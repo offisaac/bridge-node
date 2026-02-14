@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cluster Console - MVP</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0d1117; color: #c9d1d9; padding: 20px; }
+        h1 { font-size: 1.5rem; margin-bottom: 20px; color: #58a6ff; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 16px; }
+        .card h2 { font-size: 1rem; color: #8b949e; margin-bottom: 12px; }
+        .progress { background: #21262d; border-radius: 4px; height: 24px; margin: 8px 0; overflow: hidden; position: relative; }
+        .progress-bar { height: 100%; transition: width 0.3s; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; font-size: 0.75rem; }
+        .progress-bar.cpu { background: linear-gradient(90deg, #238636, #3fb950); }
+        .progress-bar.memory { background: linear-gradient(90deg, #1f6feb, #58a6ff); }
+        .progress-bar.gpu { background: linear-gradient(90deg, #a371f7, #d2a8ff); }
+        .progress-label { display: flex; justify-content: space-between; font-size: 0.85rem; }
+        .terminal { background: #0d1117; border: 1px solid #30363d; border-radius: 6px; padding: 12px; font-family: monospace; font-size: 0.85rem; min-height: 200px; max-height: 300px; overflow-y: auto; white-space: pre-wrap; }
+        .input-row { display: flex; gap: 8px; margin-top: 12px; }
+        .input-row input { flex: 1; background: #21262d; border: 1px solid #30363d; color: #c9d1d9; padding: 8px 12px; border-radius: 6px; font-family: monospace; }
+        .input-row input:focus { outline: none; border-color: #58a6ff; }
+        .btn { background: #238636; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
+        .btn:hover { background: #2ea043; }
+        .btn.danger { background: #da3633; }
+        .btn.danger:hover { background: #f85149; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        th, td { text-align: left; padding: 8px; border-bottom: 1px solid #30363d; }
+        th { color: #8b949e; }
+        .pid { color: #f85149; cursor: pointer; }
+        .file-actions { display: flex; gap: 8px; margin-bottom: 12px; }
+        .file-actions .btn { padding: 6px 12px; font-size: 0.8rem; }
+        .tab-row { display: flex; gap: 8px; margin-bottom: 16px; }
+        .tab { background: #21262d; border: 1px solid #30363d; color: #8b949e; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
+        .tab.active { background: #1f6feb; color: white; border-color: #1f6feb; }
+    </style>
+</head>
+<body>
+    <h1>🖥️ Cluster Console MVP</h1>
+
+    <div class="tab-row">
+        <div class="tab active" onclick="showTab('monitor')">📊 Monitor</div>
+        <div class="tab" onclick="showTab('files')">📁 Files</div>
+        <div class="tab" onclick="showTab('process')">📋 Process</div>
+        <div class="tab" onclick="showTab('terminal')">💻 Terminal</div>
+    </div>
+
+    <!-- Tab 1: Monitor -->
+    <div id="tab-monitor" class="grid">
+        <div class="card">
+            <h2>CPU Usage</h2>
+            <div class="progress-label"><span>CPU</span><span id="cpuVal">0%</span></div>
+            <div class="progress"><div class="progress-bar cpu" id="cpuBar" style="width: 0%"></div></div>
+        </div>
+        <div class="card">
+            <h2>Memory Usage</h2>
+            <div class="progress-label"><span>Memory</span><span id="memVal">0%</span></div>
+            <div class="progress"><div class="progress-bar memory" id="memBar" style="width: 0%"></div></div>
+            <div style="font-size: 0.75rem; color: #8b949e;" id="memDetail"></div>
+        </div>
+        <div class="card">
+            <h2>GPU Usage</h2>
+            <div class="progress-label"><span>GPU</span><span id="gpuVal">--</span></div>
+            <div class="progress"><div class="progress-bar gpu" id="gpuBar" style="width: 0%"></div></div>
+            <div style="font-size: 0.75rem; color: #8b949e;" id="gpuDetail"></div>
+        </div>
+    </div>
+
+    <!-- Tab 2: Files -->
+    <div id="tab-files" class="card" style="display: none;">
+        <h2>File Manager</h2>
+        <div class="file-actions">
+            <input type="text" id="filePath" value="/home/pengxiang" style="flex:1; background:#21262d; border:1px solid #30363d; color:#c9d1d9; padding:8px;border-radius:6px;">
+            <button class="btn" onclick="loadFiles()">Go</button>
+            <button class="btn" onclick="document.getElementById('uploadInput').click()">📤 Upload</button>
+            <input type="file" id="uploadInput" style="display:none" onchange="uploadFile(this)">
+        </div>
+        <div id="fileList" style="max-height: 300px; overflow-y: auto;"></div>
+    </div>
+
+    <!-- Tab 3: Process -->
+    <div id="tab-process" class="card" style="display: none;">
+        <h2>Process List</h2>
+        <button class="btn" onclick="loadProcesses()" style="margin-bottom:12px;">🔄 Refresh</button>
+        <table>
+            <thead><tr><th>PID</th><th>User</th><th>CPU%</th><th>Mem%</th><th>Command</th><th>Action</th></tr></thead>
+            <tbody id="processList"></tbody>
+        </table>
+    </div>
+
+    <!-- Tab 4: Terminal -->
+    <div id="tab-terminal" class="card" style="display: none;">
+        <h2>Terminal</h2>
+        <div class="terminal" id="terminalOutput">Welcome to Cluster Terminal</div>
+        <div class="input-row">
+            <input type="text" id="cmdInput" placeholder="Enter command..." onkeydown="if(event.key==='Enter')runCmd()">
+            <button class="btn" onclick="runCmd()">Execute</button>
+        </div>
+    </div>
+
+    <script>
+        const API = 'http://localhost:8888';
+
+        // Tab navigation
+        function showTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('tab-monitor').style.display = tab === 'monitor' ? 'grid' : 'none';
+            document.getElementById('tab-files').style.display = tab === 'files' ? 'block' : 'none';
+            document.getElementById('tab-process').style.display = tab === 'process' ? 'block' : 'none';
+            document.getElementById('tab-terminal').style.display = tab === 'terminal' ? 'block' : 'none';
+        }
+
+        // Monitor
+        async function updateStatus() {
+            try {
+                const res = await fetch(`${API}/api/status`);
+                const data = await res.json();
+                if (data.system) {
+                    document.getElementById('cpuBar').style.width = data.system.cpu_percent + '%';
+                    document.getElementById('cpuVal').textContent = data.system.cpu_percent.toFixed(1) + '%';
+                    document.getElementById('memBar').style.width = data.system.memory_percent + '%';
+                    document.getElementById('memVal').textContent = data.system.memory_percent.toFixed(1) + '%';
+                    const usedGB = (data.system.memory_used / 1e9).toFixed(1);
+                    const totalGB = (data.system.memory_total / 1e9).toFixed(1);
+                    document.getElementById('memDetail').textContent = `${usedGB}GB / ${totalGB}GB`;
+                }
+            } catch(e) { console.error(e); }
+            // Try GPU
+            try {
+                const res = await fetch(`${API}/api/command`, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({command: 'nvidia-smi --query-gpu=utilization.gpu,memory.used,memory.total --format=csv,noheader,nounits'})
+                });
+                const data = await res.json();
+                if (data.output) {
+                    const parts = data.output.trim().split(',');
+                    if (parts.length >= 3) {
+                        document.getElementById('gpuBar').style.width = parts[0].trim() + '%';
+                        document.getElementById('gpuVal').textContent = parts[0].trim() + '%';
+                        const memUsed = (parseInt(parts[1].trim()) / 1024).toFixed(1);
+                        const memTotal = (parseInt(parts[2].trim()) / 1024).toFixed(1);
+                        document.getElementById('gpuDetail').textContent = `${memUsed}GB / ${memTotal}GB`;
+                    }
+                }
+            } catch(e) { document.getElementById('gpuVal').textContent = 'N/A'; }
+        }
+        setInterval(updateStatus, 2000);
+        updateStatus();
+
+        // Files
+        async function loadFiles() {
+            const path = document.getElementById('filePath').value;
+            const list = document.getElementById('fileList');
+            list.innerHTML = 'Loading...';
+            try {
+                const res = await fetch(`${API}/api/remote/list?path=${encodeURIComponent(path)}`);
+                const data = await res.json();
+                if (data.items && data.items.length) {
+                    list.innerHTML = data.items.map(item => `
+                        <div style="display:flex;align-items:center;gap:8px;padding:8px;border-bottom:1px solid #30363d;">
+                            <span>${item.is_dir ? '📁' : '📄'}</span>
+                            <span style="flex:1">${item.name}</span>
+                            <span style="color:#8b949e;font-size:0.75rem">${item.is_dir ? '--' : formatSize(item.size)}</span>
+                            ${!item.is_dir ? `<button class="btn" onclick="downloadFile('${item.path}')">⬇️</button>` : ''}
+                            <button class="btn danger" onclick="deleteFile('${item.path}', ${item.is_dir})">🗑️</button>
+                        </div>
+                    `).join('');
+                } else { list.innerHTML = 'Empty directory'; }
+            } catch(e) { list.innerHTML = 'Error: ' + e.message; }
+        }
+        function formatSize(b) { return b < 1024 ? b+'B' : b < 1e6 ? (b/1024).toFixed(1)+'KB' : (b/1e6).toFixed(1)+'MB'; }
+        async function deleteFile(path, isDir) {
+            if (!confirm('Delete ' + path + '?')) return;
+            try {
+                await fetch(`${API}/api/remote/delete`, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({path, is_dir: isDir})
+                });
+                loadFiles();
+            } catch(e) { alert('Error: ' + e.message); }
+        }
+        async function downloadFile(path) {
+            try {
+                const res = await fetch(`${API}/api/remote/read?path=${encodeURIComponent(path)}`);
+                const data = await res.json();
+                if (data.content) {
+                    const blob = new Blob([data.content], {type: 'text/plain'});
+                    const a = document.createElement('a');
+                    a.href = URL.createObjectURL(blob);
+                    a.download = path.split('/').pop();
+                    a.click();
+                }
+            } catch(e) { alert('Error: ' + e.message); }
+        }
+        async function uploadFile(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const path = document.getElementById('filePath').value + '/' + file.name;
+            const formData = new FormData();
+            formData.append('file', file);
+            try {
+                await fetch(`${API}/api/remote/upload/chunk?upload_id=${Date.now()}&chunk_index=0&total_chunks=1&filename=${encodeURIComponent(file.name)}&destination=${encodeURIComponent(path)}`, {method: 'POST', body: formData});
+                loadFiles();
+            } catch(e) { alert('Error: ' + e.message); }
+        }
+        loadFiles();
+
+        // Process
+        async function loadProcesses() {
+            const tbody = document.getElementById('processList');
+            tbody.innerHTML = 'Loading...';
+            try {
+                const res = await fetch(`${API}/api/command`, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({command: 'ps aux --sort=-%cpu | head -20'})
+                });
+                const data = await res.json();
+                if (data.output) {
+                    const lines = data.output.trim().split('\n').slice(1);
+                    tbody.innerHTML = lines.map(line => {
+                        const parts = line.trim().split(/\s+/);
+                        if (parts.length < 11) return '';
+                        const pid = parts[1], user = parts[0], cpu = parts[2], mem = parts[3], cmd = parts.slice(10).join(' ');
+                        return `<tr><td>${pid}</td><td>${user}</td><td>${cpu}</td><td>${mem}</td><td style="max-width:200px;overflow:hidden;text-overflow:ellipsis">${cmd}</td><td><button class="btn danger" onclick="killProcess(${pid})">Kill</button></td></tr>`;
+                    }).join('');
+                }
+            } catch(e) { tbody.innerHTML = 'Error: ' + e.message; }
+        }
+        async function killProcess(pid) {
+            if (!confirm('Kill PID ' + pid + '?')) return;
+            try {
+                await fetch(`${API}/api/command`, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({command: 'kill ' + pid})
+                });
+                loadProcesses();
+            } catch(e) { alert('Error: ' + e.message); }
+        }
+        loadProcesses();
+
+        // Terminal
+        async function runCmd() {
+            const input = document.getElementById('cmdInput');
+            const cmd = input.value.trim();
+            if (!cmd) return;
+            const output = document.getElementById('terminalOutput');
+            output.textContent += '\n$ ' + cmd + '\n';
+            try {
+                const res = await fetch(`${API}/api/command`, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({command: cmd})
+                });
+                const data = await res.json();
+                output.textContent += data.output || data.error || 'No output';
+            } catch(e) { output.textContent += 'Error: ' + e.message; }
+            output.scrollTop = output.scrollHeight;
+            input.value = '';
+        }
+    </script>
+</body>
+</html>
