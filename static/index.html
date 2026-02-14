@@ -379,6 +379,26 @@
             border-left-color: #f472b6;
         }
 
+        .output-line.clickable {
+            cursor: pointer;
+        }
+
+        .output-line.clickable:hover {
+            background: rgba(139, 92, 246, 0.15);
+        }
+
+        .output-line.clickable::after {
+            content: '📋';
+            position: absolute;
+            right: 10px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .output-line.clickable:hover::after {
+            opacity: 0.5;
+        }
+
         .output-timestamp {
             color: var(--text-muted);
             font-size: 0.7rem;
@@ -579,6 +599,7 @@
                     </div>
                     <div class="card-body">
                         <div class="path-bar">
+                            <button class="btn btn-secondary" onclick="goUpDirectory()" title="Go to parent directory">⬆️</button>
                             <input type="text" id="filePath" value="~/.claude" placeholder="Enter path..." onkeydown="if(event.key==='Enter')loadFiles()">
                             <button class="btn btn-primary" onclick="loadFiles()">Go</button>
                         </div>
@@ -625,6 +646,7 @@
                     <div class="card-header">
                         <span class="card-title">📊 Claude Output Monitor</span>
                         <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-secondary" onclick="copyAllOutput()" title="Copy all">📋 Copy</button>
                             <button class="btn btn-secondary" onclick="clearOutput()">Clear</button>
                             <button class="btn btn-secondary" onclick="exportOutput()">Export</button>
                         </div>
@@ -806,6 +828,20 @@
             return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
         }
 
+        function goUpDirectory() {
+            let path = document.getElementById('filePath').value.replace('~', '/home/pengxiang');
+            // Remove trailing slash if present
+            path = path.replace(/\/$/, '');
+            // Get parent directory
+            const parent = path.substring(0, path.lastIndexOf('/'));
+            if (parent && parent !== path) {
+                document.getElementById('filePath').value = parent;
+                loadFiles();
+            } else {
+                showToast('Already at root');
+            }
+        }
+
         function previewFile(path) {
             showToast(`Preview: ${path.split('/').pop()}`);
             logActivity(`Preview: ${path}`);
@@ -904,8 +940,10 @@
             const now = new Date();
             const timestamp = now.toLocaleTimeString('en-US', { hour12: false });
             const line = document.createElement('div');
-            line.className = `output-line ${type}`;
+            line.className = `output-line ${type} clickable`;
             line.innerHTML = `<span class="output-timestamp">[${timestamp}]</span>${escapeHtml(text)}`;
+            line.title = 'Click to copy';
+            line.onclick = function() { copyLine(this); };
             outputConsole.appendChild(line);
             outputConsole.scrollTop = outputConsole.scrollHeight;
 
@@ -939,6 +977,29 @@
             showToast('Exported ✓');
         }
 
+        function copyAllOutput() {
+            const outputs = JSON.parse(localStorage.getItem('claudeOutputs') || '[]');
+            const text = outputs.map(o => o.text).join('\n');
+            if (text) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast('Copied all output to clipboard ✓');
+                }).catch(err => {
+                    showToast('Failed to copy: ' + err.message);
+                });
+            } else {
+                showToast('No output to copy');
+            }
+        }
+
+        function copyLine(element) {
+            const text = element.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Copied to clipboard ✓');
+            }).catch(err => {
+                showToast('Failed to copy: ' + err.message);
+            });
+        }
+
         // Load saved outputs
         function loadSavedOutputs() {
             const outputs = JSON.parse(localStorage.getItem('claudeOutputs') || '[]');
@@ -946,8 +1007,10 @@
                 const now = new Date(o.time);
                 const timestamp = now.toLocaleTimeString('en-US', { hour12: false });
                 const line = document.createElement('div');
-                line.className = `output-line ${o.type}`;
+                line.className = `output-line ${o.type} clickable`;
                 line.innerHTML = `<span class="output-timestamp">[${timestamp}]</span>${escapeHtml(o.text)}`;
+                line.title = 'Click to copy';
+                line.onclick = function() { copyLine(this); };
                 outputConsole.appendChild(line);
             });
         }
