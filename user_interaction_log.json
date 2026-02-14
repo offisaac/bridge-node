@@ -1,0 +1,34 @@
+[
+  {
+    "timestamp": "2026-02-15T10:00:00Z",
+    "type": "bug_report",
+    "description": "Claude Input + Input History 分离导致用户体验割裂",
+    "action": "合并为统一面板",
+    "status": "fixed",
+    "commit": "cb17685"
+  },
+  {
+    "timestamp": "2026-02-15T10:00:00Z",
+    "type": "bug_report",
+    "description": "Quick Commands 交互式命令导致SSH会话阻塞",
+    "action": "替换为非交互版本",
+    "status": "fixed",
+    "commit": "cb17685"
+  },
+  {
+    "timestamp": "2026-02-15T10:00:00Z",
+    "type": "bug_report",
+    "description": "File Manager upload FormData 字段名错误",
+    "action": "修正字段名为 file",
+    "status": "fixed",
+    "commit": "cb17685"
+  },
+  {
+    "timestamp": "2026-02-15T10:00:00Z",
+    "type": "bug_report",
+    "description": "Claude Input 多文件上传一次性提交导致失败",
+    "action": "改为逐个提交",
+    "status": "fixed",
+    "commit": "cb17685"
+  }
+]

@@ -564,6 +564,10 @@ async def list_files(token: str = Depends(simple_auth)):
 @app.get("/api/files/download/{filename}")
 async def download_file(filename: str, token: str = Depends(simple_auth)):
     """Download a file."""
+    # SEC-006: Validate filename to prevent path traversal
+    # Only allow safe filenames (no path separators)
+    if '/' in filename or '\\' in filename or '..' in filename:
+        raise HTTPException(status_code=400, detail="Invalid filename")
     filepath = os.path.join(os.path.dirname(__file__), "uploads", filename)
     if os.path.exists(filepath):
         return FileResponse(filepath, filename=filename)
@@ -978,15 +982,19 @@ async def delete_path(path: str, token: str = Depends(simple_auth)):
 async def rename_path(old_path: str, new_name: str, token: str = Depends(simple_auth)):
     """Rename a file or directory."""
     try:
-        expanded_old = os.path.expanduser(old_path)
+        # SEC-008: Validate path to prevent directory traversal
+        expanded_old = validate_path(old_path)
         if not os.path.exists(expanded_old):
             raise HTTPException(status_code=404, detail="Source path not found")
 
         parent_dir = os.path.dirname(expanded_old)
-        new_path = os.path.join(parent_dir, new_name)
+        # SEC-008: Validate new path is also within allowed directories
+        new_path = validate_path(os.path.join(parent_dir, new_name))
         os.rename(expanded_old, new_path)
 
         return {"success": True, "old_path": expanded_old, "new_path": new_path}
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -1366,6 +1374,10 @@ async def fs_upload(
     try:
         import shutil
         import tempfile
+
+        # SEC-006: Prevent path traversal in destination
+        if ".." in destination:
+            raise HTTPException(status_code=400, detail="Invalid destination path")
 
         # 获取集群上传目录（从环境变量或使用默认值）
         cluster_upload_dir = os.getenv(

@@ -1,0 +1,66 @@
+{
+  "project": "BridgeNode",
+  "version": "1.0.0",
+  "last_commit": "cb17685",
+  "last_updated": "2026-02-15",
+  "evolution_history": [
+    {
+      "commit": "cb17685",
+      "date": "2026-02-15",
+      "type": "bug_fix",
+      "changes": [
+        "fix: Claude Input + Input History 合并为统一面板",
+        "fix: Quick Commands 交互式命令替换为非交互版本",
+        "fix: File Manager upload FormData 字段名修正",
+        "fix: Claude Input 多文件上传逐个提交"
+      ]
+    },
+    {
+      "commit": "SEC-002",
+      "date": "2026-02-15",
+      "type": "security_fix",
+      "changes": [
+        "fix: SEC-002 命令注入漏洞 - 添加 ALLOWED_COMMANDS 白名单机制",
+        "fix: /api/command 端点使用完整字符串匹配白名单 + shell=True（保留管道特性）",
+        "fix: WebSocket 终端使用 shlex.split() + shell=False（更严格的安全控制）"
+      ]
+    },
+    {
+      "commit": "SEC-006-008",
+      "date": "2026-02-15",
+      "type": "security_fix",
+      "changes": [
+        "fix: SEC-006 文件上传路径遍历 - 添加 filename 验证和 .. 检测",
+        "fix: SEC-007 日志读取 - /api/logs 添加 validate_path() 验证",
+        "fix: SEC-008 远程文件操作 - /api/remote/rename 添加 validate_path() 验证",
+        "fix: 添加 SAFE_BASE_DIRS 白名单目录和 validate_path() 通用函数"
+      ]
+    }
+  ],
+  "stats": {
+    "total_commits": 3,
+    "bug_fixes": 5,
+    "features": 0,
+    "security_fixes": 2
+  },
+  "best_practices": [
+    {
+      "category": "SEC-002 Command Injection Prevention",
+      "rule": "使用白名单机制限制可执行命令",
+      "implementation": "ALLOWED_COMMANDS 配置完整命令字符串列表，运行时进行精确匹配",
+      "notes": "shell=True + 白名单完整匹配 允许保留管道等 shell 特性，同时防止注入"
+    },
+    {
+      "category": "SEC-002 Command Injection Prevention",
+      "rule": "使用 shlex.split() 解析用户输入",
+      "implementation": "对非白名单模式使用 shlex.split() 将命令字符串转换为安全列表",
+      "notes": "适用于不需要 shell 特性的场景（如终端模拟器）"
+    },
+    {
+      "category": "SEC-006/007/008 Path Traversal Prevention",
+      "rule": "使用 validate_path() 进行路径验证",
+      "implementation": "os.path.realpath() + SAFE_BASE_DIRS 白名单目录检查",
+      "notes": "所有文件操作端点必须使用 validate_path() 验证用户输入的路径"
+    }
+  ]
+}

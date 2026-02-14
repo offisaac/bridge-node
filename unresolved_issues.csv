@@ -1,0 +1,15 @@
+issue_id,description,severity,status,created_date,resolved_date
+SEC-001,认证完全绕过 - simple_auth 函数不验证凭证直接返回anonymous,critical,open,2026-02-15,
+SEC-002,命令注入漏洞 - subprocess使用shell=True执行用户命令,critical,resolved,2026-02-15,2026-02-15
+SEC-003,硬编码凭证 - DEFAULT_USERNAME="admin" DEFAULT_PASSWORD="password",critical,open,2026-02-15,
+SEC-004,启动时Token泄露 - Token在控制台打印,critical,open,2026-02-15,
+SEC-005,SSH密码明文存储 - GET /api/ssh/config可能返回密码,critical,open,2026-02-15,
+SEC-006,路径遍历漏洞 - 文件上传filename无验证,high,resolved,2026-02-15,2026-02-15
+SEC-007,路径遍历漏洞 - 日志读取filepath无验证,high,resolved,2026-02-15,2026-02-15
+SEC-008,路径遍历漏洞 - 远程文件列表path参数无验证,high,resolved,2026-02-15,2026-02-15
+SEC-009,时序攻击风险 - 密码比较使用==而非secrets.compare_digest,high,open,2026-02-15,
+SEC-010,CORS允许credentials - 配合通配符可能导致漏洞,high,open,2026-02-15,
+SEC-011,全局异常处理器泄露敏感信息 - 异常详情直接返回,high,open,2026-02-15,
+SEC-012,文件上传无类型验证,medium,open,2026-02-15,
+SEC-013,WebSocket无认证,medium,open,2026-02-15,
+SEC-014,Token无刷新机制,medium,open,2026-02-15,

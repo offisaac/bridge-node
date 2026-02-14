@@ -1,11 +1,12 @@
 """BridgeNode Authentication Module - Simple Username/Password"""
+import os
 import secrets
 from datetime import datetime, timedelta
 from typing import Optional
 
-# Simple hardcoded credentials (can be moved to config/env)
-DEFAULT_USERNAME = "admin"
-DEFAULT_PASSWORD = "password"
+# Credentials from environment variables with fallback defaults
+DEFAULT_USERNAME = os.getenv("BRIDGENODE_USERNAME", "admin")
+DEFAULT_PASSWORD = os.getenv("BRIDGENODE_PASSWORD", "password")
 
 # Token storage
 _token: Optional[str] = None
