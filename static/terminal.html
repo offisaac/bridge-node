@@ -503,44 +503,234 @@
         let inputEl = document.getElementById('terminalInput');
 
         // ====================
-        // WebSocket Connection
+        // WebSocket Manager with Exponential Backoff & Heartbeat
         // ====================
-        function connectWebSocket() {
-            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-            ws = new WebSocket(`${protocol}//${window.location.host}/ws/terminal`);
+        class WebSocketManager {
+            constructor(config) {
+                this.url = config.url;
+                this.onMessage = config.onMessage || (() => {});
+                this.onOpen = config.onOpen || (() => {});
+                this.onClose = config.onClose || (() => {});
+                this.onError = config.onError || (() => {});
+                this.onStatusChange = config.onStatusChange || (() => {});
 
-            ws.onopen = () => {
-                console.log('WebSocket connected');
-                updateConnectionStatus(true, 'Connected');
+                this.initialDelay = config.initialDelay || 1000;
+                this.maxDelay = config.maxDelay || 30000;
+                this.backoffMultiplier = config.backoffMultiplier || 2;
+                this.maxRetries = config.maxRetries || 10;
+                this.heartbeatInterval = config.heartbeatInterval || 30000;
+                this.heartbeatTimeout = config.heartbeatTimeout || 5000;
 
-                // Initialize session
-                ws.send(JSON.stringify({
-                    type: 'init',
-                    session_id: currentSession
-                }));
-            };
+                this.ws = null;
+                this.retryCount = 0;
+                this.currentDelay = this.initialDelay;
+                this.heartbeatTimer = null;
+                this.reconnectTimer = null;
+                this.isManualClose = false;
+                this.lastPingTime = 0;
+                this.status = 'disconnected';
+            }
 
-            ws.onmessage = (event) => {
+            connect() {
+                if (this.ws && this.ws.readyState === WebSocket.OPEN) return;
+
+                this.isManualClose = false;
+                this.updateStatus('connecting');
+
+                const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+                const wsUrl = `${protocol}//${window.location.host}${this.url}`;
+
                 try {
-                    const data = JSON.parse(event.data);
-                    handleMessage(data);
-                } catch (e) {
-                    console.error('Parse error:', e);
+                    this.ws = new WebSocket(wsUrl);
+
+                    this.ws.onopen = () => {
+                        console.log('[WS] Connected');
+                        this.retryCount = 0;
+                        this.currentDelay = this.initialDelay;
+                        this.updateStatus('connected');
+                        this.startHeartbeat();
+                        this.onOpen();
+                    };
+
+                    this.ws.onmessage = (event) => {
+                        try {
+                            const data = JSON.parse(event.data);
+                            if (data.type === 'pong') {
+                                this.lastPingTime = 0;
+                                return;
+                            }
+                            this.onMessage(data);
+                        } catch (e) {
+                            this.onMessage({ type: 'text', data: event.data });
+                        }
+                    };
+
+                    this.ws.onclose = (event) => {
+                        console.log('[WS] Disconnected:', event.code);
+                        this.stopHeartbeat();
+                        this.updateStatus('disconnected');
+                        this.onClose(event);
+
+                        if (!this.isManualClose) {
+                            this.scheduleReconnect();
+                        }
+                    };
+
+                    this.ws.onerror = (error) => {
+                        console.error('[WS] Error:', error);
+                        this.onError(error);
+                    };
+                } catch (err) {
+                    console.error('[WS] Connection failed:', err);
+                    this.scheduleReconnect();
                 }
-            };
+            }
 
-            ws.onclose = () => {
-                console.log('WebSocket disconnected');
-                updateConnectionStatus(false, 'Disconnected');
+            disconnect() {
+                this.isManualClose = true;
+                this.stopHeartbeat();
+                this.cancelReconnect();
+                if (this.ws) {
+                    this.ws.close(1000, 'Manual close');
+                    this.ws = null;
+                }
+                this.updateStatus('disconnected');
+            }
 
-                // Reconnect after 3 seconds
-                setTimeout(connectWebSocket, 3000);
-            };
+            send(data) {
+                if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+                    this.ws.send(JSON.stringify(data));
+                    return true;
+                }
+                return false;
+            }
 
-            ws.onerror = (error) => {
-                console.error('WebSocket error:', error);
-                updateConnectionStatus(false, 'Error');
-            };
+            scheduleReconnect() {
+                if (this.retryCount >= this.maxRetries) {
+                    console.log('[WS] Max retries reached');
+                    this.updateStatus('failed');
+                    return;
+                }
+
+                this.updateStatus('reconnecting');
+                const delay = this.currentDelay;
+                this.retryCount++;
+                this.currentDelay = Math.min(this.currentDelay * this.backoffMultiplier, this.maxDelay);
+
+                console.log(`[WS] Reconnecting in ${delay}ms (attempt ${this.retryCount})`);
+
+                this.reconnectTimer = setTimeout(() => {
+                    this.connect();
+                }, delay);
+            }
+
+            cancelReconnect() {
+                if (this.reconnectTimer) {
+                    clearTimeout(this.reconnectTimer);
+                    this.reconnectTimer = null;
+                }
+            }
+
+            startHeartbeat() {
+                this.stopHeartbeat();
+                this.heartbeatTimer = setInterval(() => {
+                    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+                        this.send({ type: 'ping', timestamp: Date.now() });
+                        this.lastPingTime = Date.now();
+
+                        setTimeout(() => {
+                            if (this.lastPingTime !== 0) {
+                                console.log('[WS] Heartbeat timeout');
+                                this.ws.close(4000, 'Heartbeat timeout');
+                            }
+                        }, this.heartbeatTimeout);
+                    }
+                }, this.heartbeatInterval);
+            }
+
+            stopHeartbeat() {
+                if (this.heartbeatTimer) {
+                    clearInterval(this.heartbeatTimer);
+                    this.heartbeatTimer = null;
+                }
+            }
+
+            updateStatus(status) {
+                this.status = status;
+                this.onStatusChange(status, {
+                    retryCount: this.retryCount,
+                    maxRetries: this.maxRetries,
+                    nextDelay: this.currentDelay
+                });
+            }
+        }
+
+        // ====================
+        // WebSocket Connection (Enhanced)
+        // ====================
+        let terminalWsManager = null;
+
+        function initWebSocket() {
+            terminalWsManager = new WebSocketManager({
+                url: '/ws/terminal',
+                initialDelay: 1000,
+                maxDelay: 30000,
+                backoffMultiplier: 2,
+                maxRetries: 10,
+                heartbeatInterval: 30000,
+
+                onMessage: (data) => {
+                    handleMessage(data);
+                },
+
+                onOpen: () => {
+                    updateConnectionStatus(true, 'Connected');
+                    // Initialize session
+                    terminalWsManager.send({
+                        type: 'init',
+                        session_id: currentSession
+                    });
+                },
+
+                onClose: () => {
+                    updateConnectionStatus(false, 'Disconnected');
+                },
+
+                onError: (error) => {
+                    console.error('WebSocket error:', error);
+                    updateConnectionStatus(false, 'Error');
+                },
+
+                onStatusChange: (status, info) => {
+                    updateReconnectStatusUI(status, info);
+                }
+            });
+
+            terminalWsManager.connect();
+        }
+
+        function updateReconnectStatusUI(status, info) {
+            const dot = document.getElementById('connectionDot');
+            const statusEl = document.getElementById('connectionStatus');
+            if (!dot || !statusEl) return;
+
+            dot.classList.remove('connected', 'disconnected', 'connecting', 'reconnecting', 'error');
+            if (status === 'connected') {
+                dot.classList.add('connected');
+                statusEl.textContent = 'Connected';
+            } else if (status === 'connecting') {
+                dot.classList.add('connecting');
+                statusEl.textContent = 'Connecting...';
+            } else if (status === 'reconnecting') {
+                dot.classList.add('reconnecting');
+                statusEl.textContent = `Reconnecting (${info.retryCount}/${info.maxRetries})...`;
+            } else if (status === 'failed') {
+                dot.classList.add('error');
+                statusEl.textContent = 'Connection failed';
+            } else {
+                dot.classList.add('disconnected');
+                statusEl.textContent = 'Disconnected';
+            }
         }
 
         function handleMessage(data) {
@@ -577,7 +767,7 @@
                 dot.classList.add('connected');
                 status.textContent = text;
             } else {
-                dot.classList.add('text' === 'Disconnected' ? 'disconnected' : 'connecting');
+                dot.classList.add('disconnected');
                 status.textContent = text;
             }
         }
@@ -595,7 +785,9 @@
 
         function clearTerminal() {
             terminalEl.innerHTML = '';
-            ws.send(JSON.stringify({ type: 'clear' }));
+            if (terminalWsManager) {
+                terminalWsManager.send({ type: 'clear' });
+            }
             showToast('Terminal cleared');
         }
 
@@ -615,11 +807,11 @@
             historyIndex = commandHistory.length;
 
             // Send to server
-            if (ws && ws.readyState === WebSocket.OPEN) {
-                ws.send(JSON.stringify({
+            if (terminalWsManager) {
+                terminalWsManager.send({
                     type: 'command',
                     command: command
-                }));
+                });
             }
 
             currentInput = '';
@@ -674,10 +866,10 @@
             currentSession = sessionId;
 
             // Reconnect with new session
-            if (ws) {
-                ws.close();
+            if (terminalWsManager) {
+                terminalWsManager.disconnect();
             }
-            connectWebSocket();
+            initWebSocket();
         }
 
         function closeTab(event, sessionId) {
@@ -786,7 +978,7 @@
         // ====================
         // Initialize
         // ====================
-        connectWebSocket();
+        initWebSocket();
         inputEl.focus();
     </script>
 </body>
