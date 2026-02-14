@@ -594,8 +594,11 @@
                 <!-- (a) File Manager -->
                 <div class="card file-manager full-width">
                     <div class="card-header">
-                        <span class="card-title">📁 File Manager - ~/.claude/</span>
-                        <button class="btn btn-secondary" onclick="refreshFileList()">🔄</button>
+                        <span class="card-title">📁 File Manager</span>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-secondary" onclick="uploadFile()" title="Upload file">📤 Upload</button>
+                            <button class="btn btn-secondary" onclick="refreshFileList()" title="Refresh">🔄</button>
+                        </div>
                     </div>
                     <div class="card-body">
                         <div class="path-bar">
@@ -644,7 +647,7 @@
                 <!-- (c) Output Monitor -->
                 <div class="card full-width">
                     <div class="card-header">
-                        <span class="card-title">📊 Claude Output Monitor</span>
+                        <span class="card-title">📊 Claude Monitor</span>
                         <div style="display: flex; gap: 8px;">
                             <button class="btn btn-secondary" onclick="copyAllOutput()" title="Copy all">📋 Copy</button>
                             <button class="btn btn-secondary" onclick="clearOutput()">Clear</button>
@@ -668,15 +671,18 @@
                     </div>
                     <div class="card-body">
                         <div class="quick-commands">
-                            <button class="cmd-btn" onclick="checkStatus()"><span class="icon">📊</span>Status</button>
-                            <button class="cmd-btn" onclick="clearCache()"><span class="icon">🗑️</span>Clear</button>
-                            <button class="cmd-btn" onclick="restartAPI()"><span class="icon">🔄</span>Restart</button>
+                            <button class="cmd-btn" onclick="runCommand('htop', this)"><span class="icon">📊</span>htop</button>
+                            <button class="cmd-btn" onclick="runCommand('btop', this)"><span class="icon">📈</span>btop</button>
+                            <button class="cmd-btn" onclick="runCommand('nvtop', this)"><span class="icon">🎮</span>nvtop</button>
+                            <button class="cmd-btn" onclick="runCommand('gpustat -f -c', this)"><span class="icon">🟢</span>gpustat</button>
+                            <button class="cmd-btn" onclick="runCommand('nvidia-smi --query-gpu=index,name,utilization.gpu,memory.used,memory.total,temperature.gpu --format=csv', this)"><span class="icon">🎯</span>GPU Info</button>
                             <button class="cmd-btn" onclick="runCommand('df -h', this)"><span class="icon">💾</span>Disk</button>
                             <button class="cmd-btn" onclick="runCommand('free -h', this)"><span class="icon">🧠</span>Memory</button>
-                            <button class="cmd-btn" onclick="runCommand('nvidia-smi', this)"><span class="icon">🎮</span>GPU</button>
-                            <button class="cmd-btn" onclick="runCommand('ps aux | head -10', this)"><span class="icon">📈</span>Process</button>
+                            <button class="cmd-btn" onclick="runCommand('ps aux --sort=-%mem | head -10', this)"><span class="icon">🔥</span>Top Mem</button>
+                            <button class="cmd-btn" onclick="runCommand('nproc', this)"><span class="icon">⚙️</span>CPU Cores</button>
                             <button class="cmd-btn" onclick="runCommand('uptime', this)"><span class="icon">⏰</span>Uptime</button>
                             <button class="cmd-btn" onclick="runCommand('whoami', this)"><span class="icon">👤</span>Whoami</button>
+                            <button class="cmd-btn" onclick="runCommand('hostname', this)"><span class="icon">🖥️</span>Hostname</button>
                         </div>
                         <div class="console-output" id="cmdOutput" style="margin-top: 12px;">
                             Command output will appear here...
@@ -791,8 +797,9 @@
                     data.items.forEach(item => {
                         const icon = item.is_dir ? '📁' : '📄';
                         const size = item.is_dir ? '--' : formatSize(item.size);
-                        const onclick = item.is_dir ? `navigateTo('${item.path}')` : `previewFile('${item.path}')`;
-                        html += `<div class="file-item" onclick="${onclick}">
+                        const onclick = item.is_dir ? `navigateTo('${item.path}')` : `downloadFile('${item.path}')`;
+                        const title = item.is_dir ? 'Click to enter' : 'Click to download';
+                        html += `<div class="file-item" onclick="${onclick}" title="${title}">
                             <span class="file-icon">${icon}</span>
                             <span class="file-name">${item.name}</span>
                             <span class="file-size">${size}</span>
@@ -845,6 +852,69 @@
         function previewFile(path) {
             showToast(`Preview: ${path.split('/').pop()}`);
             logActivity(`Preview: ${path}`);
+        }
+
+        async function uploadFile() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.onchange = async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const currentPath = document.getElementById('filePath').value.replace('~', '/home/pengxiang');
+                const destPath = currentPath + '/' + file.name;
+
+                showToast(`Uploading ${file.name}...`);
+
+                try {
+                    const formData = new FormData();
+                    formData.append('file', file);
+
+                    const res = await fetch(`${API_BASE}/api/remote/upload/chunk?upload_id=${Date.now()}&chunk_index=0&total_chunks=1&filename=${encodeURIComponent(file.name)}&destination=${encodeURIComponent(destPath)}`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await res.json();
+
+                    if (data.success) {
+                        showToast(`✓ Uploaded ${file.name}`);
+                        logActivity(`Uploaded: ${file.name}`);
+                        loadFiles();
+                    } else {
+                        showToast('Upload failed');
+                    }
+                } catch (err) {
+                    showToast('Upload error: ' + err.message);
+                }
+            };
+            input.click();
+        }
+
+        async function downloadFile(path) {
+            const filename = path.split('/').pop();
+            showToast(`Downloading ${filename}...`);
+
+            try {
+                const res = await fetch(`${API_BASE}/api/remote/read?path=${encodeURIComponent(path)}`);
+                const data = await res.json();
+
+                if (data.content) {
+                    // Create download link
+                    const blob = new Blob([data.content], { type: 'text/plain' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = filename;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    showToast(`✓ Downloaded ${filename}`);
+                    logActivity(`Downloaded: ${filename}`);
+                } else {
+                    showToast('Cannot download: file is binary or too large');
+                }
+            } catch (err) {
+                showToast('Download error: ' + err.message);
+            }
         }
 
         // ============================================
