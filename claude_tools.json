@@ -1,0 +1,124 @@
+{
+  "name": "BridgeNode Tools for Claude",
+  "description": "Tool definitions for Claude to interact with BridgeNode server",
+  "version": "1.0.0",
+  "tools": [
+    {
+      "name": "write_to_bn_output",
+      "description": "Push content to BridgeNode frontend via SSE/WebSocket. Use this tool when you need to output long code blocks, provide results for users to copy, or send structured data that should be displayed in the frontend UI. This is the REQUIRED method for delivering output - DO NOT just print to console.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "The content to push to the frontend. Can be plain text, markdown, code blocks, or structured data."
+          },
+          "label": {
+            "type": "string",
+            "description": "Optional label to categorize the output (e.g., 'Code Result', 'Analysis', 'Debug Info'). Default: 'Claude Output'",
+            "default": "Claude Output"
+          }
+        },
+        "required": ["content"]
+      },
+      "examples": [
+        {
+          "description": "Push a code result to frontend",
+          "params": {
+            "content": "```python\ndef hello():\n    print('Hello World!')\n```",
+            "label": "Code Result"
+          }
+        },
+        {
+          "description": "Push analysis results",
+          "params": {
+            "content": "Analysis complete. Found 42 items matching criteria.",
+            "label": "Analysis"
+          }
+        }
+      ],
+      "usage_notes": [
+        "ALWAYS use this tool when outputting code, long text, or any content that needs to be displayed in the frontend",
+        "The content will be broadcast via SSE and WebSocket to all connected frontend clients",
+        "Each output gets a unique ID and timestamp for tracking",
+        "Code blocks will be automatically extracted and made available for one-click copying"
+      ]
+    },
+    {
+      "name": "fetch_context_by_id",
+      "description": "Retrieve stored context data by its unique ID (UUID). Use this when a user provides a context UUID or ID - you MUST call this tool to fetch the actual content. The context can contain documents, code, or any stored data that needs to be retrieved.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "data_id": {
+            "type": "string",
+            "description": "The unique identifier (UUID) of the context to retrieve. This is typically provided by the user in the format 'uuid:xxxx' or just the UUID string."
+          }
+        },
+        "required": ["data_id"]
+      },
+      "examples": [
+        {
+          "description": "Fetch context by UUID",
+          "params": {
+            "data_id": "550e8400-e29b-41d4-a716-446655440000"
+          }
+        },
+        {
+          "description": "Fetch context with uuid prefix",
+          "params": {
+            "data_id": "uuid:550e8400-e29b-41d4-a716-446655440000"
+          }
+        }
+      ],
+      "usage_notes": [
+        "When user provides a UUID or mentions 'context', you MUST call this tool to retrieve the content",
+        "The system maintains a context registry that maps IDs to actual stored data",
+        "Returns both metadata and the actual content of the context",
+        "If context not found, returns error with available context IDs for reference"
+      ]
+    },
+    {
+      "name": "list_available_contexts",
+      "description": "List all available context IDs in the registry. Use this to discover what contexts are available when the user doesn't provide a specific ID.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "description": "Maximum number of contexts to return",
+            "default": 20
+          }
+        }
+      },
+      "examples": [
+        {
+          "description": "List recent contexts",
+          "params": {
+            "limit": 10
+          }
+        }
+      ]
+    }
+  ],
+  "api_endpoints": {
+    "base_url": "http://127.0.0.1:8888",
+    "authentication": {
+      "type": "Bearer token",
+      "header": "Authorization",
+      "login_endpoint": "/api/auth/login"
+    },
+    "key_endpoints": {
+      "push_output": "POST /api/claude/push",
+      "get_context": "GET /api/context/{context_id}",
+      "list_contexts": "GET /api/context/registry/summary",
+      "submit_context": "POST /api/context/submit",
+      "sse_stream": "GET /api/stream/output",
+      "list_outputs": "GET /api/claude/outputs"
+    }
+  },
+  "workflows": {
+    "output_delivery": "1. Generate content -> 2. Call write_to_bn_output -> 3. Frontend receives via SSE/WebSocket -> 4. User can copy from UI",
+    "context_retrieval": "1. User provides UUID -> 2. Call fetch_context_by_id -> 3. Process retrieved content -> 4. Generate response"
+  }
+}
