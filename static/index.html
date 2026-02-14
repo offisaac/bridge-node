@@ -1,0 +1,3410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BridgeNode - SSH Tunnel Web Interface</title>
+    <style>
+        :root {
+            /* 黑紫渐变高级色系 */
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-tertiary: #1a1a25;
+            --bg-elevated: #22222f;
+            --bg-hover: #2a2a3a;
+            --text-primary: #e8e8f0;
+            --text-secondary: #9898a8;
+            --text-muted: #686878;
+            --accent: #8b5cf6;
+            --accent-hover: #a78bfa;
+            --accent-subtle: rgba(139, 92, 246, 0.2);
+            --accent-glow: rgba(139, 92, 246, 0.4);
+            --success: #10b981;
+            --success-hover: #34d399;
+            --success-subtle: rgba(16, 185, 129, 0.2);
+            --error: #ef4444;
+            --error-hover: #f87171;
+            --error-subtle: rgba(239, 68, 68, 0.2);
+            --warning: #f59e0b;
+            --warning-hover: #fbbf24;
+            --purple: #8b5cf6;
+            --purple-light: #a78bfa;
+            --purple-dark: #7c3aed;
+            --violet: #6366f1;
+            --pink: #ec4899;
+            --border: #2a2a3a;
+            --border-light: #1e1e2a;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+            --shadow-glow: 0 0 20px var(--accent-glow);
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="light"] {
+            --bg-primary: linear-gradient(180deg, #ffffff 0%, #f0f5ff 100%);
+            --bg-secondary: #ffffff;
+            --bg-tertiary: linear-gradient(180deg, #f8f9fc 0%, #eef1fa 100%);
+            --bg-elevated: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --accent: #6366f1;
+            --accent-hover: #4f46e5;
+            --accent-subtle: rgba(99, 102, 241, 0.12);
+            --accent-glow: rgba(99, 102, 241, 0.25);
+            --success: #059669;
+            --error: #dc2626;
+            --warning: #d97706;
+            --border: #e2e8f0;
+            --border-light: #f1f5f9;
+            --shadow: 0 8px 24px rgba(99, 102, 241, 0.12);
+            --shadow-sm: 0 2px 8px rgba(99, 102, 241, 0.08);
+        }
+
+        [data-theme="light"] body {
+            background:
+                radial-gradient(ellipse at 20% 0%, rgba(99, 102, 241, 0.12) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 100%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+                var(--bg-primary);
+        }
+
+        [data-theme="light"] .header {
+            background: linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.95) 100%);
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 2px 12px rgba(99, 102, 241, 0.08);
+        }
+
+        [data-theme="light"] .card {
+            background: #ffffff;
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-sm);
+        }
+
+        [data-theme="light"] .card:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: var(--shadow);
+        }
+
+        [data-theme="light"] input,
+        [data-theme="light"] select,
+        [data-theme="light"] textarea {
+            background: #ffffff !important;
+            border: 1px solid var(--border) !important;
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="light"] input:focus,
+        [data-theme="light"] select:focus,
+        [data-theme="light"] textarea:focus {
+            border-color: var(--accent) !important;
+            box-shadow: 0 0 0 3px var(--accent-subtle), 0 0 12px rgba(99, 102, 241, 0.15) !important;
+        }
+
+        [data-theme="light"] .console {
+            background: linear-gradient(180deg, #f8f9fc 0%, #ffffff 100%);
+            border: 1px solid var(--border-light);
+        }
+
+        [data-theme="light"] .btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: white;
+            border: none;
+        }
+
+        [data-theme="light"] .theme-toggle,
+        [data-theme="light"] .theme-toggle-btn {
+            background: linear-gradient(135deg, #f0f2f8 0%, #e2e8f0 100%);
+            border: 1px solid var(--border);
+        }
+
+        [data-theme="light"] .file-item,
+        [data-theme="light"] .file-list-item {
+            background: #ffffff;
+            border: 1px solid var(--border-light);
+        }
+
+        [data-theme="light"] .file-item:hover {
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.05) 0%, rgba(139, 92, 246, 0.03) 100%);
+        }
+
+        [data-theme="light"] .toast {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fc 100%);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+
+        [data-theme="light"] h1 {
+            background: linear-gradient(135deg, #4f46e5 0%, #6366f1 50%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        [data-theme="light"] .stat-value {
+            background: linear-gradient(135deg, #6366f1 0%, #818cf8 50%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        [data-theme="light"] .modal-content {
+            background: #ffffff;
+            border: 1px solid var(--border);
+        }
+
+        [data-theme="light"] .path-bar,
+        [data-theme="light"] .file-list-header {
+            background: linear-gradient(180deg, #f0f2f8 0%, #e2e8f0 100%);
+        }
+
+        [data-theme="light"] ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #94a3b8 0%, #64748b 100%);
+        }
+
+        [data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #6366f1 0%, #4f46e5 100%);
+        }
+
+        [data-theme="light"] .card-header {
+            background: linear-gradient(180deg, #f0f2f8 0%, #e2e8f0 100%);
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        [data-theme="light"] .card-title {
+            color: #1e293b;
+        }
+
+        [data-theme="light"] .card-title-icon {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.1) 100%);
+        }
+
+        [data-theme="light"] .card:hover .card-title-icon {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        }
+
+        [data-theme="light"] .status-badge {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.1) 100%);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            color: #4f46e5;
+        }
+
+        [data-theme="light"] .file-list-area {
+            background: linear-gradient(180deg, #ffffff 0%, #f0f5ff 100%) !important;
+            scrollbar-width: thin;
+            scrollbar-color: #6366f1 #e2e8f0;
+        }
+
+        :not([data-theme="light"]) .file-list-area {
+            background: linear-gradient(180deg, #1a1a2e 0%, #0f0f1a 100%) !important;
+            scrollbar-width: thin;
+            scrollbar-color: #6366f1 #1a1a2e;
+        }
+
+        .file-list-area::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        .file-list-area::-webkit-scrollbar-track {
+            background: transparent;
+            border-radius: 6px;
+        }
+
+        .file-list-area::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #6366f1 0%, #4f46e5 100%);
+            border-radius: 6px;
+            border: 3px solid transparent;
+            background-clip: padding-box;
+        }
+
+        .file-list-area::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #818cf8 0%, #6366f1 100%);
+            background-clip: padding-box;
+        }
+
+        .file-list-area::-webkit-scrollbar-button {
+            display: none;
+        }
+
+        .file-list-area::-webkit-scrollbar-corner {
+            background: transparent;
+        }
+
+        [data-theme="light"] .command-input {
+            background: linear-gradient(180deg, rgba(99, 102, 241, 0.05) 0%, rgba(139, 92, 246, 0.02) 100%);
+            border: 1px solid rgba(99, 102, 241, 0.15);
+        }
+
+        [data-theme="light"] .transfer-item {
+            background: #ffffff;
+            border: 1px solid var(--border-light);
+        }
+
+        [data-theme="light"] .transfer-progress {
+            background: #e2e8f0;
+        }
+
+        [data-theme="light"] .transfer-progress-bar {
+            background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%);
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
+        }
+
+        [data-theme="light"] .quick-access-item:hover {
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.08) 0%, rgba(139, 92, 246, 0.05) 100%);
+            border-left-color: rgba(99, 102, 241, 0.4);
+        }
+
+        [data-theme="light"] .quick-access-item.selected {
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.12) 0%, rgba(139, 92, 246, 0.08) 100%);
+            border-left-color: #6366f1;
+        }
+
+        [data-theme="light"] .stat-card {
+            background: #ffffff;
+            border: 1px solid var(--border-light);
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.08);
+        }
+
+        [data-theme="light"] .stat-card:hover {
+            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.12);
+        }
+
+        [data-theme="light"] .copy-btn {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.08) 100%);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            color: #4f46e5;
+        }
+
+        [data-theme="light"] .copy-btn:hover {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: white;
+        }
+
+        [data-theme="light"] .btn-secondary {
+            background: linear-gradient(135deg, #ffffff 0%, #f0f2f8 100%);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            color: #4f46e5;
+        }
+
+        [data-theme="light"] .btn-secondary:hover {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: white;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background:
+                radial-gradient(ellipse at 20% 0%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 100%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+            color-scheme: light dark;
+        }
+
+        /* 紫色光晕装饰 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 30%, rgba(139, 92, 246, 0.05) 0%, transparent 40%);
+            pointer-events: none;
+            z-index: -1;
+            animation: breathe 4s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -30%;
+            right: -30%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 70% 70%, rgba(99, 102, 241, 0.04) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+            animation: breathe 5s ease-in-out infinite reverse;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+            padding: 20px 28px;
+            border-radius: var(--radius-xl);
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border);
+            box-shadow:
+                var(--shadow),
+                0 0 40px rgba(139, 92, 246, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.5), transparent);
+        }
+
+        header.sticky {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            margin-bottom: 16px;
+            border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+        }
+
+        h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 50%, #6366f1 100%);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+            text-shadow: 0 0 30px rgba(139, 92, 246, 0.3);
+            animation: gradientShift 3s ease infinite;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .theme-toggle-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            background: linear-gradient(135deg, rgba(30, 30, 46, 0.8) 0%, rgba(20, 20, 32, 0.9) 100%);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .theme-toggle-btn:hover {
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+            color: white;
+            border-color: #a78bfa;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.35);
+        }
+
+        .theme-toggle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(139, 92, 246, 0.1);
+        }
+
+        .theme-toggle:hover {
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+            color: white;
+            border-color: #a78bfa;
+            transform: rotate(15deg) scale(1.05);
+            box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4), 0 0 30px rgba(139, 92, 246, 0.2);
+        }
+
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(99, 102, 241, 0.2) 100%);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+            --status-color: var(--success);
+        }
+
+        .status-badge::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--status-color, var(--success));
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-badge.connecting::before {
+            animation: pulse-fast 0.5s infinite;
+        }
+
+        @keyframes pulse-fast {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+            gap: 24px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 900px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .container {
+                padding: 16px;
+            }
+            header {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+            .header-controls {
+                width: 100%;
+                justify-content: center;
+            }
+            h1 {
+                font-size: 1.4rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .card-header {
+                padding: 12px 16px;
+            }
+            .card-body {
+                padding: 16px;
+            }
+            .console {
+                height: 200px;
+            }
+            .drop-zone {
+                padding: 32px 16px;
+            }
+            .tabs {
+                flex-wrap: wrap;
+            }
+            .tab {
+                padding: 8px 12px;
+                font-size: 0.85rem;
+            }
+            .modal-content {
+                width: 95%;
+                max-height: 90vh;
+            }
+            .file-list-header,
+            .file-list-item {
+                padding: 10px 12px;
+                font-size: 0.85rem;
+            }
+        }
+
+        .card {
+            background: linear-gradient(180deg, var(--bg-secondary) 0%, rgba(18, 18, 26, 0.95) 100%);
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+            position: relative;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.3), transparent);
+        }
+
+        .card:hover {
+            border-color: rgba(139, 92, 246, 0.4);
+            box-shadow:
+                var(--shadow),
+                0 0 30px rgba(139, 92, 246, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .card:hover .card-header {
+            background: linear-gradient(180deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
+        }
+
+        .card-header {
+            padding: 16px 24px;
+            background: linear-gradient(180deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--text-primary) 0%, rgba(139, 92, 246, 0.8) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title-icon {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(99, 102, 241, 0.15) 100%);
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.15);
+            transition: all 0.2s;
+        }
+
+        .card:hover .card-title-icon {
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+            transform: scale(1.05);
+        }
+
+        .card-body {
+            padding: 20px 24px;
+        }
+
+        /* Login Form */
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .login-box {
+            display: none;
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-box h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, var(--accent), #a371f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            transition: all 0.2s;
+        }
+
+        .form-group:focus-within {
+            border-radius: var(--radius-md);
+            padding: 4px;
+            margin: -4px -4px 16px -4px;
+            background: rgba(139, 92, 246, 0.03);
+            border: 1px solid rgba(139, 92, 246, 0.15);
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: rgba(139, 92, 246, 0.5);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-subtle);
+        }
+
+        select {
+            padding: 10px 14px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238b5cf6' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 36px;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-subtle), 0 0 15px rgba(139, 92, 246, 0.2);
+        }
+
+        select:hover {
+            border-color: rgba(139, 92, 246, 0.5);
+        }
+
+        .copy-btn {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(99, 102, 241, 0.1) 100%);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            color: var(--accent);
+            padding: 8px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+            color: white;
+            border-color: #a78bfa;
+            box-shadow: 0 2px 12px rgba(139, 92, 246, 0.35);
+            transform: translateY(-1px);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: var(--radius-md);
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 50%, #4f46e5 100%);
+            color: #ffffff;
+            width: 100%;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #a78bfa 0%, #818cf8 50%, #6366f1 100%);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 10px rgba(139, 92, 246, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-hover);
+            border-color: var(--text-muted);
+        }
+
+        /* Console */
+        .console {
+            background: linear-gradient(180deg, #1a1a2e 0%, #0f0f1a 100%);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            height: 300px;
+            overflow-y: auto;
+            font-family: 'JetBrains Mono', 'Monaco', 'Menlo', monospace;
+            font-size: 0.8rem;
+            line-height: 1.7;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        [data-theme="light"] .console {
+            background: linear-gradient(180deg, #f8f9fc 0%, #ffffff 100%);
+            border: 1px solid var(--border-light);
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .console-line {
+            color: var(--text-secondary);
+            white-space: pre-wrap;
+            word-break: break-all;
+            padding: 2px 0;
+            border-left: 2px solid transparent;
+            padding-left: 8px;
+            margin-left: -8px;
+            transition: all 0.15s;
+        }
+
+        .console-line:hover {
+            border-left-color: rgba(139, 92, 246, 0.3);
+            background: rgba(139, 92, 246, 0.03);
+        }
+
+        .console-line.error {
+            color: var(--error);
+            background: var(--error-subtle);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .console-line.success {
+            color: var(--success);
+            background: var(--success-subtle);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .console-line.info {
+            color: var(--accent);
+        }
+
+        .console-line.warning {
+            color: var(--warning);
+            background: rgba(210, 153, 34, 0.1);
+        }
+
+        .console-line.log-error {
+            color: var(--error);
+            background: var(--error-subtle);
+        }
+
+        /* Command Input */
+        .command-input {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            padding: 16px;
+            background: linear-gradient(180deg, rgba(139, 92, 246, 0.03) 0%, transparent 100%);
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(139, 92, 246, 0.1);
+        }
+
+        .command-input input {
+            flex: 1;
+            padding: 14px 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .command-input input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-subtle), 0 0 15px rgba(139, 92, 246, 0.15);
+        }
+
+        /* File Drop Zone */
+        .drop-zone {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-lg);
+            padding: 48px 24px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            background: var(--bg-primary);
+        }
+
+        .drop-zone:hover, .drop-zone.dragover {
+            border-color: var(--accent);
+            background: var(--accent-subtle);
+            transform: scale(1.01);
+        }
+
+        .drop-zone-icon {
+            font-size: 3.5rem;
+            margin-bottom: 16px;
+            display: block;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .drop-zone-text {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* File List */
+        .file-list {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 16px;
+            background: var(--bg-primary);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-light);
+            transition: all 0.2s;
+        }
+
+        .file-item:hover {
+            border-color: rgba(139, 92, 246, 0.5);
+            background: linear-gradient(90deg, rgba(139, 92, 246, 0.08) 0%, rgba(99, 102, 241, 0.05) 100%);
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.15);
+            transform: translateX(3px);
+        }
+
+        .file-name {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .file-size {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        /* LaTeX Editor */
+        .latex-input {
+            width: 100%;
+            min-height: 150px;
+            padding: 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+            resize: vertical;
+            transition: all 0.2s;
+        }
+
+        .latex-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-subtle);
+        }
+
+        .latex-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .latex-output {
+            margin-top: 20px;
+            padding: 24px;
+            background: #ffffff;
+            border-radius: var(--radius-md);
+            color: #1a1a1a;
+            min-height: 100px;
+            font-family: 'JetBrains Mono', monospace;
+            border: 1px solid rgba(139, 92, 246, 0.1);
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .latex-output img {
+            max-width: 100%;
+            border-radius: 4px;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: linear-gradient(180deg, var(--bg-secondary) 0%, rgba(18, 18, 26, 0.9) 100%);
+            padding: 20px;
+            border-radius: var(--radius-md);
+            text-align: center;
+            border: 1px solid rgba(139, 92, 246, 0.15);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.5), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(139, 92, 246, 0.4);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.2);
+        }
+
+        .stat-card:hover::before {
+            opacity: 1;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 50%, #79c0ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+            animation: gradientShift 3s ease infinite;
+            background-size: 200% 200%;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 6px;
+            font-weight: 500;
+        }
+
+        /* Tab System */
+        .tabs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .tab.active {
+            background: var(--accent);
+            color: var(--bg-primary);
+            border-color: var(--accent);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #8b5cf6 0%, #6366f1 50%, #4f46e5 100%);
+            border-radius: 5px;
+            border: 2px solid var(--bg-primary);
+            box-shadow: 0 0 8px rgba(139, 92, 246, 0.3);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #a78bfa 0%, #818cf8 50%, #6366f1 100%);
+            box-shadow: 0 0 12px rgba(139, 92, 246, 0.5);
+        }
+
+        /* Selection */
+        ::selection {
+            background: var(--accent-subtle);
+            color: var(--text-primary);
+        }
+
+        /* Dark mode specific optimizations */
+        :root:not([data-theme="light"]) ::-webkit-scrollbar-thumb {
+            background: #3d4f61;
+        }
+
+        :root:not([data-theme="light"]) .console {
+            background: #0d1117;
+        }
+
+        :root:not([data-theme="light"]) .latex-output {
+            background: #1a1a2e;
+            color: #e0e0e0;
+        }
+
+        [data-theme="light"] .latex-output {
+            background: #ffffff;
+            color: #1a1a1a;
+            border: 1px solid var(--border-light);
+            box-shadow: 0 2px 10px rgba(99, 102, 241, 0.08);
+        }
+            color: #e0e0e0;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 14px 20px;
+            background: linear-gradient(135deg, rgba(30, 30, 46, 0.95) 0%, rgba(20, 20, 32, 0.98) 100%);
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            z-index: 2000;
+            animation: slideIn 0.3s ease;
+            box-shadow: 0 4px 20px rgba(139, 92, 246, 0.2), 0 0 40px rgba(139, 92, 246, 0.1);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 400px;
+            font-size: 0.9rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .toast.toast-success {
+            border-left: 4px solid var(--success);
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.2), 0 0 40px rgba(16, 185, 129, 0.1);
+        }
+        .toast.toast-error {
+            border-left: 4px solid var(--error);
+            box-shadow: 0 4px 20px rgba(239, 68, 68, 0.2), 0 0 40px rgba(239, 68, 68, 0.1);
+        }
+        .toast.toast-warning {
+            border-left: 4px solid var(--warning);
+            box-shadow: 0 4px 20px rgba(245, 158, 11, 0.2), 0 0 40px rgba(245, 158, 11, 0.1);
+        }
+        .toast.toast-info {
+            border-left: 4px solid var(--accent);
+            box-shadow: 0 4px 20px rgba(139, 92, 246, 0.2), 0 0 40px rgba(139, 92, 246, 0.1);
+        }
+
+        .toast-close {
+            margin-left: auto;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px;
+            font-size: 1rem;
+        }
+
+        .toast-close:hover { color: var(--text-primary); }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Breathing glow animation */
+        @keyframes breathe {
+            0%, 100% {
+                box-shadow: 0 0 5px rgba(139, 92, 246, 0.3), 0 0 10px rgba(139, 92, 246, 0.2);
+            }
+            50% {
+                box-shadow: 0 0 15px rgba(139, 92, 246, 0.5), 0 0 25px rgba(139, 92, 246, 0.3), 0 0 40px rgba(139, 92, 246, 0.1);
+            }
+        }
+
+        /* Pulse animation for status indicators */
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.6;
+                transform: scale(1.1);
+            }
+        }
+
+        /* Gradient text animation */
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Quick Access Items */
+        .quick-access-item {
+            padding: 10px 12px;
+            cursor: pointer;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+            font-size: 0.9rem;
+            border-left: 2px solid transparent;
+        }
+
+        .quick-access-item:hover {
+            background: linear-gradient(90deg, rgba(139, 92, 246, 0.15) 0%, transparent 100%);
+            color: var(--text-primary);
+            border-left: 2px solid rgba(139, 92, 246, 0.5);
+            padding-left: 14px;
+        }
+
+        .quick-access-item.selected {
+            background: linear-gradient(90deg, rgba(139, 92, 246, 0.2) 0%, rgba(99, 102, 241, 0.1) 100%);
+            color: var(--accent);
+            border-left: 3px solid var(--accent);
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.2);
+        }
+
+        /* Search Highlight */
+        .highlight {
+            background: var(--warning);
+            color: var(--bg-primary);
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+
+        /* Action Buttons in File List */
+        .action-btn {
+            padding: 6px 10px;
+            font-size: 0.75rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background: var(--accent);
+            color: var(--bg-primary);
+            border-color: var(--accent);
+        }
+
+        .action-btn.danger {
+            background: var(--error-subtle);
+            border-color: var(--error);
+            color: var(--error);
+        }
+
+        .action-btn.danger:hover {
+            background: var(--error);
+            color: white;
+        }
+
+        /* Path Navigation */
+        .path-bar {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.15);
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            background: linear-gradient(90deg, rgba(139, 92, 246, 0.03) 0%, transparent 100%);
+        }
+
+        .path-bar input {
+            flex: 1;
+            padding: 10px 14px;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .path-bar input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-subtle), 0 0 10px rgba(139, 92, 246, 0.15);
+            outline: none;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            backdrop-filter: blur(8px);
+            animation: fadeIn 0.2s ease;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            animation: modalSlideIn 0.3s ease;
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            width: 90%;
+            max-width: 900px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(139, 92, 246, 0.15);
+        }
+
+        @keyframes modalSlideIn {
+            from { opacity: 0; transform: scale(0.95) translateY(-10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body {
+            padding: 24px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 4px;
+            line-height: 1;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            color: var(--text-primary);
+            transform: rotate(90deg);
+        }
+
+        /* Focus styles for accessibility */
+        *:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        /* File list header */
+        .file-list-header {
+            display: flex;
+            padding: 12px 16px;
+            background: linear-gradient(180deg, var(--bg-tertiary) 0%, rgba(30, 30, 46, 0.8) 100%);
+            font-weight: 600;
+            font-size: 0.8rem;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.15);
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            user-select: none;
+        }
+
+        .file-list-header > div {
+            cursor: pointer;
+            transition: all 0.2s;
+            padding: 4px 8px;
+            margin: -4px -8px;
+            border-radius: 4px;
+        }
+
+        .file-list-header > div:hover {
+            color: var(--accent);
+            background: rgba(139, 92, 246, 0.1);
+        }
+
+        .file-list-header .sort-asc::after { content: ' ↑'; color: var(--accent); }
+        .file-list-header .sort-desc::after { content: ' ↓'; color: var(--accent); }
+
+        .file-list-item {
+            display: flex;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-light);
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .file-list-item:hover {
+            background: var(--bg-tertiary);
+        }
+
+        /* Transfer Progress Bar */
+        .transfer-progress {
+            width: 100%;
+            height: 6px;
+            background: var(--bg-primary);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .transfer-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #8b5cf6 0%, #a78bfa 50%, #6366f1 100%);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+            position: relative;
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.5), 0 0 20px rgba(139, 92, 246, 0.3);
+        }
+
+        .transfer-progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 2px solid rgba(139, 92, 246, 0.2);
+            border-top-color: #8b5cf6;
+            border-right-color: #6366f1;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Scroll to Top */
+        .scroll-top {
+            position: fixed;
+            bottom: 24px;
+            left: 24px;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--bg-elevated) 0%, var(--bg-tertiary) 100%);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .scroll-top.visible {
+            opacity: 1;
+        }
+
+        .scroll-top:hover {
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+            border-color: #a78bfa;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
+        }
+
+        .transfer-item {
+            padding: 12px;
+            margin-bottom: 8px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+
+        .transfer-item:hover {
+            border-color: rgba(139, 92, 246, 0.5);
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .transfer-item.completed {
+            border-color: rgba(16, 185, 129, 0.5);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(99, 102, 241, 0.05) 100%);
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.15);
+        }
+
+        .transfer-item.error {
+            border-color: rgba(239, 68, 68, 0.5);
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(99, 102, 241, 0.05) 100%);
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.15);
+        }
+
+        /* Reduced motion preference */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="scroll-top" id="scrollTop" onclick="scrollToTop()">↑</button>
+
+    <!-- Login Overlay -->
+    <div class="container">
+        <header>
+            <h1>BridgeNode</h1>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <button class="theme-toggle-btn" onclick="toggleTheme()">🌙</button>
+                <button class="theme-toggle-btn" onclick="exportData()" title="Export Data">📤</button>
+                <button class="theme-toggle-btn" onclick="runDiagnostics()" title="Diagnostics">🔧</button>
+                <button class="theme-toggle-btn" onclick="showShortcuts()" title="Keyboard Shortcuts">⌨️</button>
+                <span class="status-badge" id="connectionStatus">Connecting...</span>
+                <span id="tokenDisplay" style="color: var(--text-secondary); font-size: 0.85rem;"></span>
+            </div>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="latency">--</div>
+                <div class="stat-label">Latency (ms)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="connections">0</div>
+                <div class="stat-label">Connections</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="cpuUsage">--</div>
+                <div class="stat-label">CPU %</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="memUsage">--</div>
+                <div class="stat-label">Memory %</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="uptime">--</div>
+                <div class="stat-label">Uptime</div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <!-- LaTeX Editor -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">LaTeX Source</span>
+                </div>
+                <div class="card-body">
+                    <textarea class="latex-input" id="latexInput" placeholder="Enter LaTeX formula here...&#10;Example: \frac{-b \pm \sqrt{b^2-4ac}}{2a}"></textarea>
+                    <div class="latex-actions">
+                        <button class="btn btn-primary" onclick="renderLatex()">Preview</button>
+                        <button class="btn copy-btn" onclick="copyLatex()">Copy to Clipboard</button>
+                    </div>
+                    <div class="latex-output" id="latexOutput" style="font-family: 'Courier New', monospace; font-size: 1.1rem;">
+                        <p style="color: #666; font-style: italic;">LaTeX source will be displayed here for easy copying...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Command Console -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Command Console</span>
+                </div>
+                <div class="card-body">
+                    <div class="console" id="console"></div>
+                    <div class="command-input">
+                        <input type="text" id="commandInput" placeholder="Enter command... (↑↓ for history)" onkeydown="handleCommandKeydown(event)">
+                        <button class="btn btn-primary" onclick="sendCommand()">Send</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Log Viewer -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Log Viewer</span>
+                    <div style="display: flex; gap: 5px;">
+                        <select id="logHistorySelect" onchange="loadFromHistory(this.value)" style="padding: 6px; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-secondary); color: var(--text-primary); font-size: 0.75rem; max-width: 120px;">
+                            <option value="">History</option>
+                        </select>
+                        <input type="text" id="logPath" placeholder="Log file path" style="width: 150px; padding: 6px; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-primary); color: var(--text-primary); font-size: 0.8rem;">
+                        <button class="btn copy-btn" onclick="refreshLogs()" style="padding: 6px 10px; font-size: 0.8rem;">Load</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="console" id="logConsole" style="height: 200px;"></div>
+                </div>
+            </div>
+
+            <!-- Unified File Manager -->
+            <div class="card" style="grid-column: 1 / -1;">
+                <div class="card-header">
+                    <span class="card-title">
+                        <span class="card-title-icon">📁</span>
+                        File Manager
+                    </span>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <!-- Remote Path Input -->
+                        <input type="text" id="remotePath" placeholder="Remote path..." value="/home/pengxiang" style="padding: 8px 14px; border-radius: var(--radius-md); border: 1px solid var(--border); background: var(--bg-primary); color: var(--text-primary); width: 280px; font-size: 0.85rem;">
+                        <button class="btn btn-primary" onclick="navigateRemote()" style="padding: 8px 16px; width: auto;">Go</button>
+                        <div style="width: 1px; height: 24px; background: var(--border); margin: 0 8px;"></div>
+                        <input type="text" id="fileSearchQuery" placeholder="Search files..." style="padding: 8px 14px; border-radius: var(--radius-md); border: 1px solid var(--border); background: var(--bg-primary); color: var(--text-primary); width: 160px; font-size: 0.85rem;">
+                        <button class="btn btn-secondary" onclick="searchFiles()" style="padding: 8px 14px; font-size: 0.85rem; width: auto;">
+                            <span>🔍</span> Search
+                        </button>
+                        <button class="btn btn-secondary" onclick="createNewFolder()" style="padding: 8px 14px; font-size: 0.85rem; width: auto;">
+                            <span>📁+</span> New Folder
+                        </button>
+                        <button class="btn btn-secondary" onclick="refreshCurrentPath()" style="padding: 8px 14px; font-size: 0.85rem; width: auto;">
+                            <span>🔄</span> Refresh
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body" style="padding: 0;">
+                    <div style="display: flex; height: 520px;">
+                        <!-- Left Panel - Local Files -->
+                        <div style="width: 320px; background: var(--bg-primary); border-right: 1px solid rgba(139, 92, 246, 0.1); display: flex; flex-direction: column;">
+                            <!-- Local Panel Header -->
+                            <div style="padding: 14px 16px; border-bottom: 1px solid rgba(139, 92, 246, 0.15); background: linear-gradient(180deg, var(--bg-tertiary) 0%, rgba(30, 30, 46, 0.8) 100%);">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                    <span style="font-weight: 600; background: linear-gradient(135deg, #a78bfa 0%, #6366f1 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">💻 Local</span>
+                                    <button class="btn btn-secondary" onclick="selectAndUploadToRemote()" style="padding: 6px 12px; font-size: 0.75rem; width: auto; background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%); color: white; border: none;">
+                                        <span>⬆️</span> Upload
+                                    </button>
+                                </div>
+                                <!-- Local Directory -->
+                                <div style="display: flex; gap: 6px; margin-bottom: 10px;">
+                                    <input type="text" id="localPath" placeholder="Local path..." value="~/downloads" style="flex: 1; padding: 8px 10px; border-radius: var(--radius-sm); border: 1px solid rgba(139, 92, 246, 0.2); background: var(--bg-secondary); color: var(--text-primary); font-size: 0.8rem;">
+                                    <button class="btn btn-secondary" onclick="loadLocalFiles()" style="padding: 6px 10px; font-size: 0.75rem; width: auto; background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(99, 102, 241, 0.1) 100%); border: 1px solid rgba(139, 92, 246, 0.3);">Go</button>
+                                </div>
+                                <!-- Quick Access -->
+                                <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                                    <span onclick="setLocalPath('/')" style="padding: 4px 10px; background: var(--bg-secondary); border-radius: 12px; font-size: 0.7rem; cursor: pointer; color: var(--text-secondary); transition: all 0.2s;" onmouseover="this.style.background='rgba(139, 92, 246, 0.15)';this.style.color='#a78bfa'" onmouseout="this.style.background='var(--bg-secondary)';this.style.color='var(--text-secondary)'">Root</span>
+                                    <span onclick="setLocalPath('~/downloads')" style="padding: 4px 10px; background: var(--bg-secondary); border-radius: 12px; font-size: 0.7rem; cursor: pointer; color: var(--text-secondary); transition: all 0.2s;" onmouseover="this.style.background='rgba(139, 92, 246, 0.15)';this.style.color='#a78bfa'" onmouseout="this.style.background='var(--bg-secondary)';this.style.color='var(--text-secondary)'">Downloads</span>
+                                    <span onclick="setLocalPath('~/Documents')" style="padding: 4px 10px; background: var(--bg-secondary); border-radius: 12px; font-size: 0.7rem; cursor: pointer; color: var(--text-secondary); transition: all 0.2s;" onmouseover="this.style.background='rgba(139, 92, 246, 0.15)';this.style.color='#a78bfa'" onmouseout="this.style.background='var(--bg-secondary)';this.style.color='var(--text-secondary)'">Documents</span>
+                                    <span onclick="setLocalPath('.')" style="padding: 4px 10px; background: var(--bg-secondary); border-radius: 12px; font-size: 0.7rem; cursor: pointer; color: var(--text-secondary); transition: all 0.2s;" onmouseover="this.style.background='rgba(139, 92, 246, 0.15)';this.style.color='#a78bfa'" onmouseout="this.style.background='var(--bg-secondary)';this.style.color='var(--text-secondary)'">Current</span>
+                                </div>
+                            </div>
+                            <!-- Local File List -->
+                            <div id="localFileList" class="file-list-area" style="flex: 1; overflow-y: auto; overflow-x: hidden; padding: 8px; min-height: 200px; max-height: 400px;">
+                                <div style="padding: 20px; text-align: center; color: var(--text-muted);">Loading local files...</div>
+                            </div>
+                            <!-- Local Drop Zone -->
+                            <div id="localDropZone" style="padding: 16px; border-top: 1px solid var(--border); background: var(--bg-tertiary); text-align: center; cursor: pointer;" onclick="selectAndUploadToRemote()">
+                                <div style="font-size: 1.5rem; margin-bottom: 6px;">⬆️</div>
+                                <div style="font-size: 0.8rem; color: var(--text-secondary);">Click or drop files to upload</div>
+                            </div>
+                            <input type="file" id="localUploadInput" multiple hidden>
+                        </div>
+
+                        <!-- Middle Panel - Remote Files -->
+                        <div style="flex: 1; display: flex; flex-direction: column; min-width: 0;">
+                            <!-- Remote Panel Header -->
+                            <div style="padding: 14px 16px; border-bottom: 1px solid rgba(139, 92, 246, 0.15); background: linear-gradient(180deg, var(--bg-tertiary) 0%, rgba(30, 30, 46, 0.8) 100%); display: flex; align-items: center; justify-content: space-between;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span style="font-weight: 600; background: linear-gradient(135deg, #a78bfa 0%, #6366f1 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🖥️ Remote (Cluster)</span>
+                                    <span id="remotePathDisplay" style="color: #a78bfa; font-size: 0.85rem; font-family: monospace; background: rgba(139, 92, 246, 0.1); padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(139, 92, 246, 0.2);">/home/pengxiang</span>
+                                </div>
+                                <div style="display: flex; gap: 6px;">
+                                    <button class="btn btn-secondary" id="changelogBtn" style="padding: 6px 10px; font-size: 0.75rem; width: auto; color: #6366f1;" title="View Changelog">
+                                        📋 Changelog
+                                    </button>
+                                    <button class="btn btn-secondary" onclick="goToParentDir()" style="padding: 6px 10px; font-size: 0.75rem; width: auto; background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(99, 102, 241, 0.1) 100%); border: 1px solid rgba(139, 92, 246, 0.3);" title="Go to parent directory">
+                                        <span>⬆️</span> Parent
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- Remote File list header -->
+                            <div style="display: flex; padding: 10px 16px; background: var(--bg-secondary); font-weight: 600; font-size: 0.75rem; border-bottom: 1px solid var(--border); color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">
+                                <div style="flex: 1; min-width: 0;">Name</div>
+                                <div style="width: 80px; text-align: right; flex-shrink: 0;">Size</div>
+                                <div style="width: 140px; text-align: center; flex-shrink: 0;">Actions</div>
+                            </div>
+                            <!-- Remote File list -->
+                            <div id="remoteFileList" class="file-list-area" style="flex: 1; border: none; border-radius: 0; overflow-y: auto; overflow-x: hidden; min-height: 200px; max-height: 400px;"></div>
+                        </div>
+
+                        <!-- Right Panel - Transfer Queue -->
+                        <div style="width: 280px; background: var(--bg-primary); border-left: 1px solid var(--border); display: flex; flex-direction: column;">
+                            <!-- Transfer Header -->
+                            <div style="padding: 14px 16px; border-bottom: 1px solid var(--border); background: var(--bg-tertiary);">
+                                <div style="display: flex; align-items: center; justify-content: space-between;">
+                                    <span style="font-weight: 600; color: var(--text-primary);">📤 Transfers</span>
+                                    <span id="transferCount" style="padding: 2px 8px; background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(99, 102, 241, 0.15) 100%); border-radius: 10px; font-size: 0.7rem; color: #a78bfa; border: 1px solid rgba(139, 92, 246, 0.3);">0</span>
+                                </div>
+                            </div>
+                            <!-- Transfer List -->
+                            <div id="transferList" style="flex: 1; overflow-y: auto; padding: 10px;">
+                                <div style="padding: 20px; text-align: center; color: var(--text-muted); font-size: 0.85rem;">
+                                    <div style="font-size: 2rem; margin-bottom: 8px;">📭</div>
+                                    No active transfers
+                                </div>
+                            </div>
+                            <!-- Download to Local -->
+                            <div style="padding: 14px; border-top: 1px solid var(--border); background: var(--bg-tertiary);">
+                                <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 8px; font-weight: 500;">DOWNLOAD TO LOCAL</div>
+                                <div style="display: flex; gap: 6px;">
+                                    <input type="text" id="localDownloadDir" placeholder="Local dir" value="~/downloads" style="flex: 1; padding: 8px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-secondary); color: var(--text-primary); font-size: 0.8rem;">
+                                    <button class="btn btn-secondary" onclick="selectDownloadDirectory()" style="padding: 8px 10px; font-size: 0.75rem; width: auto;" title="Select folder">
+                                        📂
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- File Preview Modal -->
+            <div id="filePreviewModal" class="hidden" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 3000;" onclick="if(event.target === this) closeFilePreview()">
+                <div style="background: var(--bg-secondary); border-radius: 16px; border: 1px solid rgba(99, 102, 241, 0.2); width: 85%; max-width: 900px; max-height: 85vh; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 40px rgba(99, 102, 241, 0.15);">
+                    <div style="padding: 16px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: linear-gradient(180deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%); border-radius: 16px 16px 0 0;">
+                        <div>
+                            <span id="previewTitle" style="font-weight: 600; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">📄 File Preview</span>
+                            <span id="filePreviewPath" style="color: var(--text-secondary); font-size: 0.85rem; margin-left: 10px;"></span>
+                        </div>
+                        <button onclick="closeFilePreview()" style="background: rgba(99, 102, 241, 0.1); border: none; color: var(--text-primary); font-size: 1.3rem; cursor: pointer; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">&times;</button>
+                    </div>
+                    <div id="filePreviewContent" style="padding: 24px; overflow-y: auto; flex: 1;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Claude Output Monitor -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Claude Output Monitor</span>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn copy-btn" onclick="toggleManualInput()" id="manualInputBtn" style="padding: 6px 12px; font-size: 0.8rem;">✏️ Manual</button>
+                        <button class="btn copy-btn" onclick="startClaudeMonitor()" style="padding: 6px 12px; font-size: 0.85rem;">▶️ Monitor</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="manualInputSection" style="display: none; margin-bottom: 12px;">
+                        <textarea id="manualClaudeInput" placeholder="Paste Claude's response here to display..." style="width: 100%; min-height: 100px; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-primary); color: var(--text-primary); font-family: monospace; font-size: 0.85rem; resize: vertical;"></textarea>
+                        <div style="display: flex; gap: 8px; margin-top: 8px;">
+                            <button class="btn btn-primary" onclick="addManualOutput()" style="flex: 1;">Add to Display</button>
+                            <button class="btn btn-secondary" onclick="clearManualOutput()">Clear</button>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 10px; display: flex; gap: 10px;">
+                        <input type="text" id="claudeOutputPath" placeholder="Claude output directory (e.g., ~/claude-output)" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-primary); color: var(--text-primary);">
+                        <button class="btn btn-secondary" onclick="setClaudePath()">Set</button>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 10px;">
+                        <input type="text" id="outputSearch" placeholder="Search outputs..." oninput="searchOutputs(this.value)" style="flex: 1; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-primary); color: var(--text-primary); font-size: 0.8rem;">
+                        <span style="font-size: 0.8rem; color: var(--text-secondary);" id="outputCount">0 outputs</span>
+                        <button class="btn copy-btn" onclick="copyAllOutput()" style="padding: 4px 10px; font-size: 0.75rem;">📋 Copy All</button>
+                    </div>
+                    <div class="console" id="claudeOutputConsole" style="height: 250px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global error handler
+        window.onerror = function(msg, url, lineNo, columnNo, error) {
+            console.error('Script error:', msg, 'Line:', lineNo, 'Column:', columnNo);
+            return false;
+        };
+
+        // State
+        let username = null;
+        let password = null;
+        let ws = null;
+        let startTime = Date.now();
+        let logHistory = JSON.parse(localStorage.getItem('logHistory') || '[]');
+        let commandHistory = JSON.parse(localStorage.getItem('commandHistory') || '[]');
+        let historyIndex = -1;
+
+        // DOM Elements
+        const consoleEl = document.getElementById('console');
+        const logConsole = document.getElementById('logConsole');
+
+        // WebSocket
+        function connectWebSocket() {
+            ws = new WebSocket(`ws://${location.host}/ws/monitor`);
+
+            ws.onopen = () => {
+                log('WebSocket connected', 'success');
+                document.getElementById('connectionStatus').textContent = 'Connected';
+                document.getElementById('connectionStatus').style.setProperty('--status-color', 'var(--success)');
+            };
+
+            ws.onerror = (error) => {
+                log('WebSocket error', 'error');
+                document.getElementById('connectionStatus').textContent = 'Error';
+                document.getElementById('connectionStatus').style.setProperty('--status-color', 'var(--error)');
+            };
+
+            ws.onclose = () => {
+                log('WebSocket disconnected, reconnecting...', 'error');
+                document.getElementById('connectionStatus').textContent = 'Reconnecting...';
+                document.getElementById('connectionStatus').style.setProperty('--status-color', 'var(--warning)');
+                setTimeout(connectWebSocket, 3000);
+            };
+
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.type === 'pong') {
+                    const latency = Math.round(Date.now() - data.timestamp);
+                    document.getElementById('latency').textContent = latency;
+                } else if (data.type === 'log') {
+                    logConsole.innerHTML += `<div class="console-line">${escapeHtml(data.content)}</div>`;
+                    logConsole.scrollTop = logConsole.scrollHeight;
+                } else if (data.type === 'claude_output') {
+                    // 接收推送的Claude输出
+                    addClaudeOutput(data.content, data.label || 'Pushed Output');
+                    showToast('New Claude output received!', 'info');
+                }
+            };
+        }
+
+        // API Helper
+        async function apiCall(endpoint, options = {}, retries = 3) {
+            console.log(`[apiCall] ${endpoint}`);
+
+            const headers = {
+                'Content-Type': 'application/json',
+                ...options.headers
+            };
+
+            // Only add body for non-GET requests
+            let body = undefined;
+            if (options.method !== 'GET' && options.method !== 'HEAD' && options.body) {
+                const bodyData = typeof options.body === 'string' ? JSON.parse(options.body) : {...options.body};
+                bodyData.username = username;
+                bodyData.password = password;
+                body = JSON.stringify(bodyData);
+            }
+
+            for (let attempt = 1; attempt <= retries; attempt++) {
+                try {
+                    const res = await fetch(endpoint, {
+                        ...options,
+                        body: body,
+                        headers
+                    });
+
+                    console.log(`[apiCall] ${endpoint} response:`, res.status);
+
+                    if (res.status === 401) {
+                        const errorData = await res.json().catch(() => ({}));
+                        console.error('[apiCall] Auth error:', errorData);
+                        log('Auth error: ' + (errorData.detail || 'Invalid credentials'), 'error');
+                        throw new Error('Authentication failed');
+                    }
+
+                    if (!res.ok && attempt < retries) {
+                        console.warn(`[apiCall] Attempt ${attempt} failed, retrying...`);
+                        await new Promise(r => setTimeout(r, 1000 * attempt));
+                        continue;
+                    }
+
+                    return res;
+                } catch (err) {
+                    if (attempt === retries) throw err;
+                    await new Promise(r => setTimeout(r, 1000 * attempt));
+                }
+            }
+        }
+
+        // Status
+        async function fetchStatus() {
+            try {
+                const res = await apiCall('/api/status');
+                const data = await res.json();
+                document.getElementById('connections').textContent = data.connections || 0;
+
+                if (data.system) {
+                    document.getElementById('cpuUsage').textContent = data.system.cpu_percent ? Math.round(data.system.cpu_percent) + '%' : '--';
+                    document.getElementById('memUsage').textContent = data.system.memory_percent ? Math.round(data.system.memory_percent) + '%' : '--';
+                }
+            } catch (err) {
+                console.error('Status fetch error:', err);
+            }
+            setTimeout(fetchStatus, 5000);
+        }
+
+        // Connection Diagnostics
+        async function runDiagnostics() {
+            showToast('Running diagnostics...', 'info');
+            const results = { ws: false, api: false, latency: 0 };
+
+            // Test WebSocket
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                results.ws = true;
+            }
+
+            // Test API
+            try {
+                const start = Date.now();
+                await apiCall('/api/status');
+                results.latency = Date.now() - start;
+                results.api = true;
+            } catch (e) {
+                results.api = false;
+            }
+
+            const msg = `Diagnostics: WebSocket ${results.ws ? '✅' : '❌'}, API ${results.api ? '✅' : '❌'}, Latency ${results.latency}ms`;
+            showToast(msg, results.ws && results.api ? 'success' : 'warning');
+            log(msg, results.ws && results.api ? 'success' : 'error');
+        }
+
+        // Uptime
+        setInterval(() => {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            const hours = Math.floor(elapsed / 3600);
+            const mins = Math.floor((elapsed % 3600) / 60);
+            document.getElementById('uptime').textContent = `${hours}h ${mins}m`;
+        }, 1000);
+
+        // Console
+        function log(message, type = '') {
+            const line = document.createElement('div');
+            line.className = `console-line ${type}`;
+            line.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            consoleEl.appendChild(line);
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+        }
+
+        // Command
+        async function sendCommand() {
+            const input = document.getElementById('commandInput');
+            const cmd = input.value.trim();
+            if (!cmd) return;
+
+            // Save to history
+            if (!commandHistory.includes(cmd)) {
+                commandHistory.unshift(cmd);
+                if (commandHistory.length > 50) commandHistory.pop();
+                localStorage.setItem('commandHistory', JSON.stringify(commandHistory));
+            }
+            historyIndex = -1;
+
+            log(`> ${cmd}`, 'info');
+            input.value = '';
+
+            try {
+                const res = await apiCall('/api/command', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ command: cmd, params: {} })
+                });
+                const data = await res.json();
+
+                if (data.result) {
+                    log(data.result.substring(0, 5000), data.success ? 'success' : 'error');
+                }
+                if (data.error) {
+                    log('Error: ' + data.error, 'error');
+                }
+            } catch (err) {
+                log('Command failed: ' + err.message, 'error');
+            }
+        }
+
+        function handleCommandKeydown(e) {
+            if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (historyIndex < commandHistory.length - 1) {
+                    historyIndex++;
+                    document.getElementById('commandInput').value = commandHistory[historyIndex];
+                }
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (historyIndex > 0) {
+                    historyIndex--;
+                    document.getElementById('commandInput').value = commandHistory[historyIndex];
+                } else if (historyIndex === 0) {
+                    historyIndex = -1;
+                    document.getElementById('commandInput').value = '';
+                }
+            } else if (e.key === 'Enter') {
+                sendCommand();
+            }
+        }
+
+        // Logs
+        async function refreshLogs() {
+            const path = document.getElementById('logPath').value;
+            if (!path) {
+                logConsole.innerHTML = '<div class="console-line error">Please enter a log file path</div>';
+                return;
+            }
+
+            // Save to history
+            if (!logHistory.includes(path)) {
+                logHistory.unshift(path);
+                if (logHistory.length > 10) logHistory.pop();
+                localStorage.setItem('logHistory', JSON.stringify(logHistory));
+                updateLogHistorySelect();
+            }
+
+            logConsole.innerHTML = '<div class="console-line info">Loading logs...</div>';
+
+            try {
+                const res = await apiCall('/api/logs', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ filepath: path, lines: 100 })
+                });
+                const data = await res.json();
+
+                logConsole.innerHTML = '';
+                data.lines.forEach(line => {
+                    const div = document.createElement('div');
+                    div.className = 'console-line';
+                    if (line.toLowerCase().includes('error') || line.toLowerCase().includes('exception') || line.toLowerCase().includes('failed')) {
+                        div.className += ' log-error';
+                    } else if (line.toLowerCase().includes('warn') || line.toLowerCase().includes('notice')) {
+                        div.className += ' warning';
+                    }
+                    div.textContent = line;
+                    logConsole.appendChild(div);
+                });
+            } catch (err) {
+                logConsole.innerHTML = `<div class="console-line error">Error: ${err.message}</div>`;
+            }
+        }
+
+        function updateLogHistorySelect() {
+            const select = document.getElementById('logHistorySelect');
+            select.innerHTML = '<option value="">History</option>' +
+                logHistory.map(p => `<option value="${escapeHtml(p)}">${escapeHtml(p.split('/').pop())}</option>`).join('');
+        }
+
+        function loadFromHistory(path) {
+            if (path) {
+                document.getElementById('logPath').value = path;
+                refreshLogs();
+            }
+        }
+
+        // Initialize log history on load
+        updateLogHistorySelect();
+
+        // File Upload - from local file manager
+        async function handleFiles(e) {
+            const files = Array.from(e.target.files);
+            for (const file of files) {
+                await uploadFile(file);
+            }
+        }
+
+        // Drag and drop enhancement
+        function initDragDrop() {
+            const dropZone = document.querySelector('.drop-zone');
+            if (!dropZone) return;
+
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                });
+            });
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => {
+                    dropZone.classList.add('dragover');
+                });
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => {
+                    dropZone.classList.remove('dragover');
+                });
+            });
+
+            dropZone.addEventListener('drop', e => {
+                const files = Array.from(e.dataTransfer.files);
+                if (files.length > 0) {
+                    handleFiles({ target: { files } });
+                }
+            });
+        }
+
+        // Paste from clipboard
+        document.addEventListener('paste', e => {
+            const items = Array.from(e.clipboardData.items);
+            const fileItems = items.filter(item => item.type.startsWith('image/') || item.type.startsWith('file/'));
+            if (fileItems.length > 0) {
+                const files = fileItems.map(item => item.getAsFile()).filter(Boolean);
+                if (files.length > 0 && confirm(`Paste ${files.length} file(s) from clipboard?`)) {
+                    handleFiles({ target: { files } });
+                }
+            }
+        });
+
+        async function uploadFile(file) {
+            log(`Uploading ${file.name}...`, 'info');
+
+            try {
+                // Initialize upload
+                const initRes = await apiCall(`/api/files/upload/init?filename=${encodeURIComponent(file.name)}&total_size=${file.size}`, {
+                    method: 'POST'
+                });
+                const { upload_id } = await initRes.json();
+
+                // Upload in chunks
+                const chunkSize = 1024 * 1024; // 1MB
+                const totalChunks = Math.ceil(file.size / chunkSize);
+
+                for (let i = 0; i < totalChunks; i++) {
+                    const start = i * chunkSize;
+                    const end = Math.min(start + chunkSize, file.size);
+                    const chunk = file.slice(start, end);
+
+                    const formData = new FormData();
+                    formData.append('chunk', chunk);
+
+                    await apiCall(`/api/files/upload/chunk?upload_id=${upload_id}&chunk_index=${i}`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                }
+
+                // Complete upload
+                await apiCall(`/api/files/upload/complete?upload_id=${upload_id}`, {
+                    method: 'POST'
+                });
+
+                log(`Uploaded ${file.name}`, 'success');
+                loadFileList();
+            } catch (err) {
+                log(`Upload failed: ${err.message}`, 'error');
+            }
+        }
+
+        async function loadFileList() {
+            try {
+                const res = await apiCall('/api/files/list');
+                const { files } = await res.json();
+
+                const listEl = document.getElementById('fileList');
+                listEl.innerHTML = '';
+
+                files.forEach(file => {
+                    const item = document.createElement('div');
+                    item.className = 'file-item';
+                    item.innerHTML = `
+                        <div>
+                            <div class="file-name">${file.name}</div>
+                            <div class="file-size">${formatSize(file.size)}</div>
+                        </div>
+                        <button class="btn copy-btn" onclick="downloadFile('${file.name}')">Download</button>
+                    `;
+                    listEl.appendChild(item);
+                });
+            } catch (err) {
+                console.error('File list error:', err);
+            }
+        }
+
+        async function downloadFile(filename) {
+            window.open(`/api/files/download/${filename}?token=${token}`, '_blank');
+        }
+
+        function formatSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
+        // Unified File Manager
+        let currentRemotePath = '/home/pengxiang';
+        let currentLocalPath = '~/downloads';
+        let claudeMonitorInterval = null;
+        let lastClaudeFiles = {};
+        let claudeOutputs = JSON.parse(localStorage.getItem('claudeOutputs') || '[]');
+        let transferQueue = [];
+
+        // Local File Browser
+        function setLocalPath(path) {
+            document.getElementById('localPath').value = path;
+            loadLocalFiles();
+        }
+
+        async function loadLocalFiles() {
+            const path = document.getElementById('localPath').value || currentLocalPath;
+            currentLocalPath = path;
+
+            const listEl = document.getElementById('localFileList');
+            listEl.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-muted);">Loading...</div>';
+
+            // For now, show a message since we can't directly browse local files from browser
+            // In a real implementation, you'd need a backend API for this
+            listEl.innerHTML = `
+                <div style="padding: 16px;">
+                    <div style="margin-bottom: 12px; padding: 10px; background: var(--bg-secondary); border-radius: var(--radius-sm); border: 1px dashed var(--border);">
+                        <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 6px;">Current Path:</div>
+                        <div style="font-family: monospace; color: var(--accent); font-size: 0.85rem;">${escapeHtml(path)}</div>
+                    </div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); text-align: center;">
+                        <p>Click "Upload" to select files from your computer</p>
+                        <p style="margin-top: 8px;">Files will be uploaded to the remote directory shown on the right</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Transfer Queue Management
+        function addToTransferQueue(fileName, direction, status = 'pending') {
+            const transfer = {
+                id: Date.now() + Math.random(),
+                name: fileName,
+                direction: direction, // 'upload' or 'download'
+                status: status,
+                progress: 0,
+                timestamp: new Date()
+            };
+            transferQueue.push(transfer);
+            renderTransferQueue();
+            return transfer.id;
+        }
+
+        function updateTransferProgress(id, progress, status = 'in_progress') {
+            const transfer = transferQueue.find(t => t.id === id);
+            if (transfer) {
+                transfer.progress = progress;
+                transfer.status = status;
+                if (status === 'completed' || status === 'error') {
+                    transfer.completedAt = new Date();
+                }
+                renderTransferQueue();
+            }
+        }
+
+        function removeTransfer(id) {
+            transferQueue = transferQueue.filter(t => t.id !== id);
+            renderTransferQueue();
+        }
+
+        function renderTransferQueue() {
+            const listEl = document.getElementById('transferList');
+            const countEl = document.getElementById('transferCount');
+
+            countEl.textContent = transferQueue.filter(t => t.status !== 'completed' && t.status !== 'error').length;
+
+            if (transferQueue.length === 0) {
+                listEl.innerHTML = `
+                    <div style="padding: 20px; text-align: center; color: var(--text-muted); font-size: 0.85rem;">
+                        <div style="font-size: 2rem; margin-bottom: 8px;">📭</div>
+                        No active transfers
+                    </div>
+                `;
+                return;
+            }
+
+            listEl.innerHTML = '';
+            transferQueue.slice().reverse().forEach(transfer => {
+                const item = document.createElement('div');
+                let itemClass = 'transfer-item';
+                if (transfer.status === 'completed') itemClass += ' completed';
+                else if (transfer.status === 'error') itemClass += ' error';
+                item.className = itemClass;
+
+                let statusIcon = '⏳';
+                if (transfer.status === 'completed') statusIcon = '✅';
+                else if (transfer.status === 'error') statusIcon = '❌';
+                else if (transfer.status === 'in_progress') statusIcon = '🔄';
+
+                item.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span>${transfer.direction === 'upload' ? '⬆️' : '⬇️'}</span>
+                        <span style="flex: 1; font-size: 0.85rem; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(transfer.name)}</span>
+                        <span style="font-size: 0.9rem;">${statusIcon} ${transfer.status === 'in_progress' ? Math.round(transfer.progress) + '%' : ''}</span>
+                    </div>
+                    ${transfer.status === 'in_progress' ? `
+                        <div class="transfer-progress">
+                            <div class="transfer-progress-bar" style="width: ${transfer.progress}%;"></div>
+                        </div>
+                    ` : ''}
+                    ${transfer.status === 'completed' || transfer.status === 'error' ? `
+                        <div style="display: flex; justify-content: flex-end; margin-top: 8px;">
+                            <button onclick="removeTransfer(${transfer.id})" style="padding: 4px 10px; font-size: 0.75rem; background: transparent; border: 1px solid var(--border); border-radius: 4px; color: var(--text-muted); cursor: pointer;">Dismiss</button>
+                        </div>
+                    ` : ''}
+                `;
+                listEl.appendChild(item);
+            });
+        }
+
+        // Go to parent directory
+        function goToParentDir() {
+            if (currentRemotePath === '/') return;
+            const parts = currentRemotePath.split('/').filter(p => p);
+            parts.pop();
+            loadRemoteFiles('/' + parts.join('/'));
+        }
+
+        function refreshCurrentPath() {
+            const pathInput = document.getElementById('remotePath');
+            loadRemoteFiles(pathInput.value || currentRemotePath);
+        }
+
+        async function loadRemoteFiles(path) {
+            if (!path) path = currentRemotePath || '/home/pengxiang';
+            currentRemotePath = path;
+
+            try {
+                const res = await apiCall(`/api/remote/list?path=${encodeURIComponent(path)}`);
+                const data = await res.json();
+
+                document.getElementById('remotePath').value = data.path;
+                document.getElementById('remotePathDisplay').textContent = data.path;
+
+                const listEl = document.getElementById('remoteFileList');
+                listEl.innerHTML = '';
+
+                // Header - removed, now in HTML
+
+                // Add parent directory link
+                if (path !== '/') {
+                    const parentItem = document.createElement('div');
+                    parentItem.style.cssText = 'display: flex; padding: 8px 12px; cursor: pointer; border-bottom: 1px solid var(--border);';
+                    parentItem.innerHTML = '<div style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px;"><span>📁</span><span>..</span></div><div style="width: 80px; text-align: right; flex-shrink: 0;"></div><div style="width: 140px; flex-shrink: 0;"></div>';
+                    parentItem.onclick = () => {
+                        const parts = path.split('/').filter(p => p);
+                        parts.pop();
+                        loadRemoteFiles('/' + parts.join('/'));
+                    };
+                    listEl.appendChild(parentItem);
+                }
+
+                data.items.forEach(item => {
+                    const itemEl = document.createElement('div');
+                    itemEl.style.cssText = 'display: flex; padding: 8px 12px; border-bottom: 1px solid var(--border); align-items: center;';
+                    itemEl.onmouseover = "this.style.background='var(--bg-tertiary)'";
+                    itemEl.onmouseout = "this.style.background='transparent'";
+
+                    const icon = item.is_dir ? '📁' : getFileIcon(item.name);
+                    const sizeText = item.is_dir ? '--' : formatSize(item.size);
+
+                    // Name column - clickable
+                    const nameEl = document.createElement('div');
+                    nameEl.style.cssText = 'flex: 1; display: flex; align-items: center; gap: 8px; cursor: pointer;';
+                    nameEl.innerHTML = `<span>${icon}</span><span>${item.name}</span>`;
+                    if (item.is_dir) {
+                        nameEl.onclick = () => loadRemoteFiles(item.path);
+                    } else {
+                        nameEl.onclick = () => previewRemoteFile(item.path);
+                    }
+                    itemEl.appendChild(nameEl);
+
+                    // Size column
+                    const sizeEl = document.createElement('div');
+                    sizeEl.style.cssText = 'width: 80px; text-align: right; color: var(--text-secondary); font-size: 0.8rem; flex-shrink: 0;';
+                    sizeEl.textContent = item.is_dir ? '📁' : sizeText;
+                    itemEl.appendChild(sizeEl);
+
+                    // Actions column
+                    const actionsEl = document.createElement('div');
+                    actionsEl.style.cssText = 'width: 140px; display: flex; gap: 4px; flex-wrap: wrap; flex-shrink: 0; justify-content: center;';
+
+                    // Download button (for files and folders)
+                    if (!item.is_dir) {
+                        const dlBtn = document.createElement('button');
+                        dlBtn.style.cssText = 'padding: 4px 8px; font-size: 0.75rem; background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(99, 102, 241, 0.15) 100%); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 4px; color: #a78bfa; cursor: pointer; transition: all 0.2s;';
+                        dlBtn.textContent = 'DL';
+                        dlBtn.onclick = (e) => { e.stopPropagation(); downloadRemoteFile(item.path, false); };
+                        actionsEl.appendChild(dlBtn);
+                    } else {
+                        // Download folder button
+                        const dlBtn = document.createElement('button');
+                        dlBtn.style.cssText = 'padding: 4px 8px; font-size: 0.75rem; background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%); border: none; border-radius: 4px; color: white; cursor: pointer; transition: all 0.2s;';
+                        dlBtn.textContent = 'DL 📦';
+                        dlBtn.onclick = (e) => { e.stopPropagation(); downloadRemoteFile(item.path, true); };
+                        actionsEl.appendChild(dlBtn);
+                    }
+
+                    // Size button
+                    const sizeBtn = document.createElement('button');
+                    sizeBtn.style.cssText = 'padding: 4px 8px; font-size: 0.75rem; background: var(--bg-tertiary); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 4px; color: var(--text-secondary); cursor: pointer; transition: all 0.2s;';
+                    sizeBtn.textContent = 'Size';
+                    sizeBtn.onclick = (e) => { e.stopPropagation(); calculateDirSize(item.path); };
+                    actionsEl.appendChild(sizeBtn);
+
+                    // Rename button
+                    const renameBtn = document.createElement('button');
+                    renameBtn.style.cssText = 'padding: 4px 8px; font-size: 0.75rem; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 4px; color: var(--text-primary); cursor: pointer;';
+                    renameBtn.textContent = 'Rename';
+                    renameBtn.onclick = (e) => { e.stopPropagation(); renameRemoteItem(item.path, item.name); };
+                    actionsEl.appendChild(renameBtn);
+
+                    // Delete button
+                    const delBtn = document.createElement('button');
+                    delBtn.style.cssText = 'padding: 4px 8px; font-size: 0.75rem; background: var(--error); border: none; border-radius: 4px; color: white; cursor: pointer;';
+                    delBtn.textContent = 'Del';
+                    delBtn.onclick = (e) => { e.stopPropagation(); deleteRemoteItem(item.path, item.name); };
+                    actionsEl.appendChild(delBtn);
+
+                    itemEl.appendChild(actionsEl);
+                    listEl.appendChild(itemEl);
+                });
+
+                if (data.items.length === 0) {
+                    listEl.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-secondary);">Empty folder</div>';
+                }
+            } catch (err) {
+                console.error('Remote file list error:', err);
+                document.getElementById('remoteFileList').innerHTML = `<div style="color: var(--error); padding: 20px;">Error: ${err.message}</div>`;
+            }
+        }
+
+        function getFileIcon(filename) {
+            const ext = filename.split('.').pop().toLowerCase();
+            const icons = {
+                'py': '🐍', 'js': '📜', 'html': '🌐', 'css': '🎨',
+                'json': '📋', 'txt': '📝', 'md': '📝',
+                'png': '🖼️', 'jpg': '🖼️', 'jpeg': '🖼️', 'gif': '🖼️',
+                'mp4': '🎬', 'avi': '🎬', 'mov': '🎬',
+                'pdf': '📕', 'doc': '📘', 'docx': '📘',
+                'zip': '📦', 'tar': '📦', 'gz': '📦',
+                'sh': '⚙️', 'py': '🐍'
+            };
+            return icons[ext] || '📄';
+        }
+
+        function getFileType(filename) {
+            const ext = filename.split('.').pop().toLowerCase();
+            const types = {
+                'py': 'Python', 'js': 'JavaScript', 'html': 'HTML', 'css': 'CSS',
+                'json': 'JSON', 'txt': 'Text', 'md': 'Markdown',
+                'png': 'Image', 'jpg': 'Image', 'jpeg': 'Image', 'gif': 'Image',
+                'mp4': 'Video', 'avi': 'Video', 'mov': 'Video',
+                'pdf': 'PDF', 'doc': 'Word', 'docx': 'Word',
+                'zip': 'Archive', 'tar': 'Archive', 'gz': 'Archive'
+            };
+            return types[ext] || 'File';
+        }
+
+        function navigateRemote() {
+            const path = document.getElementById('remotePath').value;
+            loadRemoteFiles(path);
+        }
+
+        async function downloadRemoteFile(remotePath, isDir = false) {
+            const fileName = remotePath.split('/').pop();
+            const transferId = addToTransferQueue(fileName, 'download', 'in_progress');
+            const localDirEl = document.getElementById('localDownloadDir');
+            const localDir = localDirEl ? localDirEl.value : '~/downloads';
+
+            // Check if SSH is configured
+            try {
+                const configRes = await fetch('/api/ssh/config');
+                const config = await configRes.json();
+
+                if (config.enabled) {
+                    // Use SSH transfer
+                    log(`SSH download: ${fileName} -> ${localDir}`, 'info');
+                    showToast(`SSH downloading: ${fileName}`);
+
+                    const params = new URLSearchParams({
+                        remote_path: remotePath,
+                        local_path: localDir
+                    });
+
+                    const res = await fetch(`/api/ssh/download?${params}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    const data = await res.json();
+
+                    if (data.success) {
+                        updateTransferProgress(transferId, 100, 'completed');
+                        log(`Downloaded: ${fileName} -> ${data.local_path}`, 'success');
+                        showToast(`Downloaded to: ${data.local_path}`);
+                    } else {
+                        updateTransferProgress(transferId, 0, 'error');
+                        log(`Download failed: ${data.error}`, 'error');
+                        showToast(`Download failed: ${data.error}`);
+                    }
+                    return;
+                }
+            } catch (e) {
+                console.log('SSH not configured, using browser download');
+            }
+
+            // Fallback to browser download
+            try {
+                const params = new URLSearchParams({
+                    path: remotePath
+                });
+                const url = `/api/remote/fetch-file?${params}`;
+
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = isDir ? fileName + '.zip' : fileName;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                updateTransferProgress(transferId, 100, 'completed');
+                log(`Download started: ${fileName}`, 'success');
+                showToast(`Downloading: ${fileName}`);
+            } catch (err) {
+                updateTransferProgress(transferId, 0, 'error');
+                log(`Download failed: ${err.message}`, 'error');
+                showToast(`Download failed: ${err.message}`);
+            }
+        }
+
+        // SSH Configuration
+        async function configureSSH() {
+            const host = prompt('SSH Host (e.g., cluster.example.com):');
+            if (!host) return;
+
+            const port = prompt('SSH Port:', '22');
+            const username = prompt('SSH Username:');
+            if (!username) return;
+
+            const password = prompt('SSH Password (leave empty for key auth):');
+            const keyFile = prompt('SSH Key File path (leave empty for password auth):', '~/.ssh/id_rsa');
+            const localDir = prompt('Local download directory:', '~/downloads');
+
+            try {
+                const res = await fetch('/api/ssh/config', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        host,
+                        port: parseInt(port) || 22,
+                        username,
+                        password,
+                        key_file: keyFile,
+                        local_download_dir: localDir,
+                        enabled: true
+                    })
+                });
+                const data = await res.json();
+                showToast(data.message);
+                log(`SSH configured: ${username}@${host}`, 'success');
+            } catch (err) {
+                showToast('SSH config failed: ' + err.message);
+            }
+        }
+
+        async function checkSSHStatus() {
+            try {
+                const res = await fetch('/api/ssh/config');
+                const data = await res.json();
+                if (data.enabled) {
+                    log(`SSH connected: ${data.username}@${data.host}`, 'success');
+                }
+            } catch (e) {}
+        }
+
+        // Windows File Manager Integration
+        async function selectDownloadDirectory() {
+            // Try File System Access API first (Chrome/Edge)
+            if ('showDirectoryPicker' in window) {
+                try {
+                    const dirHandle = await window.showDirectoryPicker();
+                    // Store the directory handle for later use
+                    window.downloadDirectoryHandle = dirHandle;
+                    document.getElementById('localDownloadDir').value = dirHandle.name;
+                    showToast(`Selected folder: ${dirHandle.name}`);
+                    return;
+                } catch (err) {
+                    if (err.name !== 'AbortError') {
+                        console.log('File System Access API error:', err);
+                    }
+                }
+            }
+
+            // Fallback: use file input with webkitdirectory
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.webkitdirectory = true;
+            input.style.display = 'none';
+            document.body.appendChild(input);
+
+            input.onchange = async (e) => {
+                if (e.target.files.length > 0) {
+                    const path = e.target.files[0].webkitRelativePath || e.target.files[0].name;
+                    const dirPath = path.split('/')[0];
+                    document.getElementById('localDownloadDir').value = dirPath;
+                    showToast(`Selected folder: ${dirPath}`);
+                }
+                document.body.removeChild(input);
+            };
+
+            input.click();
+        }
+
+        // Upload local files to remote server
+        async function selectAndUploadToRemote() {
+            const input = document.getElementById('remoteUploadInput');
+
+            // Create file input for selection
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.multiple = true;
+            fileInput.style.display = 'none';
+            document.body.appendChild(fileInput);
+
+            fileInput.onchange = async (e) => {
+                const files = Array.from(e.target.files);
+                if (files.length === 0) {
+                    document.body.removeChild(fileInput);
+                    return;
+                }
+
+                // Ask for destination directory
+                const destDir = prompt('Enter destination directory on remote server:', currentRemotePath);
+                if (!destDir) {
+                    document.body.removeChild(fileInput);
+                    return;
+                }
+
+                for (const file of files) {
+                    await uploadFileToRemote(file, destDir);
+                }
+
+                showToast(`Uploaded ${files.length} file(s) to ${destDir}`);
+                loadRemoteFiles(currentRemotePath);
+                document.body.removeChild(fileInput);
+            };
+
+            fileInput.click();
+        }
+
+        async function uploadFileToRemote(file, destDir) {
+            const transferId = addToTransferQueue(file.name, 'upload', 'in_progress');
+            log(`Uploading ${file.name} to remote...`, 'info');
+
+            try {
+                const chunkSize = 1024 * 1024; // 1MB
+                const totalChunks = Math.ceil(file.size / chunkSize);
+                const uploadId = 'upload_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+
+                // Ensure destination directory exists
+                const destPath = destDir === '/' ? '/' + file.name : destDir + '/' + file.name;
+
+                for (let i = 0; i < totalChunks; i++) {
+                    const start = i * chunkSize;
+                    const end = Math.min(start + chunkSize, file.size);
+                    const chunk = file.slice(start, end);
+
+                    const formData = new FormData();
+                    formData.append('chunk', chunk);
+
+                    await apiCall(`/api/remote/upload/chunk?upload_id=${uploadId}&chunk_index=${i}&total_chunks=${totalChunks}&filename=${encodeURIComponent(file.name)}&destination=${encodeURIComponent(destPath)}`, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const progress = Math.round(((i + 1) / totalChunks) * 100);
+                    updateTransferProgress(transferId, progress);
+                }
+
+                updateTransferProgress(transferId, 100, 'completed');
+                log(`Uploaded ${file.name} to ${destPath}`, 'success');
+                loadRemoteFiles(currentRemotePath);
+            } catch (err) {
+                updateTransferProgress(transferId, 0, 'error');
+                log(`Upload failed: ${err.message}`, 'error');
+            }
+        }
+
+        async function searchFiles() {
+            const query = document.getElementById('fileSearchQuery').value.trim();
+            if (!query) {
+                showToast('Please enter a search query');
+                return;
+            }
+
+            const listEl = document.getElementById('remoteFileList');
+            listEl.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--accent);">Searching...</div>';
+
+            try {
+                const res = await apiCall(`/api/remote/search?path=${encodeURIComponent(currentRemotePath)}&query=${encodeURIComponent(query)}`);
+                const data = await res.json();
+
+                listEl.innerHTML = '';
+
+                const header = document.createElement('div');
+                header.style.cssText = 'display: flex; padding: 8px 12px; background: var(--bg-tertiary); font-weight: 600; font-size: 0.85rem; border-bottom: 1px solid var(--border);';
+                header.innerHTML = `<div style="flex: 1;">Search Results: ${data.results.length} matches for "${query}"</div>`;
+                listEl.appendChild(header);
+
+                data.results.slice(0, 50).forEach(item => {
+                    const itemEl = document.createElement('div');
+                    itemEl.style.cssText = 'display: flex; padding: 8px 12px; cursor: pointer; border-bottom: 1px solid var(--border);';
+                    itemEl.onmouseover = "this.style.background='var(--bg-tertiary)'";
+                    itemEl.onmouseout = "this.style.background='transparent'";
+
+                    const icon = item.is_dir ? '📁' : getFileIcon(item.name);
+                    const sizeText = item.is_dir ? '--' : formatSize(item.size);
+
+                    if (item.is_dir) {
+                        itemEl.onclick = () => loadRemoteFiles(item.path);
+                    } else {
+                        itemEl.onclick = () => previewRemoteFile(item.path);
+                    }
+
+                    itemEl.innerHTML = `
+                        <div style="flex: 1; display: flex; align-items: center; gap: 8px;">
+                            <span>${icon}</span>
+                            <span>${item.name}</span>
+                        </div>
+                        <div style="width: 100px; color: var(--text-secondary); font-size: 0.85rem;">${sizeText}</div>
+                    `;
+                    listEl.appendChild(itemEl);
+                });
+
+                if (data.results.length === 0) {
+                    listEl.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-secondary);">No results found</div>';
+                }
+            } catch (err) {
+                listEl.innerHTML = `<div style="color: var(--error); padding: 20px;">Error: ${err.message}</div>`;
+            }
+        }
+
+        async function deleteRemoteItem(path, name) {
+            if (!confirm(`Are you sure you want to delete "${name}"?`)) {
+                return;
+            }
+
+            try {
+                const res = await apiCall('/api/remote/delete', {
+                    method: 'POST',
+                    body: JSON.stringify({ path: path })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    log(`Deleted: ${name}`, 'success');
+                    loadRemoteFiles(currentRemotePath);
+                }
+            } catch (err) {
+                log(`Delete failed: ${err.message}`, 'error');
+            }
+        }
+
+        async function renameRemoteItem(path, oldName) {
+            const newName = prompt('Enter new name:', oldName);
+            if (!newName || newName === oldName) return;
+
+            try {
+                const res = await apiCall('/api/remote/rename', {
+                    method: 'POST',
+                    body: JSON.stringify({ old_path: path, new_name: newName })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    log(`Renamed: ${oldName} -> ${newName}`, 'success');
+                    loadRemoteFiles(currentRemotePath);
+                }
+            } catch (err) {
+                log(`Rename failed: ${err.message}`, 'error');
+            }
+        }
+
+        async function createNewFolder() {
+            const folderName = prompt('Enter folder name:');
+            if (!folderName) return;
+
+            const newPath = currentRemotePath === '/' ? '/' + folderName : currentRemotePath + '/' + folderName;
+
+            try {
+                const res = await apiCall('/api/remote/mkdir', {
+                    method: 'POST',
+                    body: JSON.stringify({ path: newPath })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    log(`Created folder: ${folderName}`, 'success');
+                    loadRemoteFiles(currentRemotePath);
+                }
+            } catch (err) {
+                log(`Create folder failed: ${err.message}`, 'error');
+            }
+        }
+
+        async function previewRemoteFile(path) {
+            const previewEl = document.getElementById('filePreviewContent');
+            const modal = document.getElementById('filePreviewModal');
+            document.getElementById('previewTitle').innerHTML = '📄 File Preview';
+            previewEl.innerHTML = '<div style="text-align: center; padding: 40px;"><div class="spinner" style="margin: 0 auto;"></div><p style="margin-top: 10px; color: var(--text-secondary);">Loading preview...</p></div>';
+            document.getElementById('filePreviewPath').textContent = path;
+            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
+
+            try {
+                const res = await fetch(`/api/remote/read?path=${encodeURIComponent(path)}`);
+                const data = await res.json();
+
+                const ext = path.split('.').pop().toLowerCase();
+                const imageExts = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp', 'svg'];
+
+                if (imageExts.includes(ext)) {
+                    const img = document.createElement('img');
+                    img.src = `/api/remote/read?path=${encodeURIComponent(path)}`;
+                    img.style.maxWidth = '100%';
+                    img.style.maxHeight = '60vh';
+                    img.style.objectFit = 'contain';
+                    img.style.borderRadius = '8px';
+                    img.style.boxShadow = 'var(--shadow)';
+                    img.onload = () => img.style.opacity = '1';
+                    img.style.opacity = '0';
+                    img.style.transition = 'opacity 0.3s';
+
+                    previewEl.innerHTML = '';
+                    previewEl.appendChild(img);
+                } else if (ext === 'pdf') {
+                    previewEl.innerHTML = `<iframe src="/api/remote/read?path=${encodeURIComponent(path)}" style="width: 100%; height: 60vh; border: none; border-radius: 8px;"></iframe>`;
+                } else {
+                    const content = data.content || 'Unable to read file';
+                    previewEl.innerHTML = `<pre style="white-space: pre-wrap; font-size: 0.85rem; max-height: 60vh; overflow-y: auto; background: var(--bg-primary); padding: 16px; border-radius: 8px;">${escapeHtml(content.substring(0, 50000))}</pre>`;
+                }
+            } catch (err) {
+                previewEl.innerHTML = `<div style="color: var(--error); text-align: center; padding: 40px;">Error: ${err.message}</div>`;
+            }
+        }
+
+        function showChangelog() {
+            const modal = document.getElementById('filePreviewModal');
+            const previewEl = document.getElementById('filePreviewContent');
+            document.getElementById('previewTitle').innerHTML = '📋 更新日志 Changelog';
+            document.getElementById('filePreviewPath').textContent = '';
+            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
+
+            const changelog = `## 🚀 BridgeNode 更新日志
+
+### v1.0.0 - 2026-02-14
+
+#### ✨ 新增功能
+- 🎨 全新黑紫蓝渐变高级主题
+- 🌙 支持深色/浅色模式切换
+- 📱 响应式设计，适配移动端
+- 🔔 优化的 Toast 通知系统
+- 📊 文件传输进度条实时显示
+
+#### 🎯 UI 改进
+- 渐变按钮和发光效果
+- 呼吸灯动画和渐变文字
+- 优化的滚动条样式
+- 文件列表悬停效果
+- 预览弹窗美化
+
+#### 🐛 修复
+- 文件管理器列对齐问题
+- 预览弹窗关闭问题
+- 浅色模式输入框可读性
+
+#### 📁 文件管理
+- 支持文件夹大小显示
+- 优化的文件预览功能
+- 拖拽上传支持
+
+---
+持续更新中... 🎉`;
+
+            previewEl.innerHTML = `<div style="font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; line-height: 1.8; white-space: pre-wrap;">${changelog}</div>`;
+        }
+
+        function closeFilePreview() {
+            const modal = document.getElementById('filePreviewModal');
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
+        }
+
+        async function calculateDirSize(path) {
+            try {
+                const res = await apiCall(`/api/remote/size?path=${encodeURIComponent(path)}`);
+                const data = await res.json();
+                showToast(`Size: ${data.size_formatted}`);
+            } catch (err) {
+                showToast('Error: ' + err.message);
+            }
+        }
+
+        // Claude Output Monitor
+        function setClaudePath() {
+            const path = document.getElementById('claudeOutputPath').value;
+            if (path) {
+                localStorage.setItem('claude_output_path', path);
+                log(`Claude output path set to: ${path}`, 'success');
+                startClaudeMonitor();
+            }
+        }
+
+        async function startClaudeMonitor() {
+            let path = document.getElementById('claudeOutputPath').value;
+            if (!path) {
+                path = localStorage.getItem('claude_output_path') || '~/claude-output';
+                document.getElementById('claudeOutputPath').value = path;
+            }
+
+            if (claudeMonitorInterval) {
+                clearInterval(claudeMonitorInterval);
+            }
+
+            const consoleEl = document.getElementById('claudeOutputConsole');
+            consoleEl.innerHTML = '<div style="color: var(--accent);">Monitoring: ' + path + '</div>';
+
+            // Initial load
+            await checkClaudeOutput(path);
+
+            // Poll every 2 seconds
+            claudeMonitorInterval = setInterval(() => checkClaudeOutput(path), 2000);
+            log('Claude monitor started', 'success');
+        }
+
+        async function checkClaudeOutput(path) {
+            try {
+                const res = await apiCall(`/api/remote/list?path=${encodeURIComponent(path)}`);
+                const data = await res.json();
+
+                const consoleEl = document.getElementById('claudeOutputConsole');
+                let hasNew = false;
+
+                data.items.forEach(item => {
+                    if (!item.is_dir) {
+                        const key = item.path + '_' + item.modified;
+                        if (!lastClaudeFiles[key]) {
+                            lastClaudeFiles[key] = true;
+                            hasNew = true;
+
+                            // Read new file content
+                            readClaudeFile(item.path);
+                        }
+                    }
+                });
+
+                if (data.items.length === 0) {
+                    consoleEl.innerHTML = '<div style="color: var(--text-secondary);">No files in directory</div>';
+                }
+            } catch (err) {
+                // Ignore errors silently
+            }
+        }
+
+        async function readClaudeFile(filepath) {
+            try {
+                // Use a simple fetch to get file content (need to add endpoint)
+                const res = await fetch(`/api/remote/read?path=${encodeURIComponent(filepath)}`, {
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                if (res.ok) {
+                    const content = await res.text();
+                    addClaudeOutput(content, filepath.split('/').pop());
+                }
+            } catch (err) {
+                console.error('Read file error:', err);
+            }
+        }
+
+        // Add output to display
+        function addClaudeOutput(content, label = 'Manual Input') {
+            const output = {
+                id: Date.now(),
+                content: content,
+                label: label,
+                timestamp: new Date().toLocaleString()
+            };
+            claudeOutputs.unshift(output);
+            if (claudeOutputs.length > 50) claudeOutputs.pop();
+            renderClaudeOutputs();
+        }
+
+        // Render all outputs
+        function renderClaudeOutputs() {
+            const consoleEl = document.getElementById('claudeOutputConsole');
+            document.getElementById('outputCount').textContent = claudeOutputs.length + ' outputs';
+
+            // Save to localStorage
+            localStorage.setItem('claudeOutputs', JSON.stringify(claudeOutputs));
+
+            if (claudeOutputs.length === 0) {
+                consoleEl.innerHTML = '<div style="color: var(--text-secondary); text-align: center; padding: 20px;">No outputs yet. Click "Manual" to paste Claude\'s response, or "Monitor" to watch a directory.</div>';
+                return;
+            }
+
+            consoleEl.innerHTML = claudeOutputs.map(output => `
+                <div style="margin-bottom: 16px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden;">
+                    <div style="background: var(--bg-tertiary); padding: 8px 12px; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: var(--accent); font-weight: 500;">${escapeHtml(output.label)}</span>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <span style="font-size: 0.7rem; color: var(--text-muted);">${output.timestamp}</span>
+                            <button onclick="copySingleOutput(${output.id})" style="background: none; border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-size: 0.7rem; cursor: pointer; color: var(--text-secondary);">📋 Copy</button>
+                            <button onclick="deleteOutput(${output.id})" style="background: none; border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-size: 0.7rem; cursor: pointer; color: var(--error);">🗑️</button>
+                        </div>
+                    </div>
+                    <pre style="white-space: pre-wrap; font-size: 0.8rem; padding: 12px; margin: 0; max-height: 300px; overflow-y: auto;">${escapeHtml(output.content.substring(0, 10000))}</pre>
+                </div>
+            `).join('');
+        }
+
+        // Toggle manual input section
+        function toggleManualInput() {
+            const section = document.getElementById('manualInputSection');
+            const btn = document.getElementById('manualInputBtn');
+            if (section.style.display === 'none') {
+                section.style.display = 'block';
+                btn.textContent = '✏️ Done';
+                btn.style.background = 'var(--accent)';
+                btn.style.color = 'white';
+            } else {
+                section.style.display = 'none';
+                btn.textContent = '✏️ Manual';
+                btn.style.background = '';
+                btn.style.color = '';
+            }
+        }
+
+        // Add manual output
+        function addManualOutput() {
+            const input = document.getElementById('manualClaudeInput');
+            const content = input.value.trim();
+            if (content) {
+                addClaudeOutput(content, 'Manual Input #' + (claudeOutputs.length + 1));
+                input.value = '';
+                showToast('Output added!', 'success');
+            }
+        }
+
+        // Clear manual input
+        function clearManualOutput() {
+            document.getElementById('manualClaudeInput').value = '';
+        }
+
+        // Copy single output
+        function copySingleOutput(id) {
+            const output = claudeOutputs.find(o => o.id === id);
+            if (output) {
+                navigator.clipboard.writeText(output.content);
+                showToast('Copied to clipboard!', 'success');
+            }
+        }
+
+        // Copy all outputs
+        function copyAllOutput() {
+            const allText = claudeOutputs.map(o => `=== ${o.label} ===\n${o.content}`).join('\n\n');
+            navigator.clipboard.writeText(allText);
+            showToast('All outputs copied!', 'success');
+        }
+
+        // Delete single output
+        function deleteOutput(id) {
+            claudeOutputs = claudeOutputs.filter(o => o.id !== id);
+            renderClaudeOutputs();
+        }
+
+        // LaTeX Display
+        function renderLatex() {
+            const input = document.getElementById('latexInput').value;
+            const output = document.getElementById('latexOutput');
+
+            if (!input.trim()) {
+                output.innerHTML = '<p style="color: #666;">Please enter LaTeX code</p>';
+                return;
+            }
+
+            // Display the LaTeX source in a readable format
+            output.innerHTML = `<pre style="white-space: pre-wrap; word-break: break-all;">${escapeHtml(input)}</pre>`;
+        }
+
+        async function copyLatex() {
+            const input = document.getElementById('latexInput').value;
+            if (!input.trim()) {
+                showToast('No LaTeX code to copy!');
+                return;
+            }
+            await navigator.clipboard.writeText(input);
+            showToast('LaTeX source copied to clipboard!');
+        }
+
+        function showToast(message, type = 'info', duration = 3000) {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `
+                <span>${message}</span>
+                <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+            `;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), duration);
+        }
+
+        function confirmAction(message) {
+            return new Promise((resolve) => {
+                const overlay = document.createElement('div');
+                overlay.className = 'modal-overlay';
+                overlay.innerHTML = `
+                    <div class="modal-content" style="max-width: 400px; padding: 24px;">
+                        <p style="margin-bottom: 20px; font-size: 1rem;">${message}</p>
+                        <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                            <button class="btn btn-secondary" onclick="this.closest('.modal-overlay').remove(); resolve(false);">Cancel</button>
+                            <button class="btn btn-primary" onclick="this.closest('.modal-overlay').remove(); resolve(true);">Confirm</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(overlay);
+            });
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Favorites management
+        function loadFavorites() {
+            const favorites = JSON.parse(localStorage.getItem('bridge_favorites') || '[]');
+            return favorites;
+        }
+
+        function saveFavorite(path) {
+            const favorites = loadFavorites();
+            if (!favorites.includes(path)) {
+                favorites.push(path);
+                localStorage.setItem('bridge_favorites', JSON.stringify(favorites));
+                showToast('Added to favorites: ' + path);
+                renderFavorites();
+            }
+        }
+
+        function removeFavorite(path) {
+            const favorites = loadFavorites().filter(f => f !== path);
+            localStorage.setItem('bridge_favorites', JSON.stringify(favorites));
+            showToast('Removed from favorites');
+            renderFavorites();
+        }
+
+        function renderFavorites() {
+            const favorites = loadFavorites();
+            const container = document.getElementById('favoritesContainer');
+            if (!container) return;
+
+            container.innerHTML = '';
+            favorites.forEach(path => {
+                const div = document.createElement('div');
+                div.style.cssText = 'padding: 6px 8px; cursor: pointer; border-radius: 4px; display: flex; align-items: center; gap: 8px; justify-content: space-between;';
+                div.innerHTML = `
+                    <span onclick="loadRemoteFiles('${path}')" style="display: flex; align-items: center; gap: 8px; flex: 1;">
+                        <span>⭐</span> <span style="font-size: 0.8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${path.split('/').pop() || path}</span>
+                    </span>
+                    <span onclick="removeFavorite('${path}')" style="color: var(--error); font-size: 0.8rem;">&times;</span>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function addCurrentToFavorites() {
+            if (currentRemotePath) {
+                saveFavorite(currentRemotePath);
+            }
+        }
+
+        // Theme toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            if (newTheme === 'dark') {
+                html.removeAttribute('data-theme');
+            } else {
+                html.setAttribute('data-theme', 'light');
+            }
+            localStorage.setItem('bridge_theme', newTheme);
+            document.querySelector('.theme-toggle-btn').textContent = newTheme === 'light' ? '🌙' : '☀️';
+            updateFileListBackground(newTheme);
+        }
+
+        function updateFileListBackground(theme) {
+            const bg = theme === 'light'
+                ? 'linear-gradient(180deg, #ffffff 0%, #f0f5ff 100%)'
+                : 'linear-gradient(180deg, #1a1a2e 0%, #0f0f1a 100%)';
+            document.getElementById('localFileList').style.background = bg;
+            document.getElementById('remoteFileList').style.background = bg;
+        }
+
+        // Load theme
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('bridge_theme') || 'dark';
+            if (savedTheme === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+            document.querySelector('.theme-toggle-btn').textContent = savedTheme === 'light' ? '☀️' : '🌙';
+            updateFileListBackground(savedTheme);
+        }
+
+        // Data Export
+        function exportData() {
+            const data = {
+                exportTime: new Date().toISOString(),
+                stats: {
+                    latency: document.getElementById('latency').textContent,
+                    connections: document.getElementById('connections').textContent,
+                    cpu: document.getElementById('cpuUsage').textContent,
+                    memory: document.getElementById('memUsage').textContent,
+                    uptime: document.getElementById('uptime').textContent
+                },
+                logHistory: logHistory,
+                commandHistory: commandHistory
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `bridge-node-export-${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Data exported successfully!', 'success');
+        }
+
+        // Keyboard shortcuts help
+        function showShortcuts() {
+            const shortcuts = [
+                ['Ctrl+K', 'Focus command input'],
+                ['Ctrl+L', 'Refresh logs'],
+                ['Ctrl+T', 'Toggle theme'],
+                ['Ctrl+S', 'Refresh status'],
+                ['Ctrl+/', 'Show this help'],
+                ['Escape', 'Close modal'],
+                ['↑/↓', 'Command history']
+            ];
+            const html = shortcuts.map(([key, desc]) => `<div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(139, 92, 246, 0.1);"><code style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(99, 102, 241, 0.15) 100%); padding: 4px 10px; border-radius: 6px; font-size: 0.85rem; color: #a78bfa; border: 1px solid rgba(139, 92, 246, 0.3);">${key}</code><span style="color: var(--text-secondary); font-size: 0.9rem;">${desc}</span></div>`).join('');
+            showToast(`<div style="min-width: 300px;"><div style="font-weight: 600; margin-bottom: 12px; color: var(--accent); font-size: 1rem;">Keyboard Shortcuts</div>${html}</div>`, 'info', 8000);
+        }
+
+        // Enter key for logs
+        document.getElementById('logPath').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') refreshLogs();
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Ignore if typing in input/textarea
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+            // Ctrl/Cmd + K: Quick command
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                document.querySelector('.command-input input')?.focus();
+            }
+            // Ctrl/Cmd + L: Refresh logs
+            if ((e.ctrlKey || e.metaKey) && e.key === 'l') {
+                e.preventDefault();
+                refreshLogs();
+            }
+            // Ctrl/Cmd + T: Toggle theme
+            if ((e.ctrlKey || e.metaKey) && e.key === 't') {
+                e.preventDefault();
+                toggleTheme();
+            }
+            // Ctrl/Cmd + /: Show shortcuts help
+            if ((e.ctrlKey || e.metaKey) && e.key === '/') {
+                e.preventDefault();
+                showToast('⌨️ Shortcuts: Ctrl+K=Command, Ctrl+L=Logs, Ctrl+T=Theme, Ctrl+S=Status');
+            }
+            // Ctrl/Cmd + S: Refresh status
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                fetchStatus();
+            }
+            // Escape: Close modals
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay').forEach(m => m.classList.add('hidden'));
+            }
+        });
+
+        // Scroll to top
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        window.addEventListener('scroll', () => {
+            document.getElementById('scrollTop').classList.toggle('visible', window.scrollY > 300);
+        });
+
+        // Auto-save key inputs
+        const autoSaveInputs = ['remotePath', 'logPath', 'claudeOutputPath'];
+        autoSaveInputs.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                const saved = localStorage.getItem(id);
+                if (saved) el.value = saved;
+                el.addEventListener('change', () => localStorage.setItem(id, el.value));
+            }
+        });
+
+        // Initialize on page load
+        username = 'admin';
+        password = 'password';
+        loadTheme();
+
+        // Changelog button handler
+        document.getElementById('changelogBtn').addEventListener('click', function() {
+            showChangelog();
+        });
+        renderFavorites();
+        initDragDrop();
+
+        // Network status monitoring
+        window.addEventListener('online', () => {
+            showToast('Network restored', 'success');
+            connectWebSocket();
+        });
+        window.addEventListener('offline', () => {
+            showToast('Network disconnected', 'warning');
+            document.getElementById('connectionStatus').textContent = 'Offline';
+        });
+
+        // Storage management
+        function clearStorage() {
+            if (confirm('Clear all local storage data?')) {
+                localStorage.clear();
+                showToast('Storage cleared', 'success');
+            }
+        }
+
+        // Debounced search
+        let searchTimeout;
+        document.getElementById('fileSearchQuery')?.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                if (e.target.value.length >= 3) {
+                    searchFiles();
+                }
+            }, 500);
+        });
+
+        log('BridgeNode ready! ⌨️ Ctrl+/ for shortcuts', 'success');
+        connectWebSocket();
+        fetchStatus();
+        // Load file managers
+        loadLocalFiles();
+        loadRemoteFiles('/home/pengxiang');
+        // Load Claude outputs
+        renderClaudeOutputs();
+    </script>
+</body>
+</html>

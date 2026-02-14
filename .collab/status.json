@@ -1,0 +1,23 @@
+{
+  "version": 2,
+  "roles": {
+    "CLAUDE_DEPLOY": {
+      "description": "部署 + 用户实时反馈",
+      "responsibility": "代码修改、调试、服务重启、测试"
+    },
+    "CLAUDE_PLANNER": {
+      "description": "长期规划 + 代码方案",
+      "responsibility": "功能规划、架构设计、代码方案、文档"
+    }
+  },
+  "active": {
+    "CLAUDE_DEPLOY": {
+      "file": "static/index.html, server.py",
+      "task": "部署 + 用户实时反馈",
+      "started_at": "2026-02-14T14:50:00",
+      "progress": "执行中 - 处理用户当前需求"
+    }
+  },
+  "queue": [],
+  "last_sync": "2026-02-14T14:50:00"
+}
