@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BridgeNode Terminal</title>
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-terminal: #0d1117;
+            --text-primary: #e8e8f0;
+            --text-secondary: #9898a8;
+            --text-muted: #686878;
+            --accent: #8b5cf6;
+            --success: #10b981;
+            --error: #ef4444;
+            --border: #2a2a3a;
+            --terminal-green: #39ff14;
+            --terminal-cursor: #39ff14;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'SF Mono', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Layout */
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, #1a1a25 100%);
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.1rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 50%, #6366f1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 6px 14px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .btn:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+            border: none;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4);
+        }
+
+        /* Tab Bar */
+        .tab-bar {
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            gap: 8px;
+            overflow-x: auto;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tab-bar::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .tab {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 6px 6px 0 0;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.15s;
+            position: relative;
+        }
+
+        .tab:hover {
+            color: var(--text-primary);
+            background: var(--bg-tertiary);
+        }
+
+        .tab.active {
+            background: var(--bg-terminal);
+            color: var(--text-primary);
+            border-bottom-color: var(--bg-terminal);
+        }
+
+        .tab-close {
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            opacity: 0.5;
+            transition: all 0.15s;
+        }
+
+        .tab-close:hover {
+            opacity: 1;
+            background: var(--error);
+            color: white;
+        }
+
+        .new-tab-btn {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: 1px dashed var(--border);
+            border-radius: 6px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.15s;
+            font-size: 1rem;
+        }
+
+        .new-tab-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* Terminal Area */
+        .terminal-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-terminal);
+            overflow: hidden;
+        }
+
+        .terminal-wrapper {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .terminal {
+            height: 100%;
+            padding: 12px 16px;
+            overflow-y: auto;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: var(--text-primary);
+        }
+
+        .terminal::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .terminal::-webkit-scrollbar-track {
+            background: var(--bg-terminal);
+        }
+
+        .terminal::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 4px;
+        }
+
+        /* Terminal Output */
+        .terminal-line {
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .terminal-line.command {
+            color: var(--terminal-green);
+        }
+
+        .terminal-line.command::before {
+            content: "$ ";
+            color: var(--terminal-green);
+        }
+
+        .terminal-line.output {
+            color: var(--text-primary);
+        }
+
+        .terminal-line.error {
+            color: var(--error);
+        }
+
+        .terminal-line.info {
+            color: var(--text-secondary);
+        }
+
+        /* Input Area */
+        .input-area {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            gap: 10px;
+        }
+
+        .prompt {
+            color: var(--terminal-green);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .terminal-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.9rem;
+            outline: none;
+            caret-color: var(--terminal-cursor);
+        }
+
+        .terminal-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* Status Bar */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 16px;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .status-left, .status-right {
+            display: flex;
+            gap: 16px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--success);
+        }
+
+        .status-dot.disconnected {
+            background: var(--error);
+        }
+
+        .status-dot.connecting {
+            background: #f59e0b;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* Hidden */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 60px;
+            right: 20px;
+            padding: 10px 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--accent);
+            border-radius: 6px;
+            font-size: 0.8rem;
+            z-index: 1000;
+            animation: slideIn 0.2s ease;
+        }
+
+        .toast.success { border-color: var(--success); color: var(--success); }
+        .toast.error { border-color: var(--error); color: var(--error); }
+
+        @keyframes slideIn {
+            from { transform: translateX(20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Shortcuts Help */
+        .shortcuts-panel {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            z-index: 1001;
+            min-width: 300px;
+            display: none;
+        }
+
+        .shortcuts-panel.visible {
+            display: block;
+        }
+
+        .shortcuts-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--accent);
+        }
+
+        .shortcut-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 0.85rem;
+        }
+
+        .shortcut-key {
+            background: var(--bg-primary);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+        }
+
+        .overlay.visible {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">BridgeNode Terminal</div>
+            <div class="header-actions">
+                <button class="btn" onclick="clearTerminal()">Clear</button>
+                <button class="btn" onclick="showShortcuts()">Shortcuts</button>
+                <button class="btn btn-primary" onclick="newTab()">+ New Tab</button>
+            </div>
+        </div>
+
+        <!-- Tab Bar -->
+        <div class="tab-bar" id="tabBar">
+            <div class="tab active" data-session="default" onclick="switchTab('default')">
+                <span>Terminal 1</span>
+                <span class="tab-close" onclick="closeTab(event, 'default')">×</span>
+            </div>
+            <button class="new-tab-btn" onclick="newTab()">+</button>
+        </div>
+
+        <!-- Terminal Area -->
+        <div class="terminal-container">
+            <div class="terminal-wrapper">
+                <div class="terminal" id="terminal"></div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="input-area">
+                <span class="prompt">$</span>
+                <input
+                    type="text"
+                    class="terminal-input"
+                    id="terminalInput"
+                    placeholder="Type command and press Enter..."
+                    autocomplete="off"
+                    spellcheck="false"
+                >
+            </div>
+        </div>
+
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="status-left">
+                <div class="status-item">
+                    <span class="status-dot" id="connectionDot"></span>
+                    <span id="connectionStatus">Connecting...</span>
+                </div>
+                <div class="status-item" id="sessionInfo">
+                    Session: <span id="sessionId">-</span>
+                </div>
+            </div>
+            <div class="status-right">
+                <div class="status-item">
+                    <span id="commandCount">0</span> commands executed
+                </div>
+                <div class="status-item">
+                    <span id="currentTime">--:--:--</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shortcuts Panel -->
+    <div class="overlay" id="overlay" onclick="hideShortcuts()"></div>
+    <div class="shortcuts-panel" id="shortcutsPanel">
+        <div class="shortcuts-title">Keyboard Shortcuts</div>
+        <div class="shortcut-item">
+            <span>New Tab</span>
+            <span class="shortcut-key">Ctrl+T</span>
+        </div>
+        <div class="shortcut-item">
+            <span>Close Tab</span>
+            <span class="shortcut-key">Ctrl+W</span>
+        </div>
+        <div class="shortcut-item">
+            <span>Next Tab</span>
+            <span class="shortcut-key">Ctrl+Tab</span>
+        </div>
+        <div class="shortcut-item">
+            <span>Previous Tab</span>
+            <span class="shortcut-key">Ctrl+Shift+Tab</span>
+        </div>
+        <div class="shortcut-item">
+            <span>Clear Terminal</span>
+            <span class="shortcut-key">Ctrl+L</span>
+        </div>
+        <div class="shortcut-item">
+            <span>Command History (Up)</span>
+            <span class="shortcut-key">↑</span>
+        </div>
+        <div class="shortcut-item">
+            <span>Command History (Down)</span>
+            <span class="shortcut-key">↓</span>
+        </div>
+    </div>
+
+    <script>
+        // ====================
+        // Terminal State
+        // ====================
+        const API_BASE = window.location.origin;
+        let ws = null;
+        let currentSession = 'default';
+        let tabCount = 1;
+        let commandCount = 0;
+        let commandHistory = [];
+        let historyIndex = -1;
+        let currentInput = '';
+        let terminalEl = document.getElementById('terminal');
+        let inputEl = document.getElementById('terminalInput');
+
+        // ====================
+        // WebSocket Connection
+        // ====================
+        function connectWebSocket() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            ws = new WebSocket(`${protocol}//${window.location.host}/ws/terminal`);
+
+            ws.onopen = () => {
+                console.log('WebSocket connected');
+                updateConnectionStatus(true, 'Connected');
+
+                // Initialize session
+                ws.send(JSON.stringify({
+                    type: 'init',
+                    session_id: currentSession
+                }));
+            };
+
+            ws.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    handleMessage(data);
+                } catch (e) {
+                    console.error('Parse error:', e);
+                }
+            };
+
+            ws.onclose = () => {
+                console.log('WebSocket disconnected');
+                updateConnectionStatus(false, 'Disconnected');
+
+                // Reconnect after 3 seconds
+                setTimeout(connectWebSocket, 3000);
+            };
+
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+                updateConnectionStatus(false, 'Error');
+            };
+        }
+
+        function handleMessage(data) {
+            const type = data.type;
+
+            if (type === 'init') {
+                document.getElementById('sessionId').textContent = data.session_id;
+                if (data.welcome) {
+                    appendOutput(data.welcome, 'info');
+                }
+            } else if (type === 'output') {
+                appendOutput(data.content, data.is_command ? 'command' : 'output');
+            } else if (type === 'exit') {
+                commandCount++;
+                document.getElementById('commandCount').textContent = commandCount;
+                if (data.code !== 0) {
+                    appendOutput(`\n[Process exited with code ${data.code}]\n`, 'error');
+                }
+            } else if (type === 'error') {
+                appendOutput(data.content, 'error');
+            } else if (type === 'clear') {
+                terminalEl.innerHTML = '';
+            } else if (type === 'history') {
+                inputEl.value = data.command;
+            }
+        }
+
+        function updateConnectionStatus(connected, text) {
+            const dot = document.getElementById('connectionDot');
+            const status = document.getElementById('connectionStatus');
+
+            dot.classList.remove('connected', 'disconnected', 'connecting');
+            if (connected) {
+                dot.classList.add('connected');
+                status.textContent = text;
+            } else {
+                dot.classList.add('text' === 'Disconnected' ? 'disconnected' : 'connecting');
+                status.textContent = text;
+            }
+        }
+
+        // ====================
+        // Terminal Output
+        // ====================
+        function appendOutput(text, type = 'output') {
+            const line = document.createElement('div');
+            line.className = `terminal-line ${type}`;
+            line.textContent = text;
+            terminalEl.appendChild(line);
+            terminalEl.scrollTop = terminalEl.scrollHeight;
+        }
+
+        function clearTerminal() {
+            terminalEl.innerHTML = '';
+            ws.send(JSON.stringify({ type: 'clear' }));
+            showToast('Terminal cleared');
+        }
+
+        // ====================
+        // Command Execution
+        // ====================
+        function sendCommand(command) {
+            if (!command.trim()) {
+                appendOutput('\n');
+                return;
+            }
+
+            // Add to local history
+            if (!commandHistory.length || commandHistory[commandHistory.length - 1] !== command) {
+                commandHistory.push(command);
+            }
+            historyIndex = commandHistory.length;
+
+            // Send to server
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({
+                    type: 'command',
+                    command: command
+                }));
+            }
+
+            currentInput = '';
+        }
+
+        function navigateHistory(direction) {
+            if (!commandHistory.length) return;
+
+            if (direction === 'up' && historyIndex > 0) {
+                historyIndex--;
+            } else if (direction === 'down' && historyIndex < commandHistory.length) {
+                historyIndex++;
+            }
+
+            const cmd = commandHistory[historyIndex] || '';
+            inputEl.value = cmd;
+        }
+
+        // ====================
+        // Tab Management
+        // ====================
+        function newTab() {
+            tabCount++;
+            const sessionId = `term_${Date.now()}`;
+
+            // Create new tab
+            const tabBar = document.getElementById('tabBar');
+            const newTabBtn = tabBar.querySelector('.new-tab-btn');
+
+            const tab = document.createElement('div');
+            tab.className = 'tab';
+            tab.dataset.session = sessionId;
+            tab.innerHTML = `
+                <span>Terminal ${tabCount}</span>
+                <span class="tab-close" onclick="closeTab(event, '${sessionId}')">×</span>
+            `;
+            tab.onclick = () => switchTab(sessionId);
+
+            tabBar.insertBefore(tab, newTabBtn);
+
+            // Switch to new tab
+            switchTab(sessionId);
+        }
+
+        function switchTab(sessionId) {
+            // Update tab UI
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.tab[data-session="${sessionId}"]`).classList.add('active');
+
+            // Save current session state
+            // For simplicity, we'll just switch the session ID
+            currentSession = sessionId;
+
+            // Reconnect with new session
+            if (ws) {
+                ws.close();
+            }
+            connectWebSocket();
+        }
+
+        function closeTab(event, sessionId) {
+            event.stopPropagation();
+
+            const tabs = document.querySelectorAll('.tab');
+            if (tabs.length <= 1) {
+                showToast('Cannot close the last tab');
+                return;
+            }
+
+            // Remove tab
+            const tab = document.querySelector(`.tab[data-session="${sessionId}"]`);
+            if (tab) {
+                tab.remove();
+            }
+
+            // If closing active tab, switch to another
+            if (document.querySelector('.tab.active') === null) {
+                const firstTab = document.querySelector('.tab');
+                if (firstTab) {
+                    switchTab(firstTab.dataset.session);
+                }
+            }
+
+            showToast('Tab closed');
+        }
+
+        // ====================
+        // UI Helpers
+        // ====================
+        function showToast(message, type = 'info') {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => toast.remove(), 2000);
+        }
+
+        function showShortcuts() {
+            document.getElementById('overlay').classList.add('visible');
+            document.getElementById('shortcutsPanel').classList.add('visible');
+        }
+
+        function hideShortcuts() {
+            document.getElementById('overlay').classList.remove('visible');
+            document.getElementById('shortcutsPanel').classList.remove('visible');
+        }
+
+        // ====================
+        // Clock
+        // ====================
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent =
+                now.toLocaleTimeString('en-US', { hour12: false });
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // ====================
+        // Event Listeners
+        // ====================
+        inputEl.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                sendCommand(inputEl.value);
+                inputEl.value = '';
+                currentInput = '';
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                navigateHistory('up');
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                navigateHistory('down');
+            } else if (e.key === 'l' && (e.ctrlKey || e.metaKey)) {
+                e.preventDefault();
+                clearTerminal();
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Ctrl+T: New Tab
+            if ((e.ctrlKey || e.metaKey) && e.key === 't') {
+                e.preventDefault();
+                newTab();
+            }
+            // Ctrl+W: Close Tab
+            if ((e.ctrlKey || e.metaKey) && e.key === 'w') {
+                e.preventDefault();
+                closeTab(e, currentSession);
+            }
+            // Ctrl+L: Clear (handled in input)
+            // Focus input on any key
+            if (!e.ctrlKey && !e.metaKey && !e.altKey &&
+                document.activeElement !== inputEl &&
+                e.key.length === 1) {
+                inputEl.focus();
+            }
+        });
+
+        // ====================
+        // Initialize
+        // ====================
+        connectWebSocket();
+        inputEl.focus();
+    </script>
+</body>
+</html>
