@@ -39,12 +39,25 @@
         }
 
         /* Responsive Layout */
+        /* Tablet Landscape */
         @media (max-width: 1200px) {
             .main-grid {
                 grid-template-columns: 1fr 320px;
             }
         }
 
+        /* Tablet Portrait */
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr 280px;
+            }
+
+            .terminal-output-wrapper {
+                max-height: 50vh;
+            }
+        }
+
+        /* Mobile Landscape / Small Tablet */
         @media (max-width: 992px) {
             .main-grid {
                 grid-template-columns: 1fr;
@@ -53,8 +66,13 @@
             .right-column {
                 order: -1;
             }
+
+            .left-column, .right-column {
+                gap: 12px;
+            }
         }
 
+        /* Mobile Portrait */
         @media (max-width: 768px) {
             .container {
                 padding: 12px;
@@ -72,12 +90,12 @@
 
             .status-bar {
                 flex-wrap: wrap;
-                gap: 12px;
-                padding: 10px 14px;
+                gap: 8px;
+                padding: 8px 12px;
             }
 
             .status-item {
-                font-size: 0.75rem;
+                font-size: 0.7rem;
             }
 
             .card {
@@ -85,11 +103,11 @@
             }
 
             .card-header {
-                padding: 10px 14px;
+                padding: 8px 12px;
             }
 
             .card-body {
-                padding: 12px;
+                padding: 10px;
             }
 
             .quick-commands {
@@ -99,12 +117,47 @@
             .header-controls {
                 flex-wrap: wrap;
                 justify-content: center;
+                gap: 8px;
+            }
+
+            /* Touch-friendly buttons */
+            .btn {
+                min-height: 44px;
+                min-width: 44px;
+                padding: 10px 16px;
+            }
+
+            /* Larger touch targets */
+            .file-item {
+                padding: 12px;
+                min-height: 48px;
+            }
+
+            /* Hide non-essential elements on mobile */
+            .desktop-only {
+                display: none !important;
+            }
+
+            /* Full-width inputs */
+            input, textarea, select {
+                font-size: 16px !important; /* Prevent iOS zoom */
+            }
+
+            /* Larger modal */
+            .modal-content {
+                width: 95% !important;
+                max-width: none !important;
             }
         }
 
+        /* Small Mobile */
         @media (max-width: 480px) {
+            .container {
+                padding: 8px;
+            }
+
             .btn {
-                padding: 6px 12px;
+                padding: 8px 12px;
                 font-size: 0.8rem;
             }
 
@@ -114,6 +167,66 @@
 
             .file-actions {
                 opacity: 1;
+            }
+
+            .header-controls .btn {
+                font-size: 0.75rem;
+                padding: 8px 10px;
+            }
+
+            /* Stack header controls */
+            .header-controls {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+
+        /* Touch-specific improvements */
+        @media (hover: none) and (pointer: coarse) {
+            /* Always show action buttons on touch devices */
+            .file-actions {
+                opacity: 1;
+            }
+
+            /* Larger tap targets */
+            .cmd-btn, .tab, .file-item {
+                min-height: 48px;
+            }
+
+            /* Disable hover effects that cause issues on touch */
+            .btn:hover {
+                transform: none;
+            }
+
+            /* Add touch feedback */
+            .btn:active {
+                transform: scale(0.97);
+                opacity: 0.9;
+            }
+
+            /* Smooth scrolling for touch */
+            .terminal-output-wrapper,
+            .file-list,
+            .output-console {
+                -webkit-overflow-scrolling: touch;
+                scroll-behavior: smooth;
+            }
+        }
+
+        /* High DPI displays */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            body {
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+            }
+        }
+
+        /* Reduced motion preference */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
             }
         }
 

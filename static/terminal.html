@@ -388,6 +388,132 @@
         .overlay.visible {
             display: block;
         }
+
+        /* Responsive Layout */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 10px;
+                padding: 10px 12px;
+            }
+
+            .logo {
+                font-size: 1rem;
+            }
+
+            .header-actions {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .header-actions .btn {
+                padding: 8px 12px;
+                font-size: 0.75rem;
+            }
+
+            .tab-bar {
+                padding: 6px 8px;
+                gap: 6px;
+            }
+
+            .tab {
+                padding: 6px 10px;
+                font-size: 0.75rem;
+            }
+
+            .terminal {
+                font-size: 0.85rem;
+                padding: 10px 12px;
+            }
+
+            .input-area {
+                padding: 8px 12px;
+            }
+
+            .prompt {
+                font-size: 0.85rem;
+            }
+
+            .terminal-input {
+                font-size: 0.85rem;
+            }
+
+            .status-bar {
+                flex-wrap: wrap;
+                gap: 10px;
+                padding: 6px 10px;
+                font-size: 0.65rem;
+            }
+
+            .shortcuts-panel {
+                width: 90%;
+                padding: 16px;
+            }
+
+            .shortcut-item {
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-actions .btn {
+                padding: 6px 10px;
+                font-size: 0.7rem;
+            }
+
+            .tab {
+                padding: 5px 8px;
+                font-size: 0.7rem;
+            }
+
+            .new-tab-btn {
+                width: 24px;
+                height: 24px;
+            }
+
+            .terminal {
+                font-size: 0.8rem;
+            }
+
+            .status-right {
+                display: none;
+            }
+        }
+
+        /* Touch improvements */
+        @media (hover: none) and (pointer: coarse) {
+            .btn {
+                min-height: 44px;
+                min-width: 44px;
+            }
+
+            .btn:active {
+                transform: scale(0.97);
+                opacity: 0.9;
+            }
+
+            .tab {
+                min-height: 44px;
+            }
+
+            .terminal-input {
+                min-height: 44px;
+            }
+
+            .terminal {
+                -webkit-overflow-scrolling: touch;
+            }
+        }
+
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
     </style>
 </head>
 <body>
