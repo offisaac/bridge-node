@@ -5,3 +5,5 @@ websockets==12.0
 pydantic==2.5.3
 aiofiles==23.2.1
 psutil==5.9.8
+pypdf==3.17.4
+sse-starlette==2.0.0

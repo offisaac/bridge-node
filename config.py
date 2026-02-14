@@ -25,6 +25,7 @@ TOKEN_EXPIRY_HOURS = 24
 
 # Upload Configuration
 UPLOAD_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "uploads")
+CLUSTER_UPLOAD_DIR = os.path.expanduser(os.getenv("CLUSTER_UPLOAD_DIR", "~/cluster_uploads"))
 MAX_UPLOAD_SIZE = 100 * 1024 * 1024  # 100MB
 CHUNK_SIZE = 1024 * 1024  # 1MB chunks
 
@@ -54,3 +55,4 @@ def ensure_directories():
     """Ensure required directories exist."""
     os.makedirs(UPLOAD_DIR, exist_ok=True)
     os.makedirs(LOG_DIR, exist_ok=True)
+    os.makedirs(CLUSTER_UPLOAD_DIR, exist_ok=True)

@@ -35,13 +35,50 @@
         "fix: SEC-008 远程文件操作 - /api/remote/rename 添加 validate_path() 验证",
         "fix: 添加 SAFE_BASE_DIRS 白名单目录和 validate_path() 通用函数"
       ]
+    },
+    {
+      "commit": "SEC-001-004",
+      "date": "2026-02-15",
+      "type": "security_fix",
+      "changes": [
+        "fix: SEC-001 认证强制验证 - 默认启用认证，可选设置 BRIDGENODE_OPTIONAL_AUTH=1 放宽",
+        "fix: SEC-003 凭证从环境变量读取 - BRIDGENODE_USERNAME 和 BRIDGENODE_PASSWORD",
+        "fix: SEC-004 Token 泄露防护 - 启动时只打印 token 前 8 位"
+      ]
+    },
+    {
+      "commit": "ISS-003",
+      "date": "2026-02-15",
+      "type": "feature",
+      "changes": [
+        "feat: 文件上传分片机制完善 - 断点续传支持",
+        "feat: 添加分片持久化到磁盘，避免内存溢出",
+        "feat: 添加 GET /api/files/upload/status/{upload_id} - 查询上传进度",
+        "feat: 添加 GET /api/files/upload/chunks/{upload_id} - 获取已上传分片列表",
+        "feat: 添加 POST /api/files/upload/chunks - 并发上传多个分片",
+        "feat: 添加 POST /api/files/upload/cancel - 取消上传"
+      ]
+    },
+    {
+      "commit": "ISS-005",
+      "date": "2026-02-15",
+      "type": "feature",
+      "changes": [
+        "feat: 速率限制功能 - 基于 Token 和 IP 的限流",
+        "feat: 添加 rate_limiter.py 模块",
+        "feat: 添加 GET /api/rate-limit/config - 查询限流配置",
+        "feat: 添加 POST /api/rate-limit/config - 更新限流配置",
+        "feat: 添加 GET /api/rate-limit/status - 查询限流状态",
+        "feat: 添加 POST /api/rate-limit/reset - 重置限流计数器",
+        "feat: 默认配置: 60请求/分钟, 1000请求/小时, 10请求/秒突发"
+      ]
     }
   ],
   "stats": {
-    "total_commits": 3,
+    "total_commits": 6,
     "bug_fixes": 5,
-    "features": 0,
-    "security_fixes": 2
+    "features": 2,
+    "security_fixes": 3
   },
   "best_practices": [
     {
@@ -61,6 +98,24 @@
       "rule": "使用 validate_path() 进行路径验证",
       "implementation": "os.path.realpath() + SAFE_BASE_DIRS 白名单目录检查",
       "notes": "所有文件操作端点必须使用 validate_path() 验证用户输入的路径"
+    },
+    {
+      "category": "SEC-001/003/004 Authentication",
+      "rule": "默认强制认证，凭证从环境变量读取",
+      "implementation": "simple_auth 默认要求认证，DEFAULT_USERNAME/PASSWORD 从环境变量读取",
+      "notes": "设置 BRIDGENODE_OPTIONAL_AUTH=1 可允许匿名访问（开发调试用）"
+    },
+    {
+      "category": "ISS-003 File Upload Chunking",
+      "rule": "分片持久化 + 断点续传",
+      "implementation": "分片写入磁盘，metadata 持久化，支持查询已上传分片",
+      "notes": "使用 asyncio.gather 实现并发上传"
+    },
+    {
+      "category": "ISS-005 Rate Limiting",
+      "rule": "Token + IP 双层限流",
+      "implementation": "rate_limiter 模块，支持每分钟/每小时/突发限制",
+      "notes": "可配置限流参数，支持实时调整"
     }
   ]
 }

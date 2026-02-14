@@ -29,6 +29,7 @@ from tunnel_monitor import tunnel_monitor
 from log_tailer import log_tailer
 from file_transfer import file_transfer
 from websocket_manager import manager
+from rate_limiter import rate_limiter
 
 # Cluster upload directory from environment variable
 CLUSTER_UPLOAD_DIR = os.path.expanduser(os.getenv("CLUSTER_UPLOAD_DIR", "/tmp/cluster_uploads"))
@@ -209,21 +210,51 @@ def validate_path(path: str) -> str:
 
 # Simple auth dependency - verify token from Authorization header
 async def simple_auth(authorization: str = Header(None)):
-    """Verify Bearer token from Authorization header."""
-    if not authorization:
-        # Allow anonymous access for local-only deployment
-        # Set BRIDGENODE_REQUIRE_AUTH=1 to enforce
-        if os.getenv("BRIDGENODE_REQUIRE_AUTH"):
+    """Verify Bearer token from Authorization header.
+
+    SEC-001: By default, require authentication.
+    Set BRIDGENODE_OPTIONAL_AUTH=1 to allow anonymous access (not recommended).
+    """
+    # Default: require authentication (SEC-001 fix)
+    if os.getenv("BRIDGENODE_OPTIONAL_AUTH"):
+        # Optional auth mode: allow anonymous access
+        if not authorization:
+            return "anonymous"
+
+        if authorization.startswith("Bearer "):
+            token = authorization[7:]
+            if auth.verify_token(token):
+                return token
+            # Invalid token in optional mode: still allow anonymous
+            return "anonymous"
+
+        return authorization
+    else:
+        # Default: enforce authentication
+        if not authorization:
             raise HTTPException(status_code=401, detail="Missing authorization header")
-        return "anonymous"
 
-    if authorization.startswith("Bearer "):
-        token = authorization[7:]
-        if auth.verify_token(token):
-            return token
-        raise HTTPException(status_code=401, detail="Invalid or expired token")
+        if authorization.startswith("Bearer "):
+            token = authorization[7:]
+            if auth.verify_token(token):
+                return token
+            raise HTTPException(status_code=401, detail="Invalid or expired token")
 
-    return authorization
+        raise HTTPException(status_code=401, detail="Invalid authorization format")
+
+
+# Rate limiting dependency (ISS-005)
+async def rate_limit_check(request: Request, token: str = Depends(simple_auth)):
+    """Check rate limits before processing request (ISS-005)."""
+    # Get client IP
+    client_ip = request.client.host if request.client else "unknown"
+
+    # Check rate limits
+    allowed, error = rate_limiter.check(token, client_ip)
+    if not allowed:
+        raise HTTPException(status_code=429, detail=error)
+
+    return token
 
 
 # API Routes
@@ -291,6 +322,69 @@ async def get_config(token: str = Depends(simple_auth)):
         "CLUSTER_UPLOAD_DIR": CLUSTER_UPLOAD_DIR,
         "cluster_download_dir": os.path.expanduser("~/downloads")
     }
+
+
+# Rate Limiting API (ISS-005)
+class RateLimitConfig(BaseModel):
+    requests_per_minute: int = 60
+    requests_per_hour: int = 1000
+    burst_limit: int = 10
+    enabled: bool = True
+
+
+@app.get("/api/rate-limit/config")
+async def get_rate_limit_config(token: str = Depends(simple_auth)):
+    """Get rate limiting configuration (ISS-005)."""
+    return {
+        "requests_per_minute": rate_limiter.requests_per_minute,
+        "requests_per_hour": rate_limiter.requests_per_hour,
+        "burst_limit": rate_limiter.burst_limit,
+        "enabled": rate_limiter._enabled
+    }
+
+
+@app.post("/api/rate-limit/config")
+async def update_rate_limit_config(
+    config: RateLimitConfig,
+    token: str = Depends(simple_auth)
+):
+    """Update rate limiting configuration (ISS-005)."""
+    rate_limiter.set_config(
+        requests_per_minute=config.requests_per_minute,
+        requests_per_hour=config.requests_per_hour,
+        burst_limit=config.burst_limit,
+        enabled=config.enabled
+    )
+    return {
+        "success": True,
+        "message": "Rate limit configuration updated",
+        "config": {
+            "requests_per_minute": rate_limiter.requests_per_minute,
+            "requests_per_hour": rate_limiter.requests_per_hour,
+            "burst_limit": rate_limiter.burst_limit,
+            "enabled": rate_limiter._enabled
+        }
+    }
+
+
+@app.get("/api/rate-limit/status")
+async def get_rate_limit_status(
+    token: str = Depends(simple_auth),
+    client_token: str = None
+):
+    """Get current rate limit status for a client (ISS-005)."""
+    return rate_limiter.get_stats(token=client_token)
+
+
+@app.post("/api/rate-limit/reset")
+async def reset_rate_limit(
+    token: str = None,
+    client_ip: str = None,
+    admin_token: str = Depends(simple_auth)
+):
+    """Reset rate limit for a specific client (ISS-005)."""
+    rate_limiter.reset(token=token, ip=client_ip)
+    return {"success": True, "message": "Rate limit counters reset"}
 
 
 @app.get("/api/status")
@@ -551,6 +645,54 @@ async def upload_chunk(
 async def complete_upload(upload_id: str, token: str = Depends(simple_auth)):
     """Complete upload and merge chunks."""
     result = await file_transfer.complete_upload(upload_id)
+    return result
+
+
+@app.get("/api/files/upload/status/{upload_id}")
+async def get_upload_status(upload_id: str, token: str = Depends(simple_auth)):
+    """Get upload progress status (ISS-003:断点续传支持)."""
+    status = await file_transfer.get_upload_status(upload_id)
+    if "error" in status:
+        raise HTTPException(status_code=404, detail=status["error"])
+    return status
+
+
+@app.get("/api/files/upload/chunks/{upload_id}")
+async def get_uploaded_chunks(upload_id: str, token: str = Depends(simple_auth)):
+    """Get list of uploaded chunk indices (ISS-003:断点续传支持)."""
+    chunks = file_transfer.get_uploaded_chunks(upload_id)
+    return {
+        "upload_id": upload_id,
+        "uploaded_chunks": chunks,
+        "count": len(chunks)
+    }
+
+
+@app.post("/api/files/upload/cancel")
+async def cancel_upload(upload_id: str, token: str = Depends(simple_auth)):
+    """Cancel an upload and clean up chunks."""
+    result = await file_transfer.cancel_upload(upload_id)
+    return result
+
+
+@app.post("/api/files/upload/chunks")
+async def upload_chunks_concurrent(
+    upload_id: str,
+    chunks: List[UploadFile],
+    token: str = Depends(simple_auth)
+):
+    """Upload multiple chunks concurrently (ISS-003:并发上传支持).
+
+    Form data should contain multiple files with 'chunk_index' field.
+    """
+    chunk_data = {}
+    for chunk_file in chunks:
+        # Get chunk index from form field
+        chunk_index = int(chunk_file.headers.get("chunk-index", 0))
+        content = await chunk_file.read()
+        chunk_data[chunk_index] = content
+
+    result = await file_transfer.upload_chunks_concurrent(upload_id, chunk_data)
     return result
 
 
