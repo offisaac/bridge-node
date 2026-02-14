@@ -35,7 +35,86 @@
         .container {
             max-width: 1600px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 16px;
+        }
+
+        /* Responsive Layout */
+        @media (max-width: 1200px) {
+            .main-grid {
+                grid-template-columns: 1fr 320px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .right-column {
+                order: -1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 12px;
+            }
+
+            header {
+                flex-direction: column;
+                gap: 12px;
+                padding: 12px 16px;
+            }
+
+            h1 {
+                font-size: 1.2rem;
+            }
+
+            .status-bar {
+                flex-wrap: wrap;
+                gap: 12px;
+                padding: 10px 14px;
+            }
+
+            .status-item {
+                font-size: 0.75rem;
+            }
+
+            .card {
+                border-radius: var(--radius-md);
+            }
+
+            .card-header {
+                padding: 10px 14px;
+            }
+
+            .card-body {
+                padding: 12px;
+            }
+
+            .quick-commands {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .header-controls {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .btn {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+
+            .claude-input-area {
+                min-height: 120px;
+            }
+
+            .file-actions {
+                opacity: 1;
+            }
         }
 
         /* Header */
@@ -71,12 +150,42 @@
             cursor: pointer;
             font-size: 0.85rem;
             font-weight: 500;
-            transition: all 0.2s;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s;
+        }
+
+        .btn:active::after {
+            width: 200%;
+            height: 200%;
         }
 
         .btn-primary {
             background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
             color: white;
+            box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
         }
 
         .btn-secondary {
@@ -85,29 +194,77 @@
             border: 1px solid var(--border);
         }
 
+        .btn-secondary:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            transform: translateY(-1px);
+        }
+
         .btn-danger {
             background: var(--error);
             color: white;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
         }
 
-        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+        }
+
+        /* Loading state */
+        .btn.loading {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .btn.loading::before {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            top: 50%;
+            left: 50%;
+            margin: -8px 0 0 -8px;
+            border: 2px solid transparent;
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Focus states for accessibility */
+        .btn:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        input:focus-visible,
+        textarea:focus-visible,
+        select:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 1px;
+        }
 
         /* Status Bar */
         .status-bar {
             display: flex;
-            gap: 20px;
-            padding: 12px 20px;
+            gap: 16px;
+            padding: 10px 16px;
             background: var(--bg-secondary);
             border-radius: var(--radius-md);
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             border: 1px solid var(--border);
+            flex-wrap: wrap;
         }
 
         .status-item {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 0.85rem;
+            gap: 6px;
+            font-size: 0.8rem;
         }
 
         .status-dot {
@@ -115,55 +272,157 @@
             height: 8px;
             border-radius: 50%;
             background: var(--success);
+            box-shadow: 0 0 6px var(--success);
+            transition: all 0.3s;
         }
 
-        .status-dot.error { background: var(--error); }
-        .status-dot.warning { background: var(--warning); }
+        .status-dot.error {
+            background: var(--error);
+            box-shadow: 0 0 6px var(--error);
+        }
+
+        .status-dot.warning {
+            background: var(--warning);
+            box-shadow: 0 0 6px var(--warning);
+        }
+
+        /* Pulse animation for active status */
+        .status-dot.active {
+            animation: statusPulse 2s infinite;
+        }
+
+        @keyframes statusPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Latency Display */
+        .latency-value {
+            font-weight: 600;
+            transition: color 0.3s ease, transform 0.2s ease;
+            min-width: 40px;
+            display: inline-block;
+        }
+
+        .latency-value.low { color: var(--success); }
+        .latency-value.medium { color: var(--warning); }
+        .latency-value.high { color: var(--error); }
+
+        .latency-pulse {
+            animation: latencyPulse 0.3s ease-out;
+        }
+
+        @keyframes latencyPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
 
         /* Main Layout */
         .main-grid {
             display: grid;
-            grid-template-columns: 1fr 400px;
-            gap: 20px;
+            grid-template-columns: 1fr 380px;
+            gap: 16px;
         }
 
         .left-column {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 16px;
         }
 
         .right-column {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 16px;
+        }
+
+        /* Resizable Terminal */
+        .terminal-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .terminal-resize-handle {
+            height: 8px;
+            background: var(--bg-tertiary);
+            cursor: ns-resize;
+            position: relative;
+            border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+            transition: background 0.2s;
+            flex-shrink: 0;
+        }
+
+        .terminal-resize-handle::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            transition: background 0.2s;
+        }
+
+        .terminal-resize-handle:hover,
+        .terminal-resize-handle.dragging {
+            background: var(--accent);
+        }
+
+        .terminal-resize-handle:hover::before,
+        .terminal-resize-handle.dragging::before {
+            background: white;
+        }
+
+        .terminal-output-wrapper {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 200px;
+            max-height: 70vh;
+        }
+
+        .terminal-output-wrapper.resizing {
+            user-select: none;
         }
 
         /* Cards */
         .card {
             background: var(--bg-secondary);
             border-radius: var(--radius-lg);
-            border: 1px solid var(--border);
+            border: 1px solid rgba(42, 42, 58, 0.6);
             overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            transition: box-shadow 0.2s, border-color 0.2s;
+        }
+
+        .card:hover {
+            border-color: rgba(139, 92, 246, 0.3);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
         }
 
         .card-header {
-            padding: 14px 20px;
-            background: var(--bg-tertiary);
-            border-bottom: 1px solid var(--border);
+            padding: 12px 16px;
+            background: linear-gradient(180deg, var(--bg-tertiary) 0%, rgba(26, 26, 37, 0.8) 100%);
+            border-bottom: 1px solid rgba(42, 42, 58, 0.5);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .card-title {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: 600;
             color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .card-body {
-            padding: 16px;
+            padding: 14px;
         }
 
         /* File Manager */
@@ -223,7 +482,85 @@
 
         .file-icon { font-size: 1.1rem; }
         .file-name { flex: 1; font-size: 0.85rem; }
-        .file-size { font-size: 0.75rem; color: var(--text-muted); }
+        .file-size { font-size: 0.75rem; color: var(--text-muted); min-width: 70px; text-align: right; }
+
+        .file-actions {
+            display: flex;
+            gap: 4px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .file-item:hover .file-actions {
+            opacity: 1;
+        }
+
+        .file-action-btn {
+            padding: 2px 6px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            color: var(--text-secondary);
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .file-action-btn:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        /* Directory selector */
+        .directory-selector {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 10px;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+        }
+
+        .directory-selector label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        .directory-selector select {
+            flex: 1;
+            padding: 6px 10px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 0.8rem;
+        }
+
+        .directory-selector input {
+            flex: 1;
+            padding: 6px 10px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 0.8rem;
+        }
+
+        .directory-selector input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .current-path-display {
+            font-size: 0.75rem;
+            color: var(--accent);
+            font-family: monospace;
+            word-break: break-all;
+        }
 
         .file-status {
             display: flex;
@@ -329,23 +666,30 @@
 
         /* Output Monitor */
         .output-console {
-            height: 280px;
+            flex: 1;
             overflow-y: auto;
             background: var(--bg-primary);
             border-radius: var(--radius-md);
             padding: 12px;
             font-family: 'Monaco', 'Menlo', monospace;
             font-size: 0.8rem;
+            min-height: 150px;
         }
 
         .output-line {
-            padding: 6px 10px;
-            border-radius: 4px;
-            margin-bottom: 4px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-bottom: 6px;
             white-space: pre-wrap;
             word-break: break-all;
-            border-left: 2px solid transparent;
+            border-left: 3px solid transparent;
             animation: fadeIn 0.2s ease;
+            transition: background 0.15s, transform 0.15s;
+            position: relative;
+        }
+
+        .output-line:hover {
+            transform: translateX(2px);
         }
 
         @keyframes fadeIn {
@@ -356,23 +700,43 @@
         .output-line.info {
             color: var(--text-primary);
             border-left-color: var(--accent);
-            background: rgba(139, 92, 246, 0.05);
+            background: rgba(139, 92, 246, 0.08);
         }
+
+        .output-line.info:hover {
+            background: rgba(139, 92, 246, 0.12);
+        }
+
         .output-line.success {
             color: var(--success);
             background: rgba(16, 185, 129, 0.1);
             border-left-color: var(--success);
         }
+
+        .output-line.success:hover {
+            background: rgba(16, 185, 129, 0.15);
+        }
+
         .output-line.error {
             color: var(--error);
             background: rgba(239, 68, 68, 0.1);
             border-left-color: var(--error);
         }
+
+        .output-line.error:hover {
+            background: rgba(239, 68, 68, 0.15);
+        }
+
         .output-line.user {
             color: #60a5fa;
             background: rgba(96, 165, 250, 0.1);
             border-left-color: #60a5fa;
         }
+
+        .output-line.user:hover {
+            background: rgba(96, 165, 250, 0.15);
+        }
+
         .output-line.claude {
             color: #f472b6;
             background: rgba(244, 114, 182, 0.1);
@@ -399,6 +763,89 @@
             opacity: 0.5;
         }
 
+        /* Clipboard History */
+        .clipboard-history {
+            height: 280px;
+            overflow-y: auto;
+            background: var(--bg-primary);
+            border-radius: var(--radius-md);
+            padding: 8px;
+        }
+
+        .clipboard-empty {
+            color: var(--text-muted);
+            text-align: center;
+            padding: 40px 20px;
+            font-size: 0.85rem;
+        }
+
+        .clipboard-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 10px 12px;
+            margin-bottom: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .clipboard-item:hover {
+            border-color: var(--accent);
+            background: var(--bg-tertiary);
+        }
+
+        .clipboard-item:hover .clipboard-copy-icon {
+            opacity: 1;
+        }
+
+        .clipboard-text {
+            font-size: 0.8rem;
+            color: var(--text-primary);
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 60px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .clipboard-text::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 20px;
+            background: linear-gradient(transparent, var(--bg-secondary));
+        }
+
+        .clipboard-item:hover .clipboard-text::after {
+            background: linear-gradient(transparent, var(--bg-tertiary));
+        }
+
+        .clipboard-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 6px;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .clipboard-copy-icon {
+            opacity: 0;
+            transition: opacity 0.2s;
+            color: var(--accent);
+        }
+
+        .clipboard-item.copied {
+            border-color: var(--success);
+        }
+
+        .clipboard-item.copied .clipboard-text {
+            color: var(--success);
+        }
+
         .output-timestamp {
             color: var(--text-muted);
             font-size: 0.7rem;
@@ -410,6 +857,12 @@
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 8px;
+        }
+
+        .cmd-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
         }
 
         .cmd-btn {
@@ -426,16 +879,89 @@
             flex-direction: column;
             align-items: center;
             gap: 4px;
+            position: relative;
+        }
+
+        .cmd-btn .state-icon {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            font-size: 0.6rem;
+        }
+
+        .cmd-btn.executing {
+            background: var(--warning);
+            color: #000;
+            border-color: var(--warning);
+            animation: pulse 1s infinite;
+            pointer-events: none;
+        }
+
+        .cmd-btn.success {
+            background: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+
+        .cmd-btn.failed, .cmd-btn.timeout {
+            background: var(--error);
+            color: white;
+            border-color: var(--error);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .cmd-output {
+            font-size: 0.65rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 4px 8px;
+            min-height: 20px;
+            max-height: 60px;
+            overflow-y: auto;
+            color: var(--text-secondary);
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .cmd-output.success {
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .cmd-output.failed, .cmd-output.timeout {
+            border-color: var(--error);
+            color: var(--error);
+        }
+
+        .cmd-output .btn-retry {
+            margin-left: 8px;
+            padding: 2px 6px;
+            font-size: 0.6rem;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .cmd-output .btn-cancel {
+            margin-left: 8px;
+            padding: 2px 6px;
+            font-size: 0.6rem;
+            background: var(--error);
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
         }
 
         .cmd-btn:hover {
-            background: var(--accent);
-            color: white;
-            border-color: var(--accent);
-            transform: translateY(-2px);
-        }
-
-        .cmd-btn:active {
             transform: translateY(0);
         }
 
@@ -443,9 +969,131 @@
             font-size: 1rem;
         }
 
-        .cmd-btn.executing {
-            opacity: 0.6;
-            pointer-events: none;
+        /* Claude Input History Panel */
+        .input-history-panel {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .input-history-item {
+            padding: 10px 12px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 8px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .input-history-item:hover {
+            border-color: var(--accent);
+            background: rgba(139, 92, 246, 0.1);
+        }
+
+        .input-history-item.expanded {
+            border-color: var(--accent);
+        }
+
+        .input-history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .input-history-id {
+            font-family: monospace;
+            font-size: 0.7rem;
+            color: var(--accent);
+            background: rgba(139, 92, 246, 0.15);
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        .input-history-time {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        .input-history-summary {
+            font-size: 0.8rem;
+            color: var(--text-primary);
+            margin-top: 6px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .input-history-meta {
+            display: flex;
+            gap: 12px;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .input-history-content {
+            display: none;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border);
+        }
+
+        .input-history-item.expanded .input-history-content {
+            display: block;
+        }
+
+        .input-history-full {
+            background: var(--bg-tertiary);
+            padding: 10px;
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 200px;
+            overflow-y: auto;
+            color: var(--text-secondary);
+        }
+
+        .input-history-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .input-history-actions .btn {
+            padding: 4px 10px;
+            font-size: 0.7rem;
+        }
+
+        .input-history-search {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .input-history-search input {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 0.8rem;
+        }
+
+        .input-history-search input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .input-history-empty {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
         }
 
         /* Console */
@@ -487,10 +1135,33 @@
             color: var(--text-secondary);
         }
 
-        /* Scrollbar */
+        /* Scrollbar - Enhanced */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: var(--bg-primary); }
-        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--accent) 0%, #6366f1 100%);
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #a78bfa 0%, #818cf8 100%);
+        }
+        ::-webkit-scrollbar-corner {
+            background: var(--bg-primary);
+        }
+
+        /* Thin scrollbar variant */
+        .scroll-thin::-webkit-scrollbar { width: 4px; height: 4px; }
+        .scroll-thin::-webkit-scrollbar-thumb { background: var(--text-muted); }
+
+        /* Firefox scrollbar */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent) var(--bg-primary);
+        }
 
         /* Modal */
         .modal-overlay {
@@ -501,6 +1172,10 @@
             align-items: center;
             justify-content: center;
             z-index: 9999;
+        }
+
+        .modal-overlay.hidden {
+            display: none;
         }
 
         .modal-content {
@@ -518,6 +1193,71 @@
             color: var(--accent);
         }
 
+        /* File Preview Modal */
+        .preview-modal .modal-content {
+            max-width: 900px;
+            width: 90%;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .preview-filename {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .preview-info {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .preview-body {
+            flex: 1;
+            overflow: auto;
+            background: var(--bg-primary);
+            border-radius: var(--radius-sm);
+            padding: 12px;
+            max-height: 60vh;
+        }
+
+        .preview-code {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: var(--text-primary);
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .preview-loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--accent);
+        }
+
+        .preview-error {
+            text-align: center;
+            padding: 40px;
+            color: var(--error);
+        }
+
+        .preview-empty {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+        }
+
         /* Toast */
         .toast {
             position: fixed;
@@ -529,11 +1269,51 @@
             border: 1px solid var(--accent);
             z-index: 10000;
             animation: slideIn 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 400px;
+        }
+
+        .toast.success { border-color: var(--success); }
+        .toast.error { border-color: var(--error); }
+        .toast.warning { border-color: var(--warning); }
+
+        .toast-icon {
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .toast-message {
+            flex: 1;
+            font-size: 0.85rem;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 0;
+            line-height: 1;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .toast-close:hover {
+            opacity: 1;
         }
 
         @keyframes slideIn {
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
         }
 
         /* Reset Button */
@@ -548,10 +1328,412 @@
         }
 
         /* Full width */
+        /* Cluster Info Panel */
+        .cluster-panel {
+            padding: 12px;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-sm);
+            margin-bottom: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .cluster-info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            margin-bottom: 8px;
+        }
+
+        .cluster-info-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .cluster-info-label {
+            color: var(--text-secondary);
+            min-width: 100px;
+        }
+
+        .cluster-info-value {
+            color: var(--accent);
+            font-weight: 500;
+            font-family: monospace;
+            font-size: 0.75rem;
+            word-break: break-all;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin: 12px 0;
+            padding: 12px;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            display: none;
+        }
+
+        .progress-container.active {
+            display: block;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .progress-filename {
+            font-size: 0.8rem;
+            color: var(--text-primary);
+            font-weight: 500;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .progress-stats {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--bg-primary);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), #6366f1);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .progress-speed {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 6px;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        /* Drop Zone */
+        .drop-zone {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            margin-bottom: 12px;
+            cursor: pointer;
+        }
+
+        .drop-zone:hover, .drop-zone.drag-over {
+            border-color: var(--accent);
+            background: rgba(139, 92, 246, 0.05);
+        }
+
+        .drop-zone-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .drop-zone-text {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .drop-zone-hint {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .dropped-files {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .dropped-file {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            border: 1px solid var(--border);
+        }
+
+        .dropped-file .remove-btn {
+            cursor: pointer;
+            color: var(--error);
+            font-weight: bold;
+        }
+
+        /* Context Card */
+        .context-cards {
+            margin-top: 12px;
+        }
+
+        .context-card {
+            background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
+            border: 1px solid var(--accent);
+            border-radius: var(--radius-md);
+            padding: 12px;
+            margin-bottom: 10px;
+            animation: slideIn 0.3s ease;
+        }
+
+        .context-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .context-card-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .context-card-id {
+            font-family: monospace;
+            font-size: 0.7rem;
+            color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .context-card-id:hover {
+            background: rgba(16, 185, 129, 0.2);
+        }
+
+        .context-card-meta {
+            display: flex;
+            gap: 12px;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .context-card-preview {
+            margin-top: 8px;
+            padding: 8px;
+            background: var(--bg-primary);
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            max-height: 60px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Claude Output Section */
+        .claude-output-section {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .claude-output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .claude-output-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .claude-output-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .claude-output-content {
+            max-height: 400px;
+            overflow-y: auto;
+            background: var(--bg-primary);
+            padding: 16px;
+        }
+
+        .output-block {
+            position: relative;
+            margin-bottom: 16px;
+            padding: 12px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            border-left: 3px solid var(--accent);
+        }
+
+        .output-block:last-child {
+            margin-bottom: 0;
+        }
+
+        .output-block-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .output-block-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .output-block-copy {
+            padding: 4px 8px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .output-block-copy:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .output-block-copy.copied {
+            background: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+
+        .output-block-content {
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text-primary);
+        }
+
+        .output-block-content pre {
+            background: var(--bg-primary);
+            padding: 10px;
+            border-radius: var(--radius-sm);
+            overflow-x: auto;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.75rem;
+            margin: 8px 0;
+        }
+
+        .output-block-content code {
+            background: var(--bg-primary);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.8em;
+        }
+
+        .output-block-content p {
+            margin: 8px 0;
+        }
+
+        .output-block-content ul, .output-block-content ol {
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+
+        .output-block-content h1, .output-block-content h2, .output-block-content h3 {
+            margin: 12px 0 8px;
+            color: var(--accent);
+        }
+
+        .output-block-timestamp {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+            text-align: right;
+        }
+
+        .output-empty {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+        }
+
+        .output-connection-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .connection-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--text-muted);
+        }
+
+        .connection-dot.connected {
+            background: var(--success);
+        }
+
+        .connection-dot.error {
+            background: var(--error);
+        }
+
         .full-width { grid-column: 1 / -1; }
     </style>
 </head>
 <body>
+    <!-- File Preview Modal -->
+    <div id="previewModal" class="modal-overlay preview-modal hidden">
+        <div class="modal-content">
+            <div class="preview-header">
+                <div>
+                    <div class="preview-filename" id="previewFilename">filename</div>
+                    <div class="preview-info" id="previewInfo">0 bytes</div>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-secondary" onclick="closePreviewModal()">Close</button>
+                </div>
+            </div>
+            <div class="preview-body" id="previewBody">
+                <div class="preview-loading">Loading...</div>
+            </div>
+        </div>
+    </div>
+
     <div class="container">
         <header>
             <h1>BridgeNode</h1>
@@ -568,7 +1750,7 @@
             </div>
             <div class="status-item">
                 <span>Latency:</span>
-                <span id="latency">--</span>
+                <span id="latency" class="latency-value">--</span>
                 <span>ms</span>
             </div>
             <div class="status-item">
@@ -601,6 +1783,30 @@
                         </div>
                     </div>
                     <div class="card-body">
+                        <!-- Directory Selector -->
+                        <div class="directory-selector">
+                            <label>Upload to:</label>
+                            <select id="uploadDirSelect" onchange="onUploadDirChange()">
+                                <option value="current">Current Path</option>
+                                <option value="~/downloads">~/downloads</option>
+                                <option value="~/">~/</option>
+                                <option value="/tmp">/tmp</option>
+                                <option value="custom">Custom...</option>
+                            </select>
+                            <input type="text" id="uploadDirCustom" placeholder="Enter custom path..." style="display: none;">
+                        </div>
+                        <div class="directory-selector">
+                            <label>Download to:</label>
+                            <select id="downloadDirSelect" onchange="onDownloadDirChange()">
+                                <option value="~/downloads">~/downloads</option>
+                                <option value="~/">~/</option>
+                                <option value="/tmp">/tmp</option>
+                                <option value="custom">Custom...</option>
+                            </select>
+                            <input type="text" id="downloadDirCustom" placeholder="Enter custom path..." style="display: none;">
+                        </div>
+                        <div class="current-path-display" id="currentDownloadPath">Current: ~/downloads</div>
+
                         <div class="path-bar">
                             <button class="btn btn-secondary" onclick="goUpDirectory()" title="Go to parent directory">⬆️</button>
                             <input type="text" id="filePath" value="~/.claude" placeholder="Enter path..." onkeydown="if(event.key==='Enter')loadFiles()">
@@ -623,40 +1829,91 @@
                     </div>
                 </div>
 
-                <!-- (b) Claude Input -->
+                <!-- (b) Claude Input & History (merged) -->
                 <div class="card full-width">
                     <div class="card-header">
                         <span class="card-title">📨 Claude Input</span>
-                        <span style="font-size: 0.75rem; color: var(--text-muted);">Ctrl+Enter to send</span>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <span id="historyCount" style="font-size: 0.7rem; background: rgba(139, 92, 246, 0.15); padding: 1px 6px; border-radius: 3px; color: var(--text-muted);">0 history</span>
+                            <span style="font-size: 0.75rem; color: var(--text-muted);">Ctrl+Enter to send</span>
+                        </div>
                     </div>
                     <div class="card-body">
-                        <textarea class="claude-input-area" id="claudeInput" placeholder="Enter text to send to Claude..."></textarea>
-                        <div class="input-stats">
-                            <span>Chars: <span id="charCount" class="stat-highlight">0</span></span>
-                            <span>Lines: <span id="lineCount" class="stat-highlight">0</span></span>
-                            <span>Words: <span id="wordCount" class="stat-highlight">0</span></span>
+                        <!-- Input History (always visible, above input) -->
+                        <div style="margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <span style="font-size: 0.85rem; font-weight: 600; color: var(--accent);">📋 Input History</span>
+                                <div style="display: flex; gap: 8px;">
+                                    <button class="btn btn-secondary" onclick="loadInputHistory()" title="Refresh" style="padding: 4px 8px; font-size: 0.7rem;">🔄</button>
+                                    <button class="btn btn-secondary" onclick="clearInputHistoryFilter()" title="Clear filter" style="padding: 4px 8px; font-size: 0.7rem;">✕</button>
+                                </div>
+                            </div>
+                            <div class="input-history-search">
+                                <input type="text" id="inputHistorySearch" placeholder="Search by ID or content..." onkeyup="filterInputHistory()">
+                            </div>
+                            <div class="input-history-panel" id="inputHistoryPanel" style="max-height: 200px;">
+                                <div class="input-history-empty">Loading history...</div>
+                            </div>
                         </div>
-                        <div class="input-response" id="inputResponse"></div>
-                        <div class="input-actions">
-                            <button class="btn btn-primary" onclick="submitToClaude()">📤 Submit</button>
-                            <button class="btn btn-secondary" onclick="clearClaudeInput()">🗑️ Clear</button>
+
+                        <div style="border-top: 1px solid var(--border); padding-top: 12px;">
+                            <!-- Drop Zone -->
+                            <div class="drop-zone" id="dropZone">
+                                <div class="drop-zone-icon">📎</div>
+                                <div class="drop-zone-text">Drag & drop files here or click to upload</div>
+                                <div class="drop-zone-hint">Supports PDF, TXT, MD, JSON and more</div>
+                                <input type="file" id="fileInput" style="display: none;" multiple accept=".pdf,.txt,.md,.json,.py,.js,.html,.css">
+                            </div>
+                            <div class="dropped-files" id="droppedFiles"></div>
+
+                            <textarea class="claude-input-area" id="claudeInput" placeholder="Enter text to send to Claude..."></textarea>
+                            <div class="input-stats">
+                                <span>Chars: <span id="charCount" class="stat-highlight">0</span></span>
+                                <span>Lines: <span id="lineCount" class="stat-highlight">0</span></span>
+                                <span>Words: <span id="wordCount" class="stat-highlight">0</span></span>
+                            </div>
+                            <div class="input-response" id="inputResponse"></div>
+
+                            <!-- Context Cards Container -->
+                            <div class="context-cards" id="contextCards"></div>
+
+                            <div class="input-actions">
+                                <button class="btn btn-primary" onclick="submitToClaude()">📤 Submit</button>
+                                <button class="btn btn-secondary" onclick="clearClaudeInput()">🗑️ Clear</button>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- (c) Output Monitor -->
+                <!-- (c) Claude Output - New SSE-based section -->
+                <div class="card full-width terminal-container">
+                    <div class="card-header">
+                        <span class="card-title">🤖 Claude Output</span>
+                        <div class="output-connection-status">
+                            <span class="connection-dot" id="sseConnectionDot"></span>
+                            <span id="sseConnectionStatus">Disconnected</span>
+                        </div>
+                    </div>
+                    <div class="terminal-output-wrapper" id="terminalWrapper">
+                        <div class="output-console" id="claudeOutputContent">
+                            <div class="output-empty">Waiting for Claude output...</div>
+                        </div>
+                        <div class="terminal-resize-handle" id="terminalResizeHandle"></div>
+                    </div>
+                </div>
+
+                <!-- (c2) Clipboard History -->
                 <div class="card full-width">
                     <div class="card-header">
-                        <span class="card-title">📊 Claude Monitor</span>
+                        <span class="card-title">📋 Clipboard History</span>
                         <div style="display: flex; gap: 8px;">
-                            <button class="btn btn-secondary" onclick="copyAllOutput()" title="Copy all">📋 Copy</button>
-                            <button class="btn btn-secondary" onclick="clearOutput()">Clear</button>
-                            <button class="btn btn-secondary" onclick="exportOutput()">Export</button>
+                            <button class="btn btn-secondary" onclick="clearClipboardHistory()" title="Clear history">Clear</button>
+                            <button class="btn btn-secondary" onclick="toggleClipboardMonitor()" id="clipboardToggleBtn">⏸ Pause</button>
                         </div>
                     </div>
                     <div class="card-body">
-                        <div class="output-console" id="outputConsole">
-                            <div class="output-line info">BridgeNode Output Monitor ready...</div>
+                        <div class="clipboard-history" id="clipboardHistory">
+                            <div class="clipboard-empty">Start copying text to see history...</div>
                         </div>
                     </div>
                 </div>
@@ -664,28 +1921,116 @@
 
             <!-- Right Column -->
             <div class="right-column">
+                <!-- (d) Cluster Info Panel -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">🖥️ Cluster Info</span>
+                        <button class="btn btn-secondary" onclick="refreshClusterInfo()" style="padding: 4px 8px; font-size: 0.7rem;">🔄</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="cluster-panel">
+                            <div class="cluster-info-item">
+                                <span class="cluster-info-label">Upload Path:</span>
+                                <span class="cluster-info-value" id="clusterUploadPath">/tmp/cluster_uploads</span>
+                            </div>
+                            <div class="cluster-info-item">
+                                <span class="cluster-info-label">Current Path:</span>
+                                <span class="cluster-info-value" id="clusterCurrentPath">~/.claude</span>
+                            </div>
+                            <div class="cluster-info-item">
+                                <span class="cluster-info-label">Download Dir:</span>
+                                <span class="cluster-info-value" id="clusterDownloadDir">~/downloads</span>
+                            </div>
+                        </div>
+
+                        <!-- Upload Progress -->
+                        <div class="progress-container" id="uploadProgress">
+                            <div class="progress-header">
+                                <span class="progress-filename" id="uploadFilename">uploading...</span>
+                                <span class="progress-stats" id="uploadPercent">0%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="uploadProgressBar" style="width: 0%"></div>
+                            </div>
+                            <div class="progress-speed">
+                                <span id="uploadSpeed">0 MB/s</span>
+                                <span id="uploadSize">0 / 0 MB</span>
+                            </div>
+                        </div>
+
+                        <!-- Download Progress -->
+                        <div class="progress-container" id="downloadProgress">
+                            <div class="progress-header">
+                                <span class="progress-filename" id="downloadFilename">downloading...</span>
+                                <span class="progress-stats" id="downloadPercent">0%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="downloadProgressBar" style="width: 0%"></div>
+                            </div>
+                            <div class="progress-speed">
+                                <span id="downloadSpeed">0 MB/s</span>
+                                <span id="downloadSize">0 / 0 MB</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- (d) Quick Commands -->
                 <div class="card">
                     <div class="card-header">
                         <span class="card-title">⚡ Quick Commands</span>
+                        <button class="btn btn-secondary" onclick="clearAllCommandOutputs()" style="padding: 4px 8px; font-size: 0.7rem;">Clear All</button>
                     </div>
                     <div class="card-body">
                         <div class="quick-commands">
-                            <button class="cmd-btn" onclick="runCommand('htop', this)"><span class="icon">📊</span>htop</button>
-                            <button class="cmd-btn" onclick="runCommand('btop', this)"><span class="icon">📈</span>btop</button>
-                            <button class="cmd-btn" onclick="runCommand('nvtop', this)"><span class="icon">🎮</span>nvtop</button>
-                            <button class="cmd-btn" onclick="runCommand('gpustat -f -c', this)"><span class="icon">🟢</span>gpustat</button>
-                            <button class="cmd-btn" onclick="runCommand('nvidia-smi --query-gpu=index,name,utilization.gpu,memory.used,memory.total,temperature.gpu --format=csv', this)"><span class="icon">🎯</span>GPU Info</button>
-                            <button class="cmd-btn" onclick="runCommand('df -h', this)"><span class="icon">💾</span>Disk</button>
-                            <button class="cmd-btn" onclick="runCommand('free -h', this)"><span class="icon">🧠</span>Memory</button>
-                            <button class="cmd-btn" onclick="runCommand('ps aux --sort=-%mem | head -10', this)"><span class="icon">🔥</span>Top Mem</button>
-                            <button class="cmd-btn" onclick="runCommand('nproc', this)"><span class="icon">⚙️</span>CPU Cores</button>
-                            <button class="cmd-btn" onclick="runCommand('uptime', this)"><span class="icon">⏰</span>Uptime</button>
-                            <button class="cmd-btn" onclick="runCommand('whoami', this)"><span class="icon">👤</span>Whoami</button>
-                            <button class="cmd-btn" onclick="runCommand('hostname', this)"><span class="icon">🖥️</span>Hostname</button>
-                        </div>
-                        <div class="console-output" id="cmdOutput" style="margin-top: 12px;">
-                            Command output will appear here...
+                            <div class="cmd-item">
+                                <button class="cmd-btn" data-cmd="top" onclick="runCommand('top -b -n 1 | head -20', this)"><span class="icon">📊</span>Top</button>
+                                <div class="cmd-output" id="output-top"></div>
+                            </div>
+                            <div class="cmd-item">
+                                <button class="cmd-btn" data-cmd="ps" onclick="runCommand('ps aux --sort=-%cpu | head -15', this)"><span class="icon">📈</span>Top CPU</button>
+                                <div class="cmd-output" id="output-ps"></div>
+                            </div>
+                            <div class="cmd-item">
+                                <button class="cmd-btn" data-cmd="nvidia-smi" onclick="runCommand('nvidia-smi', this)"><span class="icon">🎮</span>nvidia-smi</button>
+                                <div class="cmd-output" id="output-nvidia-smi"></div>
+                            </div>
+                            <div class="cmd-item">
+                                <button class="cmd-btn" data-cmd="gpustat" onclick="runCommand('gpustat -f -c 2>/dev/null || nvidia-smi --query-gpu=index,name,utilization.gpu,memory.used,memory.total --format=csv,noheader', this)"><span class="icon">🟢</span>gpustat</button>
+                                <div class="cmd-output" id="output-gpustat"></div>
+                            </div>
+                            <div class="cmd-item">
+                                <button class="cmd-btn" data-cmd="gpuinfo" onclick="runCommand('nvidia-smi --query-gpu=index,name,utilization.gpu,memory.used,memory.total,temperature.gpu --format=csv', this)"><span class="icon">🎯</span>GPU Info</button>
+                                <div class="cmd-output" id="output-gpuinfo"></div>
+                            </div>
+                            <div class="cmd-item">
+                                <button class="cmd-btn" data-cmd="df" onclick="runCommand('df -h', this)"><span class="icon">💾</span>Disk</button>
+                                <div class="cmd-output" id="output-df"></div>
+                            </div>
+                            <div class="cmd-item">
+                                <button class="cmd-btn" data-cmd="free" onclick="runCommand('free -h', this)"><span class="icon">🧠</span>Memory</button>
+                                <div class="cmd-output" id="output-free"></div>
+                            </div>
+                            <div class="cmd-item">
+                                <button class="cmd-btn" data-cmd="topmem" onclick="runCommand('ps aux --sort=-%mem | head -10', this)"><span class="icon">🔥</span>Top Mem</button>
+                                <div class="cmd-output" id="output-topmem"></div>
+                            </div>
+                            <div class="cmd-item">
+                                <button class="cmd-btn" data-cmd="nproc" onclick="runCommand('nproc', this)"><span class="icon">⚙️</span>CPU Cores</button>
+                                <div class="cmd-output" id="output-nproc"></div>
+                            </div>
+                            <div class="cmd-item">
+                                <button class="cmd-btn" data-cmd="uptime" onclick="runCommand('uptime', this)"><span class="icon">⏰</span>Uptime</button>
+                                <div class="cmd-output" id="output-uptime"></div>
+                            </div>
+                            <div class="cmd-item">
+                                <button class="cmd-btn" data-cmd="whoami" onclick="runCommand('whoami', this)"><span class="icon">👤</span>Whoami</button>
+                                <div class="cmd-output" id="output-whoami"></div>
+                            </div>
+                            <div class="cmd-item">
+                                <button class="cmd-btn" data-cmd="hostname" onclick="runCommand('hostname', this)"><span class="icon">🖥️</span>Hostname</button>
+                                <div class="cmd-output" id="output-hostname"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -719,17 +2064,445 @@
         </div>
 
         <!-- (e) Footer Status -->
-        <div style="margin-top: 20px; padding: 12px; text-align: center; font-size: 0.75rem; color: var(--text-muted);">
-            BridgeNode v1.0.0 | Server: localhost:8888 | <span id="uptime">--</span>
+        <div style="margin-top: 16px; padding: 12px; text-align: center; font-size: 0.75rem; color: var(--text-muted);">
+            <span style="background: var(--bg-tertiary); padding: 4px 10px; border-radius: 4px; margin-right: 8px;">
+                <kbd style="background: var(--bg-primary); padding: 2px 6px; border-radius: 3px; font-family: inherit; font-size: 0.7rem;">Ctrl</kbd>+<kbd style="background: var(--bg-primary); padding: 2px 6px; border-radius: 3px; font-family: inherit; font-size: 0.7rem;">Enter</kbd> Send
+            </span>
+            <span style="background: var(--bg-tertiary); padding: 4px 10px; border-radius: 4px; margin-right: 8px;">
+                <kbd style="background: var(--bg-primary); padding: 2px 6px; border-radius: 3px; font-family: inherit; font-size: 0.7rem;">Ctrl</kbd>+<kbd style="background: var(--bg-primary); padding: 2px 6px; border-radius: 3px; font-family: inherit; font-size: 0.7rem;">K</kbd> Search
+            </span>
+            <span style="background: var(--bg-tertiary); padding: 4px 10px; border-radius: 4px;">
+                <kbd style="background: var(--bg-primary); padding: 2px 6px; border-radius: 3px; font-family: inherit; font-size: 0.7rem;">Ctrl</kbd>+<kbd style="background: var(--bg-primary); padding: 2px 6px; border-radius: 3px; font-family: inherit; font-size: 0.7rem;">L</kbd> Refresh
+            </span>
+            <div style="margin-top: 8px;">
+                BridgeNode v1.0.0 | Server: localhost:8888 | <span id="uptime">--</span>
+            </div>
         </div>
     </div>
 
     <script>
         // ============================================
-        // API Connection & Status
+        // Terminal Resize Functionality
         // ============================================
-        const API_BASE = 'http://localhost:8888';
+        (function initTerminalResize() {
+            const handle = document.getElementById('terminalResizeHandle');
+            const wrapper = document.getElementById('terminalWrapper');
+            const console = document.getElementById('claudeOutputContent');
+
+            if (!handle || !wrapper || !console) return;
+
+            let isResizing = false;
+            let startY = 0;
+            let startHeight = 0;
+
+            const minHeight = 150;
+            const maxHeight = window.innerHeight * 0.7;
+
+            handle.addEventListener('mousedown', (e) => {
+                isResizing = true;
+                startY = e.clientY;
+                startHeight = console.offsetHeight;
+                handle.classList.add('dragging');
+                wrapper.classList.add('resizing');
+                document.body.style.cursor = 'ns-resize';
+                e.preventDefault();
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isResizing) return;
+
+                const delta = startY - e.clientY;
+                let newHeight = startHeight + delta;
+                newHeight = Math.max(minHeight, Math.min(maxHeight, newHeight));
+
+                console.style.height = newHeight + 'px';
+                console.style.flex = 'none';
+            });
+
+            document.addEventListener('mouseup', () => {
+                if (isResizing) {
+                    isResizing = false;
+                    handle.classList.remove('dragging');
+                    wrapper.classList.remove('resizing');
+                    document.body.style.cursor = '';
+                }
+            });
+
+            // Touch support for mobile
+            handle.addEventListener('touchstart', (e) => {
+                isResizing = true;
+                startY = e.touches[0].clientY;
+                startHeight = console.offsetHeight;
+                e.preventDefault();
+            });
+
+            document.addEventListener('touchmove', (e) => {
+                if (!isResizing) return;
+
+                const delta = startY - e.touches[0].clientY;
+                let newHeight = startHeight + delta;
+                newHeight = Math.max(minHeight, Math.min(maxHeight, newHeight));
+
+                console.style.height = newHeight + 'px';
+                console.style.flex = 'none';
+            });
+
+            document.addEventListener('touchend', () => {
+                isResizing = false;
+            });
+        })();
+
+        // ============================================
+        // Keyboard Shortcuts
+        // ============================================
+        (function initKeyboardShortcuts() {
+            document.addEventListener('keydown', (e) => {
+                // Ctrl/Cmd + Enter: Submit to Claude
+                if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                    e.preventDefault();
+                    const input = document.getElementById('claudeInput');
+                    if (input && input.value.trim()) {
+                        submitToClaude();
+                    }
+                }
+
+                // Ctrl/Cmd + L: Refresh file list
+                if ((e.ctrlKey || e.metaKey) && e.key === 'l') {
+                    e.preventDefault();
+                    if (typeof refreshFileList === 'function') {
+                        refreshFileList();
+                    }
+                }
+
+                // Ctrl/Cmd + K: Focus search
+                if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                    e.preventDefault();
+                    const searchInput = document.getElementById('inputHistorySearch');
+                    if (searchInput) {
+                        searchInput.focus();
+                    }
+                }
+
+                // Escape: Clear input
+                if (e.key === 'Escape') {
+                    const input = document.getElementById('claudeInput');
+                    if (input && document.activeElement === input) {
+                        input.blur();
+                    }
+                }
+            });
+        })();
+
+        // ============================================
+        // Axios Configuration & Progress Tracking
+        // ============================================
+        // Since we're not using axios, we'll implement progress tracking with fetch
+        // These variables track upload/download progress
+        let uploadStartTime = 0;
+        let downloadStartTime = 0;
+        let lastUploadBytes = 0;
+        let lastDownloadBytes = 0;
+
+        // ============================================
+        // Cluster Info
+        // ============================================
+        let CLUSTER_UPLOAD_DIR = '/tmp/cluster_uploads';  // Will be updated from API
+        let clusterDownloadDir = localStorage.getItem('clusterDownloadDir') || '~/downloads';
+
+        // Fetch cluster config from server
+        async function fetchClusterConfig() {
+            try {
+                const res = await fetch(`${API_BASE}/api/config`);
+                const data = await res.json();
+                if (data.CLUSTER_UPLOAD_DIR) {
+                    CLUSTER_UPLOAD_DIR = data.CLUSTER_UPLOAD_DIR;
+                    document.getElementById('clusterUploadPath').textContent = CLUSTER_UPLOAD_DIR;
+                }
+                if (data.cluster_download_dir) {
+                    clusterDownloadDir = data.cluster_download_dir;
+                }
+            } catch (err) {
+                console.error('Failed to fetch cluster config:', err);
+            }
+        }
+
+        // Initialize download directory from localStorage
+        function initDownloadDir() {
+            const savedDir = localStorage.getItem('clusterDownloadDir');
+            if (savedDir) {
+                clusterDownloadDir = savedDir;
+                document.getElementById('downloadDirSelect').value = savedDir === '~/downloads' || savedDir === '~/' || savedDir === '/tmp' ? savedDir : 'custom';
+                if (savedDir !== '~/downloads' && savedDir !== '~/' && savedDir !== '/tmp') {
+                    document.getElementById('downloadDirCustom').value = savedDir;
+                    document.getElementById('downloadDirCustom').style.display = 'block';
+                }
+            }
+            updateCurrentDownloadPath();
+        }
+
+        function onDownloadDirChange() {
+            const select = document.getElementById('downloadDirSelect');
+            const customInput = document.getElementById('downloadDirCustom');
+
+            if (select.value === 'custom') {
+                customInput.style.display = 'block';
+                customInput.focus();
+            } else {
+                customInput.style.display = 'none';
+                clusterDownloadDir = select.value;
+                localStorage.setItem('clusterDownloadDir', clusterDownloadDir);
+                updateCurrentDownloadPath();
+                showToast(`Download directory: ${clusterDownloadDir}`, 'info');
+            }
+        }
+
+        function updateCurrentDownloadPath() {
+            const customPath = document.getElementById('downloadDirCustom').value;
+            const displayDir = document.getElementById('downloadDirSelect').value === 'custom' && customPath
+                ? customPath
+                : clusterDownloadDir;
+            const expandedPath = displayDir.replace('~', '/home/pengxiang');
+            document.getElementById('currentDownloadPath').textContent = 'Current: ' + expandedPath;
+            document.getElementById('clusterDownloadDir').textContent = expandedPath;
+        }
+
+        // Upload directory management
+        let clusterUploadDir = 'current';
+
+        function initUploadDir() {
+            const savedDir = localStorage.getItem('clusterUploadDir');
+            if (savedDir) {
+                clusterUploadDir = savedDir;
+                const select = document.getElementById('uploadDirSelect');
+                if (select) {
+                    if (savedDir === 'current') {
+                        select.value = 'current';
+                    } else if (['~/downloads', '~/', '/tmp'].includes(savedDir)) {
+                        select.value = savedDir;
+                    } else {
+                        select.value = 'custom';
+                        const customInput = document.getElementById('uploadDirCustom');
+                        if (customInput) {
+                            customInput.value = savedDir;
+                            customInput.style.display = 'block';
+                        }
+                    }
+                }
+            }
+        }
+
+        function onUploadDirChange() {
+            const select = document.getElementById('uploadDirSelect');
+            const customInput = document.getElementById('uploadDirCustom');
+
+            if (select.value === 'custom') {
+                customInput.style.display = 'block';
+                customInput.focus();
+            } else {
+                customInput.style.display = 'none';
+                clusterUploadDir = select.value;
+                localStorage.setItem('clusterUploadDir', clusterUploadDir);
+                showToast(`Upload directory: ${clusterUploadDir === 'current' ? 'Current Path' : clusterUploadDir}`, 'info');
+            }
+        }
+
+        function getUploadPath() {
+            const select = document.getElementById('uploadDirSelect');
+            const customInput = document.getElementById('uploadDirCustom');
+
+            if (select.value === 'custom' && customInput.value) {
+                return customInput.value.replace('~', '/home/pengxiang');
+            } else if (select.value === 'current') {
+                return document.getElementById('filePath').value.replace('~', '/home/pengxiang');
+            } else {
+                return select.value.replace('~', '/home/pengxiang');
+            }
+        }
+
+        // Listen for custom input changes
+        document.addEventListener('DOMContentLoaded', function() {
+            initDownloadDir();
+            initUploadDir();
+            fetchClusterConfig();  // Fetch cluster config from server
+
+            const customInput = document.getElementById('downloadDirCustom');
+            if (customInput) {
+                customInput.addEventListener('input', function() {
+                    clusterDownloadDir = this.value;
+                    localStorage.setItem('clusterDownloadDir', clusterDownloadDir);
+                    updateCurrentDownloadPath();
+                });
+            }
+
+            // Add upload directory custom input listener
+            const uploadCustomInput = document.getElementById('uploadDirCustom');
+            if (uploadCustomInput) {
+                uploadCustomInput.addEventListener('input', function() {
+                    clusterUploadDir = this.value;
+                    localStorage.setItem('clusterUploadDir', clusterUploadDir);
+                });
+            }
+        });
+
+        function refreshClusterInfo() {
+            document.getElementById('clusterUploadPath').textContent = CLUSTER_UPLOAD_DIR;
+            document.getElementById('clusterCurrentPath').textContent = currentFilePath;
+            document.getElementById('clusterDownloadDir').textContent = clusterDownloadDir;
+            showToast('Cluster info refreshed');
+        }
+
+        // ============================================
+        // Progress Bar Functions
+        // ============================================
+        function showUploadProgress(filename, percent, speed, loaded, total) {
+            const container = document.getElementById('uploadProgress');
+            container.classList.add('active');
+            document.getElementById('uploadFilename').textContent = filename;
+            document.getElementById('uploadPercent').textContent = percent + '%';
+            document.getElementById('uploadProgressBar').style.width = percent + '%';
+            document.getElementById('uploadSpeed').textContent = speed + ' MB/s';
+            document.getElementById('uploadSize').textContent = formatSize(loaded) + ' / ' + formatSize(total);
+
+            if (percent >= 100) {
+                setTimeout(() => {
+                    container.classList.remove('active');
+                }, 1000);
+            }
+        }
+
+        function showDownloadProgress(filename, percent, speed, loaded, total) {
+            const container = document.getElementById('downloadProgress');
+            container.classList.add('active');
+            document.getElementById('downloadFilename').textContent = filename;
+            document.getElementById('downloadPercent').textContent = percent + '%';
+            document.getElementById('downloadProgressBar').style.width = percent + '%';
+            document.getElementById('downloadSpeed').textContent = speed + ' MB/s';
+            document.getElementById('downloadSize').textContent = formatSize(loaded) + ' / ' + formatSize(total);
+
+            if (percent >= 100) {
+                setTimeout(() => {
+                    container.classList.remove('active');
+                }, 1000);
+            }
+        }
+
+        // ============================================
+        // File Upload with Progress (using XMLHttpRequest for progress events)
+        // ============================================
+        function uploadFileWithProgress(file, destination) {
+            return new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                const formData = new FormData();
+                formData.append('chunk', file);
+
+                // Send entire file as single chunk regardless of size
+                const uploadId = 'upload_' + Date.now();
+
+                xhr.open('POST', `${API_BASE}/api/fs/upload?destination=${encodeURIComponent(destination)}&filename=${encodeURIComponent(file.name)}&upload_id=${uploadId}&chunk_index=0&total_chunks=1`);
+
+                uploadStartTime = Date.now();
+                lastUploadBytes = 0;
+
+                xhr.upload.onprogress = (e) => {
+                    if (e.lengthComputable) {
+                        const percent = Math.round((e.loaded / e.total) * 100);
+                        const elapsed = (Date.now() - uploadStartTime) / 1000;
+                        const speed = elapsed > 0 ? (e.loaded / 1024 / 1024 / elapsed).toFixed(2) : 0;
+                        showUploadProgress(file.name, percent, speed, e.loaded, e.total);
+                    }
+                };
+
+                xhr.onload = () => {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        resolve(JSON.parse(xhr.responseText));
+                    } else {
+                        reject(new Error(xhr.statusText));
+                    }
+                };
+
+                xhr.onerror = () => reject(new Error('Upload failed'));
+                xhr.send(formData);
+            });
+        }
+
+        // ============================================
+        // File Download with Progress (using XMLHttpRequest)
+        // ============================================
+        function downloadFileWithProgress(path) {
+            return new Promise((resolve, reject) => {
+                const filename = path.split('/').pop();
+                const xhr = new XMLHttpRequest();
+
+                xhr.open('GET', `${API_BASE}/api/fs/download?path=${encodeURIComponent(path)}`);
+                xhr.responseType = 'blob';
+
+                downloadStartTime = Date.now();
+                lastDownloadBytes = 0;
+
+                xhr.onprogress = (e) => {
+                    if (e.lengthComputable) {
+                        const percent = Math.round((e.loaded / e.total) * 100);
+                        const elapsed = (Date.now() - downloadStartTime) / 1000;
+                        const speed = elapsed > 0 ? (e.loaded / 1024 / 1024 / elapsed).toFixed(2) : 0;
+                        showDownloadProgress(filename, percent, speed, e.loaded, e.total);
+                    }
+                };
+
+                xhr.onload = () => {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        const blob = xhr.response;
+                        // Trigger download
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = filename;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                        resolve({ success: true, filename });
+                    } else {
+                        reject(new Error(xhr.statusText));
+                    }
+                };
+
+                xhr.onerror = () => reject(new Error('Download failed'));
+                xhr.send();
+            });
+        }
+
+        // ============================================
+        // API Connection & Status (Latency Heartbeat)
+        // ============================================
+        const API_BASE = window.location.origin;
+        var commandIds = {};
         let apiConnected = false;
+
+        function updateLatencyDisplay(latency) {
+            const latencyEl = document.getElementById('latency');
+            const oldValue = latencyEl.textContent;
+
+            // Update value
+            latencyEl.textContent = latency;
+
+            // Apply color based on latency level
+            latencyEl.classList.remove('low', 'medium', 'high');
+            if (latency < 100) {
+                latencyEl.classList.add('low');
+            } else if (latency < 500) {
+                latencyEl.classList.add('medium');
+            } else {
+                latencyEl.classList.add('high');
+            }
+
+            // Add pulse animation if value changed
+            if (oldValue !== String(latency)) {
+                latencyEl.classList.remove('latency-pulse');
+                // Force reflow to restart animation
+                void latencyEl.offsetWidth;
+                latencyEl.classList.add('latency-pulse');
+            }
+        }
 
         async function checkAPI() {
             const start = Date.now();
@@ -741,7 +2514,7 @@
                 apiConnected = true;
                 document.getElementById('apiDot').className = 'status-dot';
                 document.getElementById('apiStatus').textContent = 'Connected';
-                document.getElementById('latency').textContent = latency;
+                updateLatencyDisplay(latency);
                 document.getElementById('connections').textContent = data.connections || 0;
 
                 if (data.system) {
@@ -750,17 +2523,18 @@
                 }
 
                 console.log('API Connected ✓ - Latency:', latency + 'ms');
-                addOutput(`API Connected ✓ (${latency}ms)`, 'success');
             } catch (err) {
                 apiConnected = false;
                 document.getElementById('apiDot').className = 'status-dot error';
                 document.getElementById('apiStatus').textContent = 'Disconnected';
+                document.getElementById('latency').textContent = '--';
+                document.getElementById('latency').classList.remove('low', 'medium', 'high');
                 console.error('API Connection Failed:', err);
             }
         }
 
-        // Check API every 3 seconds
-        setInterval(checkAPI, 3000);
+        // Check API every 5 seconds (heartbeat)
+        setInterval(checkAPI, 5000);
         checkAPI();
 
         // ============================================
@@ -785,6 +2559,9 @@
             const listEl = document.getElementById('fileList');
 
             currentFilePath = path;
+            // Update cluster info panel
+            document.getElementById('clusterCurrentPath').textContent = path;
+
             setFileStatus('loading', 0);
             listEl.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--accent);">Loading...</div>';
 
@@ -796,13 +2573,28 @@
                     let html = '';
                     data.items.forEach(item => {
                         const icon = item.is_dir ? '📁' : '📄';
-                        const size = item.is_dir ? '--' : formatSize(item.size);
-                        const onclick = item.is_dir ? `navigateTo('${item.path}')` : `downloadFile('${item.path}')`;
-                        const title = item.is_dir ? 'Click to enter' : 'Click to download';
+                        const size = item.is_dir ? `${item.size} items` : formatSize(item.size);
+                        const onclick = item.is_dir ? `navigateTo('${item.path}')` : `previewFile('${item.path}')`;
+                        const title = item.is_dir ? 'Click to enter folder' : 'Click to preview file (download with button)';
+
+                        // Add action buttons
+                        let actions = '';
+                        if (item.is_dir) {
+                            actions = `<div class="file-actions">
+                                <button class="file-action-btn" onclick="event.stopPropagation(); downloadFolder('${item.path}')" title="Download as ZIP">📥 ZIP</button>
+                            </div>`;
+                        } else {
+                            actions = `<div class="file-actions">
+                                <button class="file-action-btn" onclick="event.stopPropagation(); previewFile('${item.path}')" title="Preview file">👁️</button>
+                                <button class="file-action-btn" onclick="event.stopPropagation(); downloadFile('${item.path}')" title="Download file">📥</button>
+                            </div>`;
+                        }
+
                         html += `<div class="file-item" onclick="${onclick}" title="${title}">
                             <span class="file-icon">${icon}</span>
                             <span class="file-name">${item.name}</span>
                             <span class="file-size">${size}</span>
+                            ${actions}
                         </div>`;
                     });
                     listEl.innerHTML = html;
@@ -830,9 +2622,84 @@
         }
 
         function formatSize(bytes) {
+            if (bytes === 0) return '0 B';
             if (bytes < 1024) return bytes + ' B';
             if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+            if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+            return (bytes / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
+        }
+
+        // Download folder as ZIP with progress
+        async function downloadFolder(path) {
+            const folderName = path.split('/').pop();
+
+            showToast(`Downloading folder: ${folderName}...`);
+
+            try {
+                // First get directory size for progress tracking
+                const sizeRes = await fetch(`${API_BASE}/api/remote/size?path=${encodeURIComponent(path)}`);
+                const sizeData = await sizeRes.json();
+                const totalSize = sizeData.size || 0;
+                const fileCount = sizeData.file_count || 0;
+
+                // Use streaming download endpoint
+                const xhr = new XMLHttpRequest();
+                xhr.open('GET', `${API_BASE}/api/fs/download/folder?path=${encodeURIComponent(path)}`);
+                xhr.responseType = 'blob';
+
+                downloadStartTime = Date.now();
+                lastDownloadBytes = 0;
+
+                let receivedSize = 0;
+
+                xhr.onprogress = (e) => {
+                    if (e.lengthComputable) {
+                        const percent = Math.round((e.loaded / e.total) * 100);
+                        const elapsed = (Date.now() - downloadStartTime) / 1000;
+                        const speed = elapsed > 0 ? (e.loaded / 1024 / 1024 / elapsed).toFixed(2) : 0;
+                        showDownloadProgress(folderName + '.zip', percent, speed, e.loaded, e.total);
+                    } else if (totalSize > 0) {
+                        // Estimate progress based on received data
+                        receivedSize = e.loaded;
+                        const percent = Math.min(99, Math.round((receivedSize / totalSize) * 100));
+                        const elapsed = (Date.now() - downloadStartTime) / 1000;
+                        const speed = elapsed > 0 ? (receivedSize / 1024 / 1024 / elapsed).toFixed(2) : 0;
+                        showDownloadProgress(folderName + '.zip', percent, speed + ' (est)', receivedSize, totalSize);
+                    }
+                };
+
+                xhr.onload = () => {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        const blob = xhr.response;
+                        // Trigger download
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = folderName + '.zip';
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+
+                        showToast(`✓ Downloaded: ${folderName}.zip (${fileCount} files)`);
+                        logActivity(`Downloaded folder: ${folderName} (${fileCount} files)`);
+                    } else {
+                        showToast('Download error: ' + xhr.statusText, 'error');
+                    }
+                    // Hide progress after a delay
+                    setTimeout(() => {
+                        document.getElementById('downloadProgress').classList.remove('active');
+                    }, 2000);
+                };
+
+                xhr.onerror = () => {
+                    showToast('Download error: Network failed', 'error');
+                };
+
+                xhr.send();
+            } catch (err) {
+                showToast('Download error: ' + err.message, 'error');
+            }
         }
 
         function goUpDirectory() {
@@ -850,9 +2717,59 @@
         }
 
         function previewFile(path) {
-            showToast(`Preview: ${path.split('/').pop()}`);
+            const filename = path.split('/').pop();
+            const modal = document.getElementById('previewModal');
+            const filenameEl = document.getElementById('previewFilename');
+            const infoEl = document.getElementById('previewInfo');
+            const bodyEl = document.getElementById('previewBody');
+
+            // Show modal
+            modal.classList.remove('hidden');
+            filenameEl.textContent = filename;
+            infoEl.textContent = 'Loading...';
+            bodyEl.innerHTML = '<div class="preview-loading">Loading...</div>';
+
             logActivity(`Preview: ${path}`);
+
+            // Fetch file content
+            fetch(`${API_BASE}/api/remote/read?path=${encodeURIComponent(path)}`)
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    infoEl.textContent = `${data.size} bytes`;
+                    if (data.content) {
+                        bodyEl.innerHTML = `<pre class="preview-code">${escapeHtml(data.content)}</pre>`;
+                    } else {
+                        bodyEl.innerHTML = '<div class="preview-empty">Empty file</div>';
+                    }
+                })
+                .catch(err => {
+                    bodyEl.innerHTML = `<div class="preview-error">Error: ${escapeHtml(err.message)}</div>`;
+                });
         }
+
+        function closePreviewModal() {
+            document.getElementById('previewModal').classList.add('hidden');
+        }
+
+        // Close modal on outside click
+        document.addEventListener('click', function(e) {
+            const modal = document.getElementById('previewModal');
+            if (e.target === modal) {
+                closePreviewModal();
+            }
+        });
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closePreviewModal();
+            }
+        });
 
         async function uploadFile() {
             const input = document.createElement('input');
@@ -861,27 +2778,21 @@
                 const file = e.target.files[0];
                 if (!file) return;
 
-                const currentPath = document.getElementById('filePath').value.replace('~', '/home/pengxiang');
-                const destPath = currentPath + '/' + file.name;
+                // Use selected upload directory
+                const uploadPath = getUploadPath();
+                const destPath = uploadPath + '/' + file.name;
 
-                showToast(`Uploading ${file.name}...`);
+                showToast(`Uploading ${file.name} to ${uploadPath}...`);
 
                 try {
-                    const formData = new FormData();
-                    formData.append('file', file);
-
-                    const res = await fetch(`${API_BASE}/api/remote/upload/chunk?upload_id=${Date.now()}&chunk_index=0&total_chunks=1&filename=${encodeURIComponent(file.name)}&destination=${encodeURIComponent(destPath)}`, {
-                        method: 'POST',
-                        body: formData
-                    });
-                    const data = await res.json();
-
-                    if (data.success) {
-                        showToast(`✓ Uploaded ${file.name}`);
-                        logActivity(`Uploaded: ${file.name}`);
+                    // Use progress-enabled upload
+                    await uploadFileWithProgress(file, destPath);
+                    showToast(`✓ Uploaded ${file.name}`);
+                    logActivity(`Uploaded: ${file.name}`);
+                    // Refresh file list if we're in the upload directory
+                    const currentPath = document.getElementById('filePath').value.replace('~', '/home/pengxiang');
+                    if (currentPath === uploadPath) {
                         loadFiles();
-                    } else {
-                        showToast('Upload failed');
                     }
                 } catch (err) {
                     showToast('Upload error: ' + err.message);
@@ -895,27 +2806,131 @@
             showToast(`Downloading ${filename}...`);
 
             try {
-                const res = await fetch(`${API_BASE}/api/remote/read?path=${encodeURIComponent(path)}`);
-                const data = await res.json();
-
-                if (data.content) {
-                    // Create download link
-                    const blob = new Blob([data.content], { type: 'text/plain' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = filename;
-                    a.click();
-                    URL.revokeObjectURL(url);
-                    showToast(`✓ Downloaded ${filename}`);
-                    logActivity(`Downloaded: ${filename}`);
-                } else {
-                    showToast('Cannot download: file is binary or too large');
-                }
+                // Use progress-enabled download
+                await downloadFileWithProgress(path);
+                showToast(`✓ Downloaded ${filename}`);
+                logActivity(`Downloaded: ${filename}`);
             } catch (err) {
-                showToast('Download error: ' + err.message);
+                // Fallback to regular download
+                try {
+                    const res = await fetch(`${API_BASE}/api/remote/read?path=${encodeURIComponent(path)}`);
+                    const data = await res.json();
+
+                    if (data.content) {
+                        const blob = new Blob([data.content], { type: 'text/plain' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = filename;
+                        a.click();
+                        URL.revokeObjectURL(url);
+                        showToast(`✓ Downloaded ${filename}`);
+                        logActivity(`Downloaded: ${filename}`);
+                    } else {
+                        showToast('Cannot download: file is binary or too large');
+                    }
+                } catch (fallbackErr) {
+                    showToast('Download error: ' + fallbackErr.message);
+                }
             }
         }
+
+        // ============================================
+        // Drag & Drop File Upload for Claude Input
+        // ============================================
+        let droppedFilesList = [];
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const droppedFilesContainer = document.getElementById('droppedFiles');
+
+        // Click to open file dialog
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        // Drag events
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('drag-over');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('drag-over');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+
+        function handleFiles(files) {
+            Array.from(files).forEach(file => {
+                if (!droppedFilesList.find(f => f.name === file.name)) {
+                    droppedFilesList.push(file);
+                }
+            });
+            renderDroppedFiles();
+        }
+
+        function renderDroppedFiles() {
+            droppedFilesContainer.innerHTML = droppedFilesList.map((file, index) => `
+                <div class="dropped-file">
+                    <span>${file.name}</span>
+                    <span class="remove-btn" onclick="removeDroppedFile(${index})">×</span>
+                </div>
+            `).join('');
+        }
+
+        function removeDroppedFile(index) {
+            droppedFilesList.splice(index, 1);
+            renderDroppedFiles();
+        }
+
+        // ============================================
+        // Context Cards - Persistent Storage
+        // ============================================
+        function saveContextCard(cardData) {
+            const cards = JSON.parse(localStorage.getItem('claudeContextCards') || '[]');
+            cards.unshift(cardData);
+            if (cards.length > 20) cards.pop();
+            localStorage.setItem('claudeContextCards', JSON.stringify(cards));
+        }
+
+        function loadContextCards() {
+            const cards = JSON.parse(localStorage.getItem('claudeContextCards') || '[]');
+            const container = document.getElementById('contextCards');
+            container.innerHTML = cards.map(card => createContextCardHTML(card)).join('');
+        }
+
+        function createContextCardHTML(card) {
+            const preview = card.description ? card.description.substring(0, 100) : (card.content ? card.content.substring(0, 100) : '');
+            return `
+                <div class="context-card">
+                    <div class="context-card-header">
+                        <span class="context-card-title">${escapeHtml(card.title || 'Untitled')}</span>
+                        <span class="context-card-id" onclick="copyContextId('${card.id}')" title="Click to copy">ID: ${card.id.substring(0, 8)}...</span>
+                    </div>
+                    <div class="context-card-meta">
+                        <span>${card.content_length || 0} chars</span>
+                        <span>${new Date(card.created_at).toLocaleString()}</span>
+                        ${card.pdf_extracted ? '<span>PDF</span>' : ''}
+                    </div>
+                    ${preview ? `<div class="context-card-preview">${escapeHtml(preview)}...</div>` : ''}
+                </div>
+            `;
+        }
+
+        function copyContextId(id) {
+            navigator.clipboard.writeText(id).then(() => {
+                showToast('Context ID copied!');
+            });
+        }
+
+        // Load context cards on page load
+        loadContextCards();
 
         // ============================================
         // Claude Input
@@ -948,9 +2963,11 @@
 
         async function submitToClaude() {
             const content = claudeInput.value.trim();
-            if (!content) {
-                showToast('Please enter some text');
-                showInputResponse('Please enter some text', false);
+            const hasFiles = droppedFilesList.length > 0;
+
+            if (!content && !hasFiles) {
+                showToast('Please enter some text or drop a file', 'warning');
+                showInputResponse('Please enter some text or drop a file', false);
                 return;
             }
 
@@ -958,42 +2975,95 @@
             claudeInput.classList.add('sending');
             const submitBtn = document.querySelector('.input-actions .btn-primary');
             const originalText = submitBtn.textContent;
-            submitBtn.textContent = '⏳ Sending...';
+            submitBtn.classList.add('loading');
+            submitBtn.textContent = 'Sending...';
+            submitBtn.disabled = true;
 
             // Add user input to output
             addOutput(`[User] ${content.substring(0, 100)}${content.length > 100 ? '...' : ''}`, 'user');
 
             try {
-                const res = await fetch(`${API_BASE}/api/claude/input`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ content })
-                });
-                const data = await res.json();
+                // If there are dropped files, use the context submit API
+                if (hasFiles) {
+                    // Submit each file separately, then text-only if needed
+                    for (const file of droppedFilesList) {
+                        const formData = new FormData();
+                        formData.append('description', content);
+                        formData.append('file', file);
 
-                if (data.success) {
-                    const stats = `${data.content_length} chars, ${data.line_count} lines, MD5: ${data.md5?.substring(0, 8) || 'N/A'}`;
-                    showInputResponse(`✓ Submitted! ${stats}`, true);
-                    showToast('Submitted to Claude ✓');
-                    logActivity(`Claude Input: ${data.content_length} chars submitted`);
+                        const res = await fetch(`${API_BASE}/api/context/submit`, {
+                            method: 'POST',
+                            body: formData
+                        });
+                        const data = await res.json();
+
+                        if (data.success) {
+                            const cardData = {
+                                id: data.context_id,
+                                title: data.title,
+                                description: content,
+                                content: '',
+                                content_length: data.content_length,
+                                created_at: data.created_at,
+                                pdf_extracted: data.pdf_extracted
+                            };
+                            saveContextCard(cardData);
+                        } else {
+                            showInputResponse('Error: ' + (data.error || 'Failed to submit'), false);
+                            showToast('Error: ' + (data.error || 'Failed to submit'), 'error');
+                            return;
+                        }
+                    }
+
+                    loadContextCards();
+                    showInputResponse(`✓ Submitted ${droppedFilesList.length} file(s)!`, true);
+                    showToast('Submitted to Claude ✓', 'success');
+                    logActivity(`Claude Input: ${droppedFilesList.length} file(s) submitted`);
+                    loadInputHistory();
+
+                    // Clear input and files
                     claudeInput.value = '';
+                    droppedFilesList = [];
+                    renderDroppedFiles();
                     updateInputStats();
                 } else {
-                    showInputResponse('Error: ' + (data.error || 'Failed to submit'), false);
-                    showToast('Error: ' + (data.error || 'Failed to submit'));
+                    // Regular text submission using claude/input API
+                    const res = await fetch(`${API_BASE}/api/claude/input`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ content })
+                    });
+                    const data = await res.json();
+
+                    if (data.success) {
+                        const stats = `${data.content_length} chars, ${data.line_count} lines, MD5: ${data.md5?.substring(0, 8) || 'N/A'}`;
+                        showInputResponse(`✓ Submitted! ${stats}`, true);
+                        showToast('Submitted to Claude ✓', 'success');
+                        logActivity(`Claude Input: ${data.content_length} chars submitted`);
+                        claudeInput.value = '';
+                        updateInputStats();
+                        loadInputHistory();
+                    } else {
+                        showInputResponse('Error: ' + (data.error || 'Failed to submit'), false);
+                        showToast('Error: ' + (data.error || 'Failed to submit'), 'error');
+                    }
                 }
             } catch (err) {
                 showInputResponse('Error: ' + err.message, false);
-                showToast('Error: ' + err.message);
+                showToast('Error: ' + err.message, 'error');
                 logActivity(`Claude Input Error: ${err.message}`);
             } finally {
                 claudeInput.classList.remove('sending');
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
                 submitBtn.textContent = originalText;
             }
         }
 
         function clearClaudeInput() {
             claudeInput.value = '';
+            droppedFilesList = [];
+            renderDroppedFiles();
             updateInputStats();
             inputResponse.className = 'input-response';
             inputResponse.innerHTML = '';
@@ -1001,12 +3071,391 @@
         }
 
         // ============================================
+        // Claude Input History Functions
+        // ============================================
+        let inputHistoryCache = [];
+
+        async function loadInputHistory() {
+            const panel = document.getElementById('inputHistoryPanel');
+            panel.innerHTML = '<div class="input-history-empty">Loading...</div>';
+
+            try {
+                const res = await fetch(`${API_BASE}/api/claude/input/history?limit=100`);
+                const data = await res.json();
+
+                if (data.success) {
+                    inputHistoryCache = data.inputs || [];
+                    renderInputHistory(inputHistoryCache);
+
+                    // Save to localStorage
+                    localStorage.setItem('claudeInputHistory', JSON.stringify(inputHistoryCache));
+                } else {
+                    // Try to load from localStorage
+                    const cached = localStorage.getItem('claudeInputHistory');
+                    if (cached) {
+                        inputHistoryCache = JSON.parse(cached);
+                        renderInputHistory(inputHistoryCache);
+                    } else {
+                        panel.innerHTML = '<div class="input-history-empty">No history yet</div>';
+                    }
+                }
+            } catch (err) {
+                console.error('[Input History] Load error:', err);
+                // Try to load from localStorage
+                const cached = localStorage.getItem('claudeInputHistory');
+                if (cached) {
+                    inputHistoryCache = JSON.parse(cached);
+                    renderInputHistory(inputHistoryCache);
+                } else {
+                    panel.innerHTML = '<div class="input-history-empty">Failed to load history</div>';
+                }
+            }
+        }
+
+        function renderInputHistory(inputs) {
+            const panel = document.getElementById('inputHistoryPanel');
+            const searchInput = document.getElementById('inputHistorySearch');
+            const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+            updateHistoryCount(inputs ? inputs.length : 0);
+
+            let filtered = inputs;
+            if (searchTerm) {
+                filtered = inputs.filter(item =>
+                    item.id.toLowerCase().includes(searchTerm) ||
+                    (item.summary && item.summary.toLowerCase().includes(searchTerm))
+                );
+            }
+
+            if (!filtered || filtered.length === 0) {
+                panel.innerHTML = '<div class="input-history-empty">No matching history</div>';
+                return;
+            }
+
+            panel.innerHTML = filtered.map(item => {
+                const time = formatTime(item.timestamp);
+                const shortId = item.id.substring(0, 8);
+                const summary = item.summary ? item.summary.substring(0, 60) + (item.summary.length > 60 ? '...' : '') : 'Untitled';
+
+                return `
+                    <div class="input-history-item" data-id="${item.id}" onclick="toggleInputHistoryItem(this, '${item.id}')">
+                        <div class="input-history-header">
+                            <span class="input-history-id">${shortId}</span>
+                            <span class="input-history-time">${time}</span>
+                        </div>
+                        <div class="input-history-summary">${escapeHtml(summary)}</div>
+                        <div class="input-history-meta">
+                            <span>${item.content_length} chars</span>
+                        </div>
+                        <div class="input-history-content" id="content-${item.id}">
+                            <div class="input-history-full" id="full-${item.id}">Loading...</div>
+                            <div class="input-history-actions">
+                                <button class="btn btn-secondary" onclick="event.stopPropagation(); copyInputContent('${item.id}')">📋 Copy</button>
+                                <button class="btn btn-secondary" onclick="event.stopPropagation(); useInputContent('${item.id}')">📝 Use</button>
+                                <button class="btn btn-danger" onclick="event.stopPropagation(); deleteInputHistory('${item.id}')">🗑️ Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function toggleInputHistoryItem(el, id) {
+            const wasExpanded = el.classList.contains('expanded');
+            // Close all others
+            document.querySelectorAll('.input-history-item').forEach(item => {
+                item.classList.remove('expanded');
+            });
+
+            if (!wasExpanded) {
+                el.classList.add('expanded');
+                // Load full content if not loaded
+                const contentDiv = document.getElementById(`full-${id}`);
+                if (contentDiv && contentDiv.textContent === 'Loading...') {
+                    try {
+                        const res = await fetch(`${API_BASE}/api/claude/input/${id}`);
+                        const data = await res.json();
+                        if (data.success) {
+                            contentDiv.textContent = data.input.content;
+                        } else {
+                            contentDiv.textContent = 'Failed to load content';
+                        }
+                    } catch (err) {
+                        contentDiv.textContent = 'Error: ' + err.message;
+                    }
+                }
+            }
+        }
+
+        async function copyInputContent(id) {
+            try {
+                const res = await fetch(`${API_BASE}/api/claude/input/${id}`);
+                const data = await res.json();
+                if (data.success) {
+                    await navigator.clipboard.writeText(data.input.content);
+                    showToast('Copied to clipboard!');
+                }
+            } catch (err) {
+                showToast('Failed to copy: ' + err.message);
+            }
+        }
+
+        async function useInputContent(id) {
+            try {
+                const res = await fetch(`${API_BASE}/api/claude/input/${id}`);
+                const data = await res.json();
+                if (data.success) {
+                    claudeInput.value = data.input.content;
+                    updateInputStats();
+                    showToast('Content loaded to input area');
+                    claudeInput.focus();
+                }
+            } catch (err) {
+                showToast('Failed to load: ' + err.message);
+            }
+        }
+
+        async function deleteInputHistory(id) {
+            if (!confirm('Delete this input history?')) return;
+
+            try {
+                const res = await fetch(`${API_BASE}/api/claude/input/${id}`, { method: 'DELETE' });
+                const data = await res.json();
+                if (data.success) {
+                    showToast('Deleted');
+                    loadInputHistory();
+                }
+            } catch (err) {
+                showToast('Failed to delete: ' + err.message);
+            }
+        }
+
+        function filterInputHistory() {
+            renderInputHistory(inputHistoryCache);
+        }
+
+        function toggleInputHistoryPanel() {
+            // History is always visible now, just refresh
+            loadInputHistory();
+        }
+
+        function updateHistoryCount(count) {
+            const el = document.getElementById('historyCount');
+            if (el) el.textContent = count + ' history';
+        }
+
+        function clearInputHistoryFilter() {
+            document.getElementById('inputHistorySearch').value = '';
+            renderInputHistory(inputHistoryCache);
+        }
+
+        function formatTime(isoString) {
+            if (!isoString) return '';
+            const date = new Date(isoString);
+            const now = new Date();
+            const diff = now - date;
+
+            // Less than 1 minute
+            if (diff < 60000) return 'Just now';
+            // Less than 1 hour
+            if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
+            // Less than 24 hours
+            if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
+            // More than 24 hours
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Initialize input history on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadInputHistory();
+        });
+
+        // ============================================
+        // Claude Output - SSE Streaming & Markdown Rendering
+        // ============================================
+        const claudeOutputContent = document.getElementById('claudeOutputContent');
+        let sseConnected = false;
+        let claudeOutputs = [];
+
+        // Simple Markdown parser
+        function parseMarkdown(text) {
+            if (!text) return '';
+
+            let html = text;
+
+            // Escape HTML
+            html = html.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+            // Code blocks (```code```)
+            html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+
+            // Inline code (`code`)
+            html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+            // Headers
+            html = html.replace(/^### (.*$)/gm, '<h3>$1</h3>');
+            html = html.replace(/^## (.*$)/gm, '<h2>$1</h2>');
+            html = html.replace(/^# (.*$)/gm, '<h1>$1</h1>');
+
+            // Bold
+            html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+
+            // Italic
+            html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+
+            // Lists
+            html = html.replace(/^\- (.*$)/gm, '<li>$1</li>');
+            html = html.replace(/^(\d+)\. (.*$)/gm, '<li>$2</li>');
+
+            // Paragraphs
+            html = html.replace(/\n\n/g, '</p><p>');
+            html = '<p>' + html + '</p>';
+
+            // Clean up
+            html = html.replace(/<p><\/p>/g, '');
+            html = html.replace(/<p>(<h[123]>)/g, '$1');
+            html = html.replace(/(<\/h[123]>)<\/p>/g, '$1');
+            html = html.replace(/<p>(<pre>)/g, '$1');
+            html = html.replace(/(<\/pre>)<\/p>/g, '$1');
+            html = html.replace(/<p>(<li>)/g, '$1');
+            html = html.replace(/(<\/li>)<\/p>/g, '$1');
+
+            return html;
+        }
+
+        function addClaudeOutput(data) {
+            const outputBlock = {
+                content: data.content,
+                label: data.label || 'Claude Output',
+                timestamp: data.timestamp || new Date().toISOString()
+            };
+
+            claudeOutputs.push(outputBlock);
+            if (claudeOutputs.length > 50) claudeOutputs.shift();
+
+            renderClaudeOutputs();
+            saveClaudeOutputsToStorage();
+        }
+
+        function renderClaudeOutputs() {
+            if (claudeOutputs.length === 0) {
+                claudeOutputContent.innerHTML = '<div class="output-empty">Waiting for Claude output...</div>';
+                return;
+            }
+
+            claudeOutputContent.innerHTML = claudeOutputs.map((output, index) => `
+                <div class="output-block">
+                    <div class="output-block-header">
+                        <span class="output-block-label">${escapeHtml(output.label)}</span>
+                        <button class="output-block-copy" onclick="copyClaudeOutput(${index}, this)">📋 Copy</button>
+                    </div>
+                    <div class="output-block-content">${parseMarkdown(output.content)}</div>
+                    <div class="output-block-timestamp">${new Date(output.timestamp).toLocaleString()}</div>
+                </div>
+            `).join('');
+
+            claudeOutputContent.scrollTop = claudeOutputContent.scrollHeight;
+        }
+
+        function copyClaudeOutput(index, btn) {
+            const output = claudeOutputs[index];
+            navigator.clipboard.writeText(output.content).then(() => {
+                btn.textContent = '✓ Copied!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = '📋 Copy';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        function saveClaudeOutputsToStorage() {
+            localStorage.setItem('claudeOutputsNew', JSON.stringify(claudeOutputs));
+        }
+
+        function loadClaudeOutputsFromStorage() {
+            const saved = localStorage.getItem('claudeOutputsNew');
+            if (saved) {
+                claudeOutputs = JSON.parse(saved);
+                renderClaudeOutputs();
+            }
+        }
+
+        // SSE Connection
+        let eventSource = null;
+
+        function connectSSE() {
+            if (eventSource) {
+                eventSource.close();
+            }
+
+            const sseDot = document.getElementById('sseConnectionDot');
+            const sseStatus = document.getElementById('sseConnectionStatus');
+
+            try {
+                eventSource = new EventSource(`${API_BASE}/api/stream/output`);
+
+                eventSource.onopen = () => {
+                    console.log('SSE connected');
+                    sseConnected = true;
+                    sseDot.className = 'connection-dot connected';
+                    sseStatus.textContent = 'Connected';
+                };
+
+                eventSource.onmessage = (event) => {
+                    try {
+                        const data = JSON.parse(event.data);
+
+                        if (data.type === 'connected') {
+                            console.log('SSE stream ready');
+                        } else if (data.type === 'heartbeat') {
+                            // Keepalive
+                        } else if (data.type === 'claude_output') {
+                            addClaudeOutput(data);
+                            // Also add to legacy output for compatibility
+                            addOutput(`[Claude] ${data.content.substring(0, 200)}...`, 'claude');
+                        }
+                    } catch (e) {
+                        console.error('SSE parse error:', e);
+                    }
+                };
+
+                eventSource.onerror = (err) => {
+                    console.error('SSE error:', err);
+                    sseConnected = false;
+                    sseDot.className = 'connection-dot error';
+                    sseStatus.textContent = 'Disconnected';
+
+                    // Try to reconnect after 5 seconds
+                    setTimeout(connectSSE, 5000);
+                };
+            } catch (err) {
+                console.error('SSE connection failed:', err);
+                sseDot.className = 'connection-dot error';
+                sseStatus.textContent = 'Failed';
+            }
+        }
+
+        // Load saved outputs and connect SSE
+        loadClaudeOutputsFromStorage();
+        connectSSE();
+
+        // ============================================
         // Output Monitor
         // ============================================
-        const outputConsole = document.getElementById('outputConsole');
+        const outputConsole = document.getElementById('claudeOutputContent');
         let wsConnected = false;
 
         function addOutput(text, type = 'info') {
+            if (!outputConsole) {
+                console.warn('Output console element not found');
+                return;
+            }
             const now = new Date();
             const timestamp = now.toLocaleTimeString('en-US', { hour12: false });
             const line = document.createElement('div');
@@ -1022,12 +3471,6 @@
             outputs.push({ text, type, time: Date.now() });
             if (outputs.length > 100) outputs.shift();
             localStorage.setItem('claudeOutputs', JSON.stringify(outputs));
-        }
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
         }
 
         function clearOutput() {
@@ -1070,7 +3513,7 @@
             });
         }
 
-        // Load saved outputs
+        // Load saved outputs (legacy)
         function loadSavedOutputs() {
             const outputs = JSON.parse(localStorage.getItem('claudeOutputs') || '[]');
             outputs.forEach(o => {
@@ -1085,6 +3528,122 @@
             });
         }
         loadSavedOutputs();
+
+        // =====================
+        // Clipboard History
+        // =====================
+        const MAX_CLIPBOARD_ITEMS = 20;
+        let clipboardHistory = [];
+        let clipboardMonitorEnabled = true;
+        let lastClipboardText = '';
+
+        function initClipboardHistory() {
+            const saved = localStorage.getItem('clipboardHistory');
+            if (saved) {
+                try {
+                    clipboardHistory = JSON.parse(saved);
+                } catch (e) {
+                    clipboardHistory = [];
+                }
+            }
+            renderClipboardHistory();
+            startClipboardMonitor();
+        }
+
+        function startClipboardMonitor() {
+            // Poll clipboard every 1 second
+            setInterval(async () => {
+                if (!clipboardMonitorEnabled) return;
+                try {
+                    const text = await navigator.clipboard.readText();
+                    if (text && text !== lastClipboardText && text.trim().length > 0) {
+                        lastClipboardText = text;
+                        addToClipboardHistory(text);
+                    }
+                } catch (e) {
+                    // Clipboard access denied or empty - ignore
+                }
+            }, 1000);
+        }
+
+        function addToClipboardHistory(text) {
+            const now = new Date();
+            const item = {
+                id: Date.now(),
+                text: text,
+                time: now.toISOString()
+            };
+            clipboardHistory.unshift(item);
+            if (clipboardHistory.length > MAX_CLIPBOARD_ITEMS) {
+                clipboardHistory = clipboardHistory.slice(0, MAX_CLIPBOARD_ITEMS);
+            }
+            localStorage.setItem('clipboardHistory', JSON.stringify(clipboardHistory));
+            renderClipboardHistory();
+        }
+
+        function renderClipboardHistory() {
+            const container = document.getElementById('clipboardHistory');
+            if (!container) return;
+
+            if (clipboardHistory.length === 0) {
+                container.innerHTML = '<div class="clipboard-empty">Start copying text to see history...</div>';
+                return;
+            }
+
+            container.innerHTML = clipboardHistory.map(item => {
+                const time = new Date(item.time);
+                const timeStr = time.toLocaleTimeString('en-US', { hour12: false });
+                const dateStr = time.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                const previewText = item.text.length > 150 ? item.text.substring(0, 150) + '...' : item.text;
+                return `
+                    <div class="clipboard-item" onclick="copyClipboardItem(${item.id}, this)" title="Click to copy">
+                        <div class="clipboard-text">${escapeHtml(previewText)}</div>
+                        <div class="clipboard-meta">
+                            <span>${dateStr} ${timeStr}</span>
+                            <span class="clipboard-copy-icon">📋 Click to copy</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function copyClipboardItem(id, element) {
+            const item = clipboardHistory.find(i => i.id === id);
+            if (!item) return;
+
+            navigator.clipboard.writeText(item.text).then(() => {
+                element.classList.add('copied');
+                const icon = element.querySelector('.clipboard-copy-icon');
+                if (icon) icon.textContent = '✓ Copied!';
+                lastClipboardText = item.text; // Prevent re-adding
+                showToast('Copied to clipboard ✓');
+                setTimeout(() => {
+                    element.classList.remove('copied');
+                    if (icon) icon.textContent = '📋 Click to copy';
+                }, 1500);
+            }).catch(err => {
+                showToast('Failed to copy: ' + err.message);
+            });
+        }
+
+        function clearClipboardHistory() {
+            clipboardHistory = [];
+            localStorage.removeItem('clipboardHistory');
+            renderClipboardHistory();
+            showToast('Clipboard history cleared');
+        }
+
+        function toggleClipboardMonitor() {
+            clipboardMonitorEnabled = !clipboardMonitorEnabled;
+            const btn = document.getElementById('clipboardToggleBtn');
+            if (btn) {
+                btn.textContent = clipboardMonitorEnabled ? '⏸ Pause' : '▶ Resume';
+            }
+            showToast(clipboardMonitorEnabled ? 'Clipboard monitor enabled' : 'Clipboard monitor paused');
+        }
+
+        // Initialize clipboard history
+        initClipboardHistory();
 
         // WebSocket connection for real-time Claude output
         function connectWebSocket() {
@@ -1136,45 +3695,186 @@
         // ============================================
         // Quick Commands
         // ============================================
+
+        // Store active command IDs for each button (declared early via var to avoid TDZ)
+        commandIds = {};
+
         async function runCommand(cmd, btn) {
-            const output = document.getElementById('cmdOutput');
-            output.textContent = 'Executing: ' + cmd + '\n\n...';
+            if (!btn) return;
 
-            // Show loading state on button
-            if (btn) {
-                btn.classList.add('executing');
-                const originalContent = btn.innerHTML;
-                btn.innerHTML = '<span class="icon">⏳</span>Running';
+            // Get the output element for this command
+            const cmdName = btn.getAttribute('data-cmd');
+            const outputEl = document.getElementById('output-' + cmdName);
 
-                try {
-                    const res = await fetch(`${API_BASE}/api/command`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ command: cmd })
-                    });
-                    const data = await res.json();
-                    output.textContent = data.output || data.error || 'No output';
-                    logActivity(`Command: ${cmd}`);
-                } catch (err) {
-                    output.textContent = 'Error: ' + err.message;
-                    logActivity(`Command error: ${err.message}`);
-                } finally {
-                    btn.classList.remove('executing');
-                    btn.innerHTML = originalContent;
-                }
-            } else {
-                try {
-                    const res = await fetch(`${API_BASE}/api/command`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ command: cmd })
-                    });
-                    const data = await res.json();
-                    output.textContent = data.output || data.error || 'No output';
-                } catch (err) {
-                    output.textContent = 'Error: ' + err.message;
-                }
+            // Check if already running
+            if (btn.classList.contains('executing')) {
+                return;
             }
+
+            // Generate unique command ID
+            const commandId = 'cmd_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            commandIds[cmdName] = commandId;
+
+            // Update button state to running
+            btn.classList.remove('success', 'failed', 'timeout');
+            btn.classList.add('executing');
+            const originalContent = btn.innerHTML;
+            btn.innerHTML = '<span class="state-icon">⏳</span>' + originalContent;
+
+            // Show running state in output
+            if (outputEl) {
+                outputEl.classList.remove('success', 'failed', 'timeout');
+                outputEl.innerHTML = '<span style="color: var(--warning);">Running...</span> <button class="btn-cancel" onclick="cancelCommand(\'' + commandId + '\', \'' + cmdName + '\', this)">Cancel</button>';
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/api/command`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ command: cmd, command_id: commandId })
+                });
+                const data = await res.json();
+
+                // Check if this command is still the latest one (not superseded by retry)
+                if (commandIds[cmdName] !== commandId) {
+                    return; // Ignore results of stale commands
+                }
+
+                if (data.success) {
+                    btn.classList.remove('executing');
+                    btn.classList.add('success');
+                    btn.innerHTML = '<span class="state-icon">✓</span>' + originalContent;
+
+                    if (outputEl) {
+                        outputEl.classList.add('success');
+                        outputEl.classList.remove('failed', 'timeout');
+                        outputEl.innerHTML = escapeHtml(data.result || 'Success');
+                    }
+                    logActivity(`Command: ${cmd} - Success`);
+                } else {
+                    btn.classList.remove('executing');
+                    btn.classList.add(data.state === 'timeout' ? 'timeout' : 'failed');
+                    btn.innerHTML = '<span class="state-icon">✗</span>' + originalContent;
+
+                    if (outputEl) {
+                        outputEl.classList.add(data.state === 'timeout' ? 'timeout' : 'failed');
+                        outputEl.classList.remove('success');
+                        outputEl.innerHTML = (data.error || 'Command failed') + ' <button class="btn-retry" onclick="retryCommand(\'' + cmd + '\', this)">Retry</button>';
+                    }
+                    logActivity(`Command: ${cmd} - ${data.state || 'Failed'}: ${data.error}`);
+                }
+            } catch (err) {
+                if (commandIds[cmdName] !== commandId) {
+                    return;
+                }
+
+                btn.classList.remove('executing');
+                btn.classList.add('failed');
+                btn.innerHTML = '<span class="state-icon">✗</span>' + originalContent;
+
+                if (outputEl) {
+                    outputEl.classList.add('failed');
+                    outputEl.innerHTML = 'Error: ' + escapeHtml(err.message) + ' <button class="btn-retry" onclick="retryCommand(\'' + cmd + '\', this)">Retry</button>';
+                }
+                logActivity(`Command error: ${err.message}`);
+            }
+        }
+
+        async function cancelCommand(commandId, cmdName, cancelBtn) {
+            try {
+                const res = await fetch(`${API_BASE}/api/command/${commandId}/cancel`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    const btn = document.querySelector(`.cmd-btn[data-cmd="${cmdName}"]`);
+                    if (btn) {
+                        btn.classList.remove('executing');
+                        btn.classList.add('failed');
+                        btn.innerHTML = btn.innerHTML.replace('<span class="state-icon">⏳</span>', '<span class="state-icon">✗</span>');
+                    }
+
+                    const outputEl = document.getElementById('output-' + cmdName);
+                    if (outputEl) {
+                        outputEl.classList.add('failed');
+                        outputEl.innerHTML = 'Cancelled <button class="btn-retry" onclick="retryCommand(this.getAttribute(\'data-cmd\'), this)">Retry</button>';
+                        outputEl.setAttribute('data-cmd', btn ? btn.getAttribute('data-original-cmd') || getOriginalCmd(cmdName) : getOriginalCmd(cmdName));
+                    }
+                    logActivity(`Command cancelled: ${commandId}`);
+                }
+            } catch (err) {
+                showToast('Cancel failed: ' + err.message);
+            }
+        }
+
+        async function retryCommand(cmd, element) {
+            // Find the parent command button
+            const btn = element.closest('.cmd-item').querySelector('.cmd-btn') ||
+                        document.querySelector(`.cmd-btn[data-cmd="${getCmdKey(cmd)}"]`);
+            if (btn) {
+                // Clear previous state
+                const cmdName = btn.getAttribute('data-cmd');
+                const outputEl = document.getElementById('output-' + cmdName);
+                if (outputEl) {
+                    outputEl.innerHTML = '';
+                    outputEl.classList.remove('success', 'failed', 'timeout');
+                }
+                btn.classList.remove('success', 'failed', 'timeout', 'executing');
+
+                // Run the command again
+                await runCommand(cmd, btn);
+            }
+        }
+
+        function getOriginalCmd(cmdName) {
+            const cmdMap = {
+                'htop': 'htop',
+                'btop': 'btop',
+                'top': 'top -b -n 1 | head -20',
+                'ps': 'ps aux --sort=-%cpu | head -15',
+                'nvidia-smi': 'nvidia-smi',
+                'gpustat': 'gpustat -f -c 2>/dev/null || nvidia-smi --query-gpu=index,name,utilization.gpu,memory.used,memory.total --format=csv,noheader',
+                'gpuinfo': 'nvidia-smi --query-gpu=index,name,utilization.gpu,memory.used,memory.total,temperature.gpu --format=csv',
+                'df': 'df -h',
+                'free': 'free -h',
+                'topmem': 'ps aux --sort=-%mem | head -10',
+                'nproc': 'nproc',
+                'uptime': 'uptime',
+                'whoami': 'whoami',
+                'hostname': 'hostname'
+            };
+            return cmdMap[cmdName] || cmdName;
+        }
+
+        function getCmdKey(cmd) {
+            const reverseMap = {
+                'top -b -n 1 | head -20': 'top',
+                'ps aux --sort=-%cpu | head -15': 'ps',
+                'nvidia-smi': 'nvidia-smi',
+                'gpustat -f -c 2>/dev/null || nvidia-smi --query-gpu=index,name,utilization.gpu,memory.used,memory.total --format=csv,noheader': 'gpustat',
+                'nvidia-smi --query-gpu=index,name,utilization.gpu,memory.used,memory.total,temperature.gpu --format=csv': 'gpuinfo',
+                'df -h': 'df',
+                'free -h': 'free',
+                'ps aux --sort=-%mem | head -10': 'topmem',
+                'nproc': 'nproc',
+                'uptime': 'uptime',
+                'whoami': 'whoami',
+                'hostname': 'hostname'
+            };
+            return reverseMap[cmd] || cmd;
+        }
+
+        function clearAllCommandOutputs() {
+            document.querySelectorAll('.cmd-output').forEach(el => {
+                el.innerHTML = '';
+                el.classList.remove('success', 'failed', 'timeout');
+            });
+            document.querySelectorAll('.cmd-btn').forEach(btn => {
+                btn.classList.remove('success', 'failed', 'timeout', 'executing');
+            });
+            showToast('All command outputs cleared');
         }
 
         async function checkStatus() {
@@ -1272,15 +3972,33 @@
         // ============================================
         // Utility Functions
         // ============================================
-        function showToast(msg) {
+        function showToast(msg, type = 'info') {
             const existing = document.querySelector('.toast');
             if (existing) existing.remove();
 
+            const icons = {
+                info: 'ℹ️',
+                success: '✓',
+                error: '✕',
+                warning: '⚠️'
+            };
+
             const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.textContent = msg;
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <span class="toast-icon">${icons[type] || icons.info}</span>
+                <span class="toast-message">${msg}</span>
+                <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+            `;
             document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
+
+            // Auto remove after 3 seconds
+            setTimeout(() => {
+                if (toast.parentElement) {
+                    toast.style.animation = 'slideOut 0.3s ease forwards';
+                    setTimeout(() => toast.remove(), 300);
+                }
+            }, 3000);
         }
 
         function resetLayout() {
@@ -1300,6 +4018,9 @@
         // Initial log
         console.log('BridgeNode UI Loaded ✓');
         logActivity('BridgeNode initialized');
+
+        // Initialize cluster info
+        refreshClusterInfo();
     </script>
 </body>
 </html>
