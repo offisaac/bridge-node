@@ -2250,7 +2250,7 @@
                     </div>
                     <div class="card-body" style="padding: 8px;">
                         <div style="display: flex; gap: 4px; margin-bottom: 6px;">
-                            <input type="text" id="fdSearchInput" placeholder="filename..." style="flex: 1; padding: 4px 8px; font-size: 0.75rem; border: 1px solid var(--border); border-radius: 4px;">
+                            <input type="text" id="fdSearchInput" placeholder="filename..." onkeydown="if(event.key==='Enter')runFdSearch()" style="flex: 1; padding: 4px 8px; font-size: 0.75rem; border: 1px solid var(--border); border-radius: 4px;">
                             <button class="btn btn-secondary" onclick="runFdSearch()" style="padding: 4px 8px; font-size: 0.7rem;">🔍</button>
                         </div>
                         <div id="fdSearchResults" style="max-height: 100px; overflow-y: auto; font-size: 0.7rem; color: var(--text-secondary);">
@@ -2982,10 +2982,12 @@
                         `).join('');
                     }
                 } else {
+                    console.log('fd search response:', data);
                     resultsEl.innerHTML = '<div style="color: var(--error);">Error: ' + (data.error || 'Unknown') + '</div>';
                 }
             } catch (e) {
-                resultsEl.innerHTML = '<div style="color: var(--error);">Failed to search</div>';
+                console.error('fd search error:', e);
+                resultsEl.innerHTML = '<div style="color: var(--error);">Failed to search: ' + e.message + '</div>';
             }
         }
 
