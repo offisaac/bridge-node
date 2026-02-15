@@ -49,11 +49,21 @@
       "created_at": "2026-02-15T17:26:47.883252",
       "data_file": "context_db.json",
       "pdf_extracted": true
+    },
+    {
+      "uuid": "e2b254d7-af53-4c5b-905b-d781afc59c34",
+      "title": "2008.11200v1.pdf",
+      "filename": "2008.11200v1.pdf",
+      "md5": "1bf078d62105df37772fd9c86e3da412",
+      "content_length": 85975,
+      "created_at": "2026-02-15T17:54:20.841764",
+      "data_file": "context_db.json",
+      "pdf_extracted": true
     }
   ],
   "metadata": {
     "created_at": "2026-02-15T16:04:56.298029",
-    "last_updated": "2026-02-15T17:26:47.883252",
-    "total_entries": 5
+    "last_updated": "2026-02-15T17:54:20.841764",
+    "total_entries": 6
   }
 }
