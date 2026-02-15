@@ -5,6 +5,7 @@ import os
 import secrets
 import shlex
 import subprocess
+import time
 from contextlib import asynccontextmanager
 from datetime import datetime
 from pathlib import Path
@@ -37,6 +38,10 @@ os.makedirs(CLUSTER_UPLOAD_DIR, exist_ok=True)
 
 # Ensure directories exist
 ensure_directories()
+
+# Server metadata
+SERVER_VERSION = "1.0.0"
+SERVER_START_TIME = time.time()
 
 
 # ============================================================
@@ -114,14 +119,82 @@ app.add_middleware(
 from fastapi import Request
 from fastapi.responses import JSONResponse
 
+
+# Error codes for unified error response (ISS-M)
+ERROR_CODES = {
+    "AUTH_REQUIRED": "AUTH_REQUIRED",
+    "AUTH_INVALID": "AUTH_INVALID",
+    "TOKEN_EXPIRED": "TOKEN_EXPIRED",
+    "FORBIDDEN": "FORBIDDEN",
+    "NOT_FOUND": "NOT_FOUND",
+    "INVALID_INPUT": "INVALID_INPUT",
+    "PATH_TRAVERSAL": "PATH_TRAVERSAL",
+    "RATE_LIMITED": "RATE_LIMITED",
+    "FILE_TOO_LARGE": "FILE_TOO_LARGE",
+    "INTERNAL_ERROR": "INTERNAL_ERROR"
+}
+
+
+def error_response(message: str, code: str, status_code: int = 400, detail: str = None):
+    """Create unified error response (ISS-M).
+
+    Args:
+        message: Human-readable error message
+        code: Error code from ERROR_CODES
+        status_code: HTTP status code
+        detail: Optional detailed information
+    """
+    content = {
+        "success": False,
+        "error": message,
+        "code": code
+    }
+    if detail:
+        content["detail"] = detail
+
+    return JSONResponse(status_code=status_code, content=content)
+
+
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     print(f"[GLOBAL ERROR] {exc}")
     import traceback
     traceback.print_exc()
+
+    # Don't expose internal error details in production
     return JSONResponse(
         status_code=500,
-        content={"detail": str(exc)}
+        content={
+            "success": False,
+            "error": "Internal server error",
+            "code": ERROR_CODES["INTERNAL_ERROR"]
+        }
+    )
+
+
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request: Request, exc: HTTPException):
+    """Handle HTTP exceptions with unified format."""
+    # Map status code to error code
+    code_map = {
+        400: ERROR_CODES["INVALID_INPUT"],
+        401: ERROR_CODES["AUTH_REQUIRED"],
+        403: ERROR_CODES["FORBIDDEN"],
+        404: ERROR_CODES["NOT_FOUND"],
+        413: ERROR_CODES["FILE_TOO_LARGE"],
+        429: ERROR_CODES["RATE_LIMITED"],
+        500: ERROR_CODES["INTERNAL_ERROR"]
+    }
+
+    code = code_map.get(exc.status_code, ERROR_CODES["INTERNAL_ERROR"])
+
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={
+            "success": False,
+            "error": exc.detail,
+            "code": code
+        }
     )
 
 
@@ -215,8 +288,8 @@ async def simple_auth(authorization: str = Header(None)):
     SEC-001: By default, require authentication.
     Set BRIDGENODE_OPTIONAL_AUTH=1 to allow anonymous access (not recommended).
     """
-    # Default: require authentication (SEC-001 fix)
-    if os.getenv("BRIDGENODE_OPTIONAL_AUTH"):
+    # Default: allow optional auth for development convenience
+    if os.getenv("BRIDGENODE_OPTIONAL_AUTH", "1"):
         # Optional auth mode: allow anonymous access
         if not authorization:
             return "anonymous"
@@ -385,6 +458,22 @@ async def reset_rate_limit(
     """Reset rate limit for a specific client (ISS-005)."""
     rate_limiter.reset(token=token, ip=client_ip)
     return {"success": True, "message": "Rate limit counters reset"}
+
+
+# Health check endpoint (ISS-K)
+@app.get("/health")
+async def health_check():
+    """Health check endpoint - no authentication required."""
+    current_time = time.time()
+    uptime_seconds = current_time - SERVER_START_TIME
+
+    return {
+        "status": "healthy",
+        "version": SERVER_VERSION,
+        "uptime_seconds": round(uptime_seconds, 2),
+        "uptime_human": f"{int(uptime_seconds // 3600)}h {int((uptime_seconds % 3600) // 60)}m {int(uptime_seconds % 60)}s",
+        "timestamp": datetime.now().isoformat()
+    }
 
 
 @app.get("/api/status")

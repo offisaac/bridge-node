@@ -13,3 +13,6 @@ SEC-011,全局异常处理器泄露敏感信息 - 异常详情直接返回,high,
 SEC-012,文件上传无类型验证,medium,open,2026-02-15,
 SEC-013,WebSocket无认证,medium,open,2026-02-15,
 SEC-014,Token无刷新机制,medium,open,2026-02-15,
+SEC-015,文件上传filename未验证路径遍历 - file_transfer.py line 260,low,open,2026-02-15,
+SEC-016,WebSocket连接返回403被拒绝 - server.py WebSocket认证逻辑问题,high,resolved,2026-02-15,2026-02-15
+SEC-017,速率限制未启用 - rate_limit_check未应用到任何端点,medium,resolved,2026-02-15,2026-02-15

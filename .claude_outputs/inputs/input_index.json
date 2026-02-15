@@ -1,0 +1,33 @@
+{
+  "inputs": [
+    {
+      "id": "c92025a5-02a9-496d-a5dc-3536ceddbee0",
+      "summary": "test message",
+      "content_length": 12,
+      "content_hash": "c72b9698",
+      "timestamp": "2026-02-15T01:11:40.580957"
+    },
+    {
+      "id": "d6e31cd1-ad39-4ba4-806f-cc0451465180",
+      "summary": "test input",
+      "content_length": 10,
+      "content_hash": "5eed6502",
+      "timestamp": "2026-02-15T00:59:28.362882"
+    },
+    {
+      "id": "6621905d-a23a-41d7-8348-cd0f99ed73bb",
+      "summary": "test input content",
+      "content_length": 18,
+      "content_hash": "abf3c205",
+      "timestamp": "2026-02-15T00:55:31.027679"
+    },
+    {
+      "id": "7ef4ac4d-eea5-46db-8a62-7aeaf35f4aba",
+      "summary": "test input content",
+      "content_length": 18,
+      "content_hash": "abf3c205",
+      "timestamp": "2026-02-15T00:43:12.913126"
+    }
+  ],
+  "last_updated": "2026-02-15T01:11:40.580957"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "fae528c7-324a-4ea7-8e6d-30600aaba896",
+  "content": "Test message",
+  "cleaned_content": "Test message",
+  "label": "Test",
+  "metadata": {},
+  "timestamp": "2026-02-15T02:38:31.218373",
+  "content_hash": "82dfa554",
+  "content_length": 12,
+  "has_debug_markers": false,
+  "debug_markers": [],
+  "code_blocks": [],
+  "code_block_count": 0
+}
