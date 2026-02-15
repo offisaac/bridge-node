@@ -3718,7 +3718,6 @@
                         <button class="output-block-copy" onclick="copyClaudeOutput(${index}, this)">📋 Copy</button>
                     </div>
                     <div class="output-block-content">${parseMarkdown(output.content)}</div>
-                    <div class="output-block-timestamp">${new Date(output.timestamp).toLocaleString()}</div>
                 </div>
             `).join('');
 
@@ -4042,12 +4041,12 @@
 
                 onOpen: () => {
                     wsConnected = true;
-                    addOutput('WebSocket connected ✓', 'success');
+                    // Connection status shown in right sidebar
                 },
 
                 onClose: () => {
                     wsConnected = false;
-                    addOutput('WebSocket disconnected, reconnecting...', 'error');
+                    // Connection status shown in right sidebar
                 },
 
                 onError: (error) => {
