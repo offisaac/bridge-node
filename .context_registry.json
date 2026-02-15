@@ -1,0 +1,19 @@
+{
+  "entries": [
+    {
+      "uuid": "59c8f00b-d73f-4c0e-9ea0-af484aad8f79",
+      "title": "2008.11200v1.pdf",
+      "filename": "2008.11200v1.pdf",
+      "md5": "1bf078d62105df37772fd9c86e3da412",
+      "content_length": 85975,
+      "created_at": "2026-02-15T16:04:56.275691",
+      "data_file": "context_db.json",
+      "pdf_extracted": true
+    }
+  ],
+  "metadata": {
+    "created_at": "2026-02-15T16:04:56.298029",
+    "last_updated": "2026-02-15T16:04:56.275691",
+    "total_entries": 1
+  }
+}
