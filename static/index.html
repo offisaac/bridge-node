@@ -1084,18 +1084,21 @@
 
         /* Claude Input History Panel */
         .input-history-panel {
-            max-height: 300px;
+            max-height: 250px;
             overflow-y: auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
         }
 
         .input-history-item {
-            padding: 10px 12px;
+            padding: 8px 10px;
             border-radius: var(--radius-sm);
-            margin-bottom: 8px;
             background: var(--bg-primary);
             border: 1px solid var(--border);
             cursor: pointer;
             transition: all 0.2s;
+            font-size: 0.75rem;
         }
 
         .input-history-item:hover {
@@ -1694,7 +1697,7 @@
         }
 
         .claude-output-content {
-            max-height: 150px;
+            max-height: 250px;
             overflow-y: auto;
             background: var(--bg-primary);
             padding: 8px;
@@ -2161,6 +2164,14 @@
                             <div class="cmd-item">
                                 <button class="cmd-btn" data-cmd="topmem" onclick="runCommand('ps aux --sort=-%mem | head -10', this)"><span class="icon">🔥</span>Top Mem</button>
                                 <div class="cmd-output" id="output-topmem"></div>
+                            </div>
+                            <div class="cmd-item">
+                                <button class="cmd-btn" data-cmd="btop" onclick="runCommand('btop --quiet 2>/dev/null || htop 2>/dev/null || top', this)"><span class="icon">📺</span>btop</button>
+                                <div class="cmd-output" id="output-btop"></div>
+                            </div>
+                            <div class="cmd-item">
+                                <button class="cmd-btn" data-cmd="nvtop" onclick="runCommand('nvtop 2>/dev/null || echo "nvtop not installed"', this)"><span class="icon">🎬</span>nvtop</button>
+                                <div class="cmd-output" id="output-nvtop"></div>
                             </div>
                             <div class="cmd-item">
                                 <button class="cmd-btn" data-cmd="nproc" onclick="runCommand('nproc', this)"><span class="icon">⚙️</span>CPU Cores</button>
