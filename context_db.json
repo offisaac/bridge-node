@@ -39,6 +39,16 @@
       "content_length": 48,
       "created_at": "2026-02-15T17:19:46.722650",
       "pdf_extracted": true
+    },
+    {
+      "id": "d557f4e3-c192-47e7-a48a-9e397fb4db17",
+      "title": "",
+      "description": "",
+      "filename": "pdf_to_ppt.py",
+      "content": "PDF Content:\nimport fitz  # PyMuPDF\r\nfrom pptx import Presentation\r\nfrom pptx.util import Inches\r\nimport sys\r\nimport os\r\nimport tempfile\r\n\r\ndef pdf_to_pptx(pdf_path):\r\n    # 1. 获取文件名和路径\r\n    base_name = os.path.splitext(os.path.basename(pdf_path))[0]\r\n    output_dir = os.path.dirname(os.path.abspath(pdf_path))\r\n    output_pptx = os.path.join(output_dir, f\"{base_name}.pptx\")\r\n\r\n    # 2. 初始化 PPT (16:9 比例)\r\n    prs = Presentation()\r\n    # 设置幻灯片大小为 16:9 (13.33 x 7.5 英寸)\r\n    prs.slide_width = Inches(13.33)\r\n    prs.slide_height = Inches(7.5)\r\n\r\n    # 3. 打开 PDF\r\n    pdf_doc = fitz.open(pdf_path)\r\n\r\n    print(f\"正在处理: {os.path.basename(pdf_path)}\")\r\n\r\n    # 使用临时目录存储图片\r\n    temp_dir = tempfile.mkdtemp()\r\n\r\n    for page_num in range(len(pdf_doc)):\r\n        page = pdf_doc[page_num]\r\n\r\n        # 将 PDF 页渲染为高清图片 (matrix 8.33 约等于 600 DPI，保持原始质量不压缩)\r\n        pix = page.get_pixmap(matrix=fitz.Matrix(8.33, 8.33))\r\n        img_path = os.path.join(temp_dir, f\"temp_page_{page_num}.png\")\r\n        pix.save(img_path)\r\n\r\n        # 4. 添加幻灯片 (使用空白布局)\r\n        blank_slide_layout = prs.slide_layouts[6]\r\n        slide = prs.slides.add_slide(blank_slide_layout)\r\n\r\n        # 5. 将图片插入并铺满\r\n        slide.shapes.add_picture(img_path, 0, 0, width=prs.slide_width, height=prs.slide_height)\r\n\r\n        # 删除临时图片\r\n        os.remove(img_path)\r\n        print(f\"已完成第 {page_num + 1} 页\")\r\n\r\n    # 清理临时目录\r\n    os.rmdir(temp_dir)\r\n\r\n    # 6. 保存 PPT\r\n    prs.save(output_pptx)\r\n    print(f\"成功! 文件保存在: {output_pptx}\")\r\n\r\nif __name__ == \"__main__\":\r\n    if len(sys.argv) > 1:\r\n        pdf_to_pptx(sys.argv[1])\r\n    else:\r\n        print(\"请拖入或指定 PDF 文件路径\")\r\n        input(\"按回车键退出...\")\r\n",
+      "content_length": 1654,
+      "created_at": "2026-02-15T17:26:47.883252",
+      "pdf_extracted": true
     }
   ]
 }
