@@ -4120,11 +4120,7 @@
                 heartbeatInterval: 30000,
 
                 onMessage: (data) => {
-                    if (data.type === 'claude_output') {
-                        addOutput(`[Claude] ${data.content}`, 'claude');
-                    } else if (data.type === 'claude_input') {
-                        addOutput(`[Input] ${data.content_length} chars received`, 'info');
-                    }
+                    // Claude output handled by SSE section, not here
                 },
 
                 onOpen: () => {
