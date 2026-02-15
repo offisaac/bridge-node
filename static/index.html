@@ -1711,13 +1711,15 @@
 
         .output-block {
             position: relative;
-            padding: 12px;
+            padding: 10px;
             background: var(--bg-secondary);
             border-radius: var(--radius-md);
             border-left: 3px solid var(--accent);
             display: flex;
             flex-direction: column;
-            min-height: 120px;
+            min-height: 100px;
+            max-height: 150px;
+            overflow-y: auto;
         }
 
         .output-block:last-child {
