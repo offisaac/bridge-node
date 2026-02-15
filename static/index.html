@@ -1694,13 +1694,13 @@
         }
 
         .claude-output-content {
-            max-height: 400px;
+            max-height: 150px;
             overflow-y: auto;
             background: var(--bg-primary);
-            padding: 16px;
+            padding: 8px;
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
+            gap: 6px;
         }
 
         .output-block {
@@ -1995,7 +1995,7 @@
                             <div class="input-history-search">
                                 <input type="text" id="inputHistorySearch" placeholder="Search by ID or content..." onkeyup="filterInputHistory()">
                             </div>
-                            <div class="input-history-panel" id="inputHistoryPanel" style="max-height: 200px;">
+                            <div class="input-history-panel" id="inputHistoryPanel" style="max-height: 80px;">
                                 <div class="input-history-empty">Loading history...</div>
                             </div>
                         </div>
@@ -2057,7 +2057,7 @@
                             <button class="btn btn-secondary" onclick="toggleClipboardMonitor()" id="clipboardToggleBtn">⏸ Pause</button>
                         </div>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body" style="max-height: 100px; overflow-y: auto;">
                         <div class="clipboard-history" id="clipboardHistory">
                             <div class="clipboard-empty">Start copying text to see history...</div>
                         </div>
@@ -2191,6 +2191,38 @@
                         <div id="activityLog" style="font-size: 0.75rem; color: var(--text-secondary);">
                             Activity log...
                         </div>
+                    </div>
+                </div>
+
+                <!-- (e) Connection Status - Compact -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">📡 Connection Status</span>
+                    </div>
+                    <div class="card-body" style="padding: 8px;">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                            <span class="connection-dot" id="wsConnectionDot2"></span>
+                            <span style="font-size: 0.75rem;">WebSocket</span>
+                            <span id="wsStatusText" style="font-size: 0.7rem; color: var(--text-muted);">--</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span class="connection-dot" id="sseConnectionDot2"></span>
+                            <span style="font-size: 0.75rem;">SSE</span>
+                            <span id="sseStatusText" style="font-size: 0.7rem; color: var(--text-muted);">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- (f) BridgeNode API Guide -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">🤖 BridgeNode API</span>
+                        <button class="btn btn-secondary" onclick="copyApiGuide()" style="padding: 2px 6px; font-size: 0.65rem;">📋 Copy</button>
+                    </div>
+                    <div class="card-body" style="max-height: 120px; overflow-y: auto; padding: 8px;">
+                        <pre style="font-size: 0.65rem; margin: 0; white-space: pre-wrap; color: var(--text-secondary);">curl -X POST "http://127.0.0.1:8888/api/claude/push" \
+  -H "Content-Type: application/json" \
+  -d '{"content": "your output here", "label": "Output"}'</pre>
                     </div>
                 </div>
 
@@ -3591,6 +3623,16 @@
             return div.innerHTML;
         }
 
+        // Copy API Guide function
+        function copyApiGuide() {
+            const apiCmd = `curl -X POST "http://127.0.0.1:8888/api/claude/push" \\
+  -H "Content-Type: application/json" \\
+  -d '{"content": "your output here", "label": "Output"}'`;
+            navigator.clipboard.writeText(apiCmd).then(() => {
+                alert('API command copied to clipboard!');
+            });
+        }
+
         // Initialize input history on page load
         document.addEventListener('DOMContentLoaded', () => {
             loadInputHistory();
@@ -3726,6 +3768,11 @@
                     sseConnected = true;
                     sseDot.className = 'connection-dot connected';
                     sseStatus.textContent = 'Connected';
+                    // Sync to right sidebar
+                    const sseDot2 = document.getElementById('sseConnectionDot2');
+                    const sseStatusText = document.getElementById('sseStatusText');
+                    if (sseDot2) sseDot2.className = 'connection-dot connected';
+                    if (sseStatusText) sseStatusText.textContent = '✓';
                 };
 
                 eventSource.onmessage = (event) => {
@@ -3751,6 +3798,11 @@
                     sseConnected = false;
                     sseDot.className = 'connection-dot error';
                     sseStatus.textContent = 'Disconnected';
+                    // Sync to right sidebar
+                    const sseDot2 = document.getElementById('sseConnectionDot2');
+                    const sseStatusText = document.getElementById('sseStatusText');
+                    if (sseDot2) sseDot2.className = 'connection-dot error';
+                    if (sseStatusText) sseStatusText.textContent = '✕';
 
                     // Try to reconnect after 5 seconds
                     setTimeout(connectSSE, 5000);
@@ -3759,6 +3811,8 @@
                 console.error('SSE connection failed:', err);
                 sseDot.className = 'connection-dot error';
                 sseStatus.textContent = 'Failed';
+                const sseDot2 = document.getElementById('sseConnectionDot2');
+                if (sseDot2) sseDot2.className = 'connection-dot error';
             }
         }
 
@@ -4011,25 +4065,42 @@
         function updateWsStatusUI(status, info) {
             const dot = document.getElementById('wsConnectionDot');
             const statusEl = document.getElementById('wsConnectionStatus');
+            const dot2 = document.getElementById('wsConnectionDot2');
+            const statusText2 = document.getElementById('wsStatusText');
+
             if (!dot || !statusEl) return;
 
             dot.className = 'connection-dot';
+            let statusText = 'Disconnected';
+
             if (status === 'connected') {
                 dot.classList.add('connected');
-                statusEl.textContent = 'Connected';
+                statusText = 'Connected';
+                if (dot2) dot2.className = 'connection-dot connected';
+                if (statusText2) statusText2.textContent = '✓';
             } else if (status === 'connecting') {
                 dot.classList.add('connecting');
-                statusEl.textContent = 'Connecting...';
+                statusText = 'Connecting...';
+                if (dot2) dot2.className = 'connection-dot connecting';
+                if (statusText2) statusText2.textContent = '...';
             } else if (status === 'reconnecting') {
                 dot.classList.add('reconnecting');
-                statusEl.textContent = `Reconnecting (${info.retryCount}/${info.maxRetries})...`;
+                statusText = `Reconnecting (${info.retryCount}/${info.maxRetries})...`;
+                if (dot2) dot2.className = 'connection-dot reconnecting';
+                if (statusText2) statusText2.textContent = '...';
             } else if (status === 'failed') {
                 dot.classList.add('error');
-                statusEl.textContent = 'Connection failed';
+                statusText = 'Connection failed';
+                if (dot2) dot2.className = 'connection-dot error';
+                if (statusText2) statusText2.textContent = '✕';
             } else {
                 dot.classList.add('error');
-                statusEl.textContent = 'Disconnected';
+                statusText = 'Disconnected';
+                if (dot2) dot2.className = 'connection-dot error';
+                if (statusText2) statusText2.textContent = '✕';
             }
+
+            statusEl.textContent = statusText;
         }
 
         // Try to connect WebSocket
