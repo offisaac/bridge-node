@@ -1445,6 +1445,161 @@
             display: none !important;
         }
 
+        /* Command Palette */
+        .command-palette-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 9998;
+        }
+
+        .command-palette {
+            position: fixed;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 500px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            z-index: 9999;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+
+        .command-search {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--bg-primary);
+            border: none;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-primary);
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .command-search::placeholder {
+            color: var(--text-muted);
+        }
+
+        .command-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .command-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .command-item:hover,
+        .command-item.selected {
+            background: var(--accent);
+            color: white;
+        }
+
+        .command-name {
+            font-size: 0.9rem;
+        }
+
+        .command-shortcut {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            background: var(--bg-tertiary);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .command-item:hover .command-shortcut,
+        .command-item.selected .command-shortcut {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .command-footer {
+            display: flex;
+            gap: 16px;
+            padding: 10px 16px;
+            background: var(--bg-tertiary);
+            border-top: 1px solid var(--border);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .command-footer kbd {
+            background: var(--bg-primary);
+            padding: 2px 6px;
+            border-radius: 3px;
+            margin-right: 4px;
+        }
+
+        /* Shortcuts Help Panel */
+        .shortcuts-panel {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            z-index: 9999;
+            min-width: 400px;
+            max-width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .shortcuts-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .shortcuts-panel-header h3 {
+            font-size: 1.1rem;
+            color: var(--accent);
+            margin: 0;
+        }
+
+        .shortcuts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .shortcut-group h4 {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .shortcut-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            font-size: 0.8rem;
+        }
+
+        .shortcut-row kbd {
+            background: var(--bg-tertiary);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            margin-left: 4px;
+        }
+
         .modal-content {
             background: var(--bg-secondary);
             border-radius: var(--radius-lg);
@@ -2466,6 +2621,48 @@ function generateSendPrompt() {
                     </div>
                 </div>
 
+                <!-- Command Palette Modal -->
+                <div id="commandPaletteOverlay" class="command-palette-overlay hidden" onclick="toggleCommandPalette()"></div>
+                <div id="commandPalette" class="command-palette hidden">
+                    <input type="text" id="commandSearch" class="command-search" placeholder="Type a command..." onkeyup="renderCommandList(this.value)">
+                    <div class="command-list" id="commandList"></div>
+                    <div class="command-footer">
+                        <span><kbd>↑↓</kbd> Navigate</span>
+                        <span><kbd>Enter</kbd> Execute</span>
+                        <span><kbd>Esc</kbd> Close</span>
+                    </div>
+                </div>
+
+                <!-- Shortcuts Help Modal -->
+                <div id="shortcutsOverlay" class="command-palette-overlay hidden" onclick="hideShortcutsHelp()"></div>
+                <div id="shortcutsHelpPanel" class="shortcuts-panel hidden">
+                    <div class="shortcuts-panel-header">
+                        <h3>Keyboard Shortcuts</h3>
+                        <button class="btn" onclick="hideShortcutsHelp()">✕</button>
+                    </div>
+                    <div class="shortcuts-grid">
+                        <div class="shortcut-group">
+                            <h4>Global</h4>
+                            <div class="shortcut-row"><span>Command Palette</span><kbd>Ctrl+P</kbd></div>
+                            <div class="shortcut-row"><span>Search</span><kbd>Ctrl+K</kbd></div>
+                            <div class="shortcut-row"><span>Help</span><kbd>Ctrl+/</kbd></div>
+                            <div class="shortcut-row"><span>Toggle Favorites</span><kbd>Ctrl+B</kbd></div>
+                        </div>
+                        <div class="shortcut-group">
+                            <h4>Navigation</h4>
+                            <div class="shortcut-row"><span>Go to Files</span><kbd>G</kbd><kbd>F</kbd></div>
+                            <div class="shortcut-row"><span>Go to Input</span><kbd>G</kbd><kbd>C</kbd></div>
+                            <div class="shortcut-row"><span>Go to Output</span><kbd>G</kbd><kbd>T</kbd></div>
+                        </div>
+                        <div class="shortcut-group">
+                            <h4>Actions</h4>
+                            <div class="shortcut-row"><span>Submit</span><kbd>Ctrl+Enter</kbd></div>
+                            <div class="shortcut-row"><span>Refresh Files</span><kbd>Ctrl+L</kbd></div>
+                            <div class="shortcut-row"><span>Close/Escape</span><kbd>Esc</kbd></div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- (b) Claude Input & History (merged) -->
                 <div class="card full-width">
                     <div class="card-header">
@@ -3028,6 +3225,10 @@ function generateSendPrompt() {
         // ============================================
         (function initKeyboardShortcuts() {
             document.addEventListener('keydown', (e) => {
+                // Don't trigger shortcuts when typing in input/textarea
+                const isInput = e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA';
+                const isContentEditable = e.target.isContentEditable;
+
                 // Ctrl/Cmd + Enter: Submit to Claude
                 if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
                     e.preventDefault();
@@ -3045,24 +3246,210 @@ function generateSendPrompt() {
                     }
                 }
 
-                // Ctrl/Cmd + K: Focus search
+                // Ctrl/Cmd + K: Focus search / Toggle command palette
                 if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
                     e.preventDefault();
-                    const searchInput = document.getElementById('inputHistorySearch');
-                    if (searchInput) {
-                        searchInput.focus();
+                    // If in input, blur it first
+                    if (isInput) {
+                        e.target.blur();
+                    }
+                    toggleCommandPalette();
+                }
+
+                // Ctrl/Cmd + P: Toggle command palette
+                if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+                    e.preventDefault();
+                    toggleCommandPalette();
+                }
+
+                // Ctrl/Cmd + /: Show shortcuts help
+                if ((e.ctrlKey || e.metaKey) && e.key === '/') {
+                    e.preventDefault();
+                    showShortcutsHelp();
+                }
+
+                // Ctrl/Cmd + B: Toggle sidebar/favorites
+                if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+                    e.preventDefault();
+                    toggleFavorites();
+                }
+
+                // G then F: Go to File manager
+                if (e.key === 'g' && !e.ctrlKey && !e.metaKey && !isInput && !isContentEditable) {
+                    document.addEventListener('keydown', function goToFile(e2) {
+                        if (e2.key === 'f') {
+                            document.getElementById('filePath')?.focus();
+                            document.removeEventListener('keydown', goToFile);
+                        } else if (e2.key !== 'g') {
+                            document.removeEventListener('keydown', goToFile);
+                        }
+                    }, { once: true });
+                }
+
+                // G then C: Go to Claude Input
+                if (e.key === 'g' && !e.ctrlKey && !e.metaKey && !isInput && !isContentEditable) {
+                    document.addEventListener('keydown', function goToClaude(e2) {
+                        if (e2.key === 'c') {
+                            document.getElementById('claudeInput')?.focus();
+                            document.removeEventListener('keydown', goToClaude);
+                        } else if (e2.key !== 'g') {
+                            document.removeEventListener('keydown', goToClaude);
+                        }
+                    }, { once: true });
+                }
+
+                // G then T: Go to Terminal/Output
+                if (e.key === 'g' && !e.ctrlKey && !e.metaKey && !isInput && !isContentEditable) {
+                    document.addEventListener('keydown', function goToTerminal(e2) {
+                        if (e2.key === 't') {
+                            document.getElementById('claudeOutputContent')?.focus();
+                            document.removeEventListener('keydown', goToTerminal);
+                        } else if (e2.key !== 'g') {
+                            document.removeEventListener('keydown', goToTerminal);
+                        }
+                    }, { once: true });
+                }
+
+                // Escape: Close modals / Clear input
+                if (e.key === 'Escape') {
+                    // Close command palette
+                    const palette = document.getElementById('commandPalette');
+                    if (palette && !palette.classList.contains('hidden')) {
+                        toggleCommandPalette();
+                        return;
+                    }
+
+                    // Close shortcuts help
+                    const helpPanel = document.getElementById('shortcutsHelpPanel');
+                    if (helpPanel && !helpPanel.classList.contains('hidden')) {
+                        helpPanel.classList.add('hidden');
+                        document.getElementById('shortcutsOverlay')?.classList.add('hidden');
+                        return;
+                    }
+
+                    // Blur input if focused
+                    if (isInput || isContentEditable) {
+                        e.target.blur();
                     }
                 }
 
-                // Escape: Clear input
-                if (e.key === 'Escape') {
-                    const input = document.getElementById('claudeInput');
-                    if (input && document.activeElement === input) {
-                        input.blur();
+                // Arrow up/down in favorites navigation (when not in input)
+                if (!isInput && !isContentEditable) {
+                    if (e.key === 'j' || e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        navigateFavorites(1);
+                    } else if (e.key === 'k' || e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        navigateFavorites(-1);
+                    } else if (e.key === 'Enter') {
+                        activateSelectedFavorite();
                     }
                 }
             });
         })();
+
+        // ====================
+        // Command Palette
+        // ====================
+        const COMMANDS = [
+            { id: 'refresh-files', name: 'Refresh File List', shortcut: 'Ctrl+L', action: () => refreshFileList() },
+            { id: 'new-tab', name: 'Open Terminal', shortcut: '', action: () => window.open('/terminal.html', '_blank') },
+            { id: 'toggle-theme', name: 'Toggle Theme', shortcut: '', action: () => toggleTheme() },
+            { id: 'clear-output', name: 'Clear Claude Output', shortcut: '', action: () => clearClaudeOutputCache?.() },
+            { id: 'clear-input', name: 'Clear Claude Input', shortcut: '', action: () => clearClaudeInput?.() },
+            { id: 'go-to-files', name: 'Go to File Manager', shortcut: 'G F', action: () => document.getElementById('filePath')?.focus() },
+            { id: 'go-to-input', name: 'Go to Claude Input', shortcut: 'G C', action: () => document.getElementById('claudeInput')?.focus() },
+            { id: 'go-to-output', name: 'Go to Claude Output', shortcut: 'G T', action: () => document.getElementById('claudeOutputContent')?.focus() },
+            { id: 'show-help', name: 'Show Keyboard Shortcuts', shortcut: 'Ctrl+/', action: () => showShortcutsHelp() },
+            { id: 'clear-data', name: 'Clear All Data', shortcut: '', action: () => clearAllData?.() },
+        ];
+
+        let commandPaletteSelectedIndex = 0;
+
+        function toggleCommandPalette() {
+            const palette = document.getElementById('commandPalette');
+            const overlay = document.getElementById('commandPaletteOverlay');
+
+            if (palette.classList.contains('hidden')) {
+                palette.classList.remove('hidden');
+                overlay.classList.remove('hidden');
+                document.getElementById('commandSearch').focus();
+                renderCommandList('');
+            } else {
+                palette.classList.add('hidden');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        function renderCommandList(filter) {
+            const list = document.getElementById('commandList');
+            const filtered = COMMANDS.filter(cmd =>
+                cmd.name.toLowerCase().includes(filter.toLowerCase())
+            );
+
+            list.innerHTML = filtered.map((cmd, index) => `
+                <div class="command-item ${index === commandPaletteSelectedIndex ? 'selected' : ''}"
+                     onclick="executeCommand('${cmd.id}')"
+                     data-index="${index}">
+                    <span class="command-name">${cmd.name}</span>
+                    <span class="command-shortcut">${cmd.shortcut}</span>
+                </div>
+            `).join('');
+        }
+
+        function executeCommand(id) {
+            const cmd = COMMANDS.find(c => c.id === id);
+            if (cmd) {
+                cmd.action();
+                toggleCommandPalette();
+            }
+        }
+
+        function showShortcutsHelp() {
+            const helpPanel = document.getElementById('shortcutsHelpPanel');
+            const overlay = document.getElementById('shortcutsOverlay');
+
+            if (helpPanel) {
+                helpPanel.classList.remove('hidden');
+                overlay.classList.remove('hidden');
+            }
+        }
+
+        function hideShortcutsHelp() {
+            const helpPanel = document.getElementById('shortcutsHelpPanel');
+            const overlay = document.getElementById('shortcutsOverlay');
+
+            if (helpPanel) {
+                helpPanel.classList.add('hidden');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        // Favorites navigation
+        let favoritesNavIndex = -1;
+
+        function navigateFavorites(direction) {
+            const favorites = document.querySelectorAll('.favorite-item');
+            if (favorites.length === 0) return;
+
+            favorites[favoritesNavIndex]?.classList.remove('selected');
+            favoritesNavIndex = (favoritesNavIndex + direction + favorites.length) % favorites.length;
+            favorites[favoritesNavIndex]?.classList.add('selected');
+        }
+
+        function activateSelectedFavorite() {
+            const selected = document.querySelector('.favorite-item.selected');
+            if (selected) {
+                selected.click();
+            }
+        }
+
+        function toggleFavorites() {
+            const favSection = document.querySelector('.card:has(.favorites-bar)');
+            if (favSection) {
+                favSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
 
         // ============================================
         // Axios Configuration & Progress Tracking
