@@ -6,20 +6,76 @@
     <title>BridgeNode - SSH Tunnel Web Interface</title>
     <style>
         :root {
-            --bg-primary: #0a0a0f;
-            --bg-secondary: #12121a;
-            --bg-tertiary: #1a1a25;
-            --text-primary: #e8e8f0;
-            --text-secondary: #9898a8;
-            --text-muted: #686878;
-            --accent: #8b5cf6;
+            --bg-primary: #0c0c14;
+            --bg-secondary: #14141f;
+            --bg-tertiary: #1c1c2a;
+            --text-primary: #e4e4ec;
+            --text-secondary: #9090a8;
+            --text-muted: #606078;
+            --accent: #7c3aed;
+            --accent-glow: rgba(124, 58, 237, 0.4);
             --success: #10b981;
-            --error: #ef4444;
+            --success-glow: rgba(16, 185, 129, 0.3);
+            --error: #f43f5e;
             --warning: #f59e0b;
-            --border: #2a2a3a;
+            --border: #2a2a3d;
+            --card-bg: #12121c;
             --radius-sm: 6px;
-            --radius-md: 10px;
-            --radius-lg: 16px;
+            --radius-md: 12px;
+            --radius-lg: 18px;
+        }
+
+        /* Light Mode - Blue White Gradient */
+        [data-theme="light"] {
+            --bg-primary: linear-gradient(135deg, #f0f9ff 0%, #ffffff 50%, #e0f2fe 100%);
+            --bg-secondary: rgba(255, 255, 255, 0.85);
+            --bg-tertiary: rgba(224, 242, 254, 0.6);
+            --text-primary: #1e3a5f;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --border: rgba(191, 219, 254, 0.6);
+            --accent: #0284c7;
+            --accent-glow: rgba(2, 132, 199, 0.2);
+            --card-bg: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Light mode body background */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f0f9ff 0%, #ffffff 40%, #e0f2fe 100%);
+            background-attachment: fixed;
+        }
+
+        /* Light mode cards */
+        [data-theme="light"] .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Card hover effect */
+        .card {
+            transition: all 0.3s ease;
+            border: 1px solid var(--border);
+        }
+        .card:hover {
+            border-color: var(--accent-glow);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        /* Theme Toggle Button in Header */
+        .theme-toggle-btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+        .theme-toggle-btn:hover {
+            transform: scale(1.1);
+            background: var(--accent);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -287,14 +343,15 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+            background: linear-gradient(135deg, var(--accent) 0%, #6366f1 100%);
             color: white;
-            box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+            box-shadow: 0 2px 12px var(--accent-glow);
+            border: none;
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+            box-shadow: 0 4px 20px var(--accent-glow);
         }
 
         .btn-primary:active {
@@ -303,6 +360,7 @@
 
         .btn-secondary {
             background: var(--bg-tertiary);
+            border: 1px solid var(--border);
             color: var(--text-primary);
             border: 1px solid var(--border);
         }
@@ -531,6 +589,7 @@
             color: var(--accent);
             display: flex;
             align-items: center;
+            text-shadow: 0 0 10px var(--accent-glow);
             gap: 6px;
         }
 
@@ -708,6 +767,78 @@
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.4; }
+        }
+
+        /* Favorites / Bookmarks */
+        .favorites-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .favorites-bar .btn {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+        }
+
+        .favorite-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.8rem;
+            color: var(--text-primary);
+        }
+
+        .favorite-item:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .favorite-item .remove-fav {
+            opacity: 0;
+            font-size: 0.7rem;
+            margin-left: 4px;
+        }
+
+        .favorite-item:hover .remove-fav {
+            opacity: 1;
+        }
+
+        .favorite-icon {
+            font-size: 0.9rem;
+        }
+
+        .add-favorite-form {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            padding: 10px;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-sm);
+        }
+
+        .add-favorite-form input {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 0.85rem;
+        }
+
+        .add-favorite-form input:focus {
+            outline: none;
+            border-color: var(--accent);
         }
 
         /* Claude Input */
@@ -1082,7 +1213,12 @@
         }
 
         .cmd-btn .icon {
-            font-size: 1rem;
+            font-size: 0.7rem;
+        }
+
+        .cmd-btn {
+            padding: 6px 4px;
+            font-size: 0.65rem;
         }
 
         /* Claude Input History Panel */
@@ -1127,6 +1263,13 @@
             background: rgba(139, 92, 246, 0.15);
             padding: 2px 6px;
             border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .input-history-id:hover {
+            background: var(--accent);
+            color: white;
+            transform: scale(1.05);
         }
 
         .input-history-time {
@@ -1295,6 +1438,11 @@
 
         .modal-overlay.hidden {
             display: none;
+        }
+
+        /* Utility class */
+        .hidden {
+            display: none !important;
         }
 
         .modal-content {
@@ -1488,11 +1636,11 @@
             background: var(--bg-tertiary);
             border-radius: var(--radius-md);
             border: 1px solid var(--border);
-            display: none;
+            display: block;  /* Always visible */
         }
 
-        .progress-container.active {
-            display: block;
+        .progress-container.hidden {
+            display: none;
         }
 
         .progress-header {
@@ -1610,6 +1758,9 @@
             cursor: pointer;
             color: var(--error);
             font-weight: bold;
+        }
+        .dropped-file:hover {
+            border-color: var(--accent);
         }
 
         /* Context Card */
@@ -1732,6 +1883,8 @@
             align-items: center;
             margin-bottom: 8px;
             padding-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 4px;
             border-bottom: 1px solid var(--border);
         }
 
@@ -1762,6 +1915,27 @@
             background: var(--success);
             color: white;
             border-color: var(--success);
+        }
+
+        .output-block-meta {
+            font-family: monospace;
+            font-size: 0.65rem;
+            color: var(--success);
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 3px;
+            background: rgba(16, 185, 129, 0.15);
+            margin-right: 8px;
+        }
+        .output-block-meta:hover {
+            background: var(--success);
+            color: white;
+        }
+
+        .output-block-time {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            margin-right: auto;
         }
 
         .output-block-content {
@@ -1864,9 +2038,236 @@
         }
 
         .full-width { grid-column: 1 / -1; }
-    </style>
+    
+        /* Glass Morphism */
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Neon Glow */
+        .neon-text {
+            text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 20px #8b5cf6, 0 0 30px #8b5cf6;
+        }
+        .neon-border {
+            box-shadow: 0 0 5px #8b5cf6, 0 0 10px #8b5cf6;
+        }
+
+        /* Backdrop Blur */
+        .blur-bg {
+            backdrop-filter: blur(8px);
+        }
+
+        /* Gradient Text */
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Animated Border */
+        @keyframes borderGlow {
+            0%, 100% { border-color: #8b5cf6; box-shadow: 0 0 5px #8b5cf6; }
+            50% { border-color: #f5576c; box-shadow: 0 0 10px #f5576c; }
+        }
+        .animated-border {
+            animation: borderGlow 2s ease-in-out infinite;
+        }
+
+        /* Skeleton Loading */
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .skeleton {
+            background: linear-gradient(90deg, #333 25%, #444 50%, #333 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+</style>
 </head>
 <body>
+<!-- Custom Right-Click Context Menu -->
+<div id="contextMenu" class="context-menu">
+    <!-- Dynamic section will be inserted here -->
+</div>
+
+<style>
+/* Context Menu Styles */
+.context-menu {
+    display: none;
+    position: fixed;
+    z-index: 10000;
+    min-width: 160px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    padding: 6px 0;
+    font-size: 0.85rem;
+}
+.context-menu-item {
+    padding: 8px 16px;
+    cursor: pointer;
+    color: var(--text-primary);
+    transition: background 0.15s;
+}
+.context-menu-item:hover {
+    background: var(--accent);
+    color: white;
+}
+.context-menu-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 4px 0;
+}
+</style>
+
+<script>
+function toggleTheme() {
+    const html = document.documentElement;
+    const btn = document.querySelector('.theme-toggle-btn');
+    if (html.getAttribute('data-theme') === 'light') {
+        html.setAttribute('data-theme', 'dark');
+        btn.textContent = '🌙';
+        localStorage.setItem('theme', 'dark');
+    } else {
+        html.setAttribute('data-theme', 'light');
+        btn.textContent = '☀️';
+        localStorage.setItem('theme', 'light');
+    }
+}
+(function() {
+    const saved = localStorage.getItem('theme');
+    if (saved === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+        const btn = document.querySelector('.theme-toggle-btn');
+        if (btn) btn.textContent = '☀️';
+    }
+})();
+</script>
+<script>
+// Prompt Generator functions - global scope for onclick handlers
+let currentPromptMode = 'input';
+
+function togglePromptMode(mode) {
+    currentPromptMode = mode;
+    // Update button styles - both class and inline styles
+    const btnInput = document.getElementById('btnToggleInput');
+    const btnContext = document.getElementById('btnToggleContext');
+    const btnSend = document.getElementById('btnToggleSend');
+
+    // Active style (accent background)
+    const activeStyle = "flex: 1; padding: 3px 2px; font-size: 0.55rem; background: var(--accent); color: white;";
+    // Inactive style (secondary)
+    const inactiveStyle = "flex: 1; padding: 3px 2px; font-size: 0.55rem; background: var(--secondary); color: var(--text);";
+
+    if (btnInput) {
+        btnInput.className = mode === 'input' ? 'btn' : 'btn btn-secondary';
+        btnInput.style = mode === 'input' ? activeStyle : inactiveStyle;
+    }
+    if (btnContext) {
+        btnContext.className = mode === 'context' ? 'btn' : 'btn btn-secondary';
+        btnContext.style = mode === 'context' ? activeStyle : inactiveStyle;
+    }
+    if (btnSend) {
+        btnSend.className = mode === 'send' ? 'btn' : 'btn btn-secondary';
+        btnSend.style = mode === 'send' ? activeStyle : inactiveStyle;
+    }
+
+    // Show/hide panels
+    const panelInput = document.getElementById('promptInputMode');
+    const panelContext = document.getElementById('promptContextMode');
+    const panelSend = document.getElementById('promptSendMode');
+    if (panelInput) panelInput.style.display = mode === 'input' ? 'block' : 'none';
+    if (panelContext) panelContext.style.display = mode === 'context' ? 'block' : 'none';
+    if (panelSend) panelSend.style.display = mode === 'send' ? 'block' : 'none';
+    const genPrompt = document.getElementById('generatedPrompt');
+    if (genPrompt) genPrompt.textContent = '点击生成';
+}
+
+function generateInputPrompt() {
+    const idsText = document.getElementById('inputIds');
+    if (!idsText || !idsText.value.trim()) {
+        alert('请输入 Input ID');
+        return;
+    }
+    const ids = idsText.value.trim().split(/[,，\n\s]+/).filter(id => id.trim());
+    if (ids.length === 0) return;
+
+    const promptLines = [
+        '请读取以下 BridgeNode Input ID 的内容并分析：',
+        ''
+    ];
+    ids.forEach((id, idx) => {
+        promptLines.push(`# Input ID ${idx + 1}: ${id.trim()}`);
+    });
+    promptLines.push('');
+    promptLines.push('读取方式：调用 API http://127.0.0.1:8888/api/claude/input/{id}');
+
+    const fullPrompt = promptLines.join('\n');
+    const genPrompt = document.getElementById('generatedPrompt');
+    if (genPrompt) genPrompt.textContent = fullPrompt;
+    navigator.clipboard.writeText(fullPrompt).then(() => showToast('Prompt 已复制！'));
+}
+
+function generateContextPrompt() {
+    const idsText = document.getElementById('contextIds');
+    if (!idsText || !idsText.value.trim()) {
+        alert('请输入 Context ID');
+        return;
+    }
+    const ids = idsText.value.trim().split(/[,，\n\s]+/).filter(id => id.trim());
+    if (ids.length === 0) return;
+
+    const promptLines = [
+        '请读取以下 BridgeNode Context（文件上传）的内容：',
+        ''
+    ];
+    ids.forEach((id, idx) => {
+        promptLines.push(`# Context ID ${idx + 1}: ${id.trim()}`);
+    });
+    promptLines.push('');
+    promptLines.push('读取方式：调用 API http://127.0.0.1:8888/api/context/{id}');
+
+    const fullPrompt = promptLines.join('\n');
+    const genPrompt = document.getElementById('generatedPrompt');
+    if (genPrompt) genPrompt.textContent = fullPrompt;
+    navigator.clipboard.writeText(fullPrompt).then(() => showToast('Prompt 已复制！'));
+}
+
+function generateSendPrompt() {
+    const sendContent = document.getElementById('sendContent');
+    if (!sendContent || !sendContent.value.trim()) {
+        alert('请输入内容');
+        return;
+    }
+    const content = sendContent.value.trim();
+
+    const promptLines = [
+        '请将以下内容推送到 BridgeNode：',
+        '',
+        '---',
+        content,
+        '---',
+        '',
+        '推送方式：',
+        '```bash',
+        'curl -X POST "http://127.0.0.1:8888/api/claude/push" \\',
+        '  -H "Content-Type: application/json" \\',
+        '  -d \'{"content": "' + content.replace(/"/g, '\\"') + '", "label": "Output"}\'',
+        '```'
+    ];
+
+    const fullPrompt = promptLines.join('\n');
+    const genPrompt = document.getElementById('generatedPrompt');
+    if (genPrompt) genPrompt.textContent = fullPrompt;
+    navigator.clipboard.writeText(fullPrompt).then(() => showToast('Prompt 已复制！'));
+}
+</script>
     <!-- File Preview Modal -->
     <div id="previewModal" class="modal-overlay preview-modal hidden">
         <div class="modal-content">
@@ -1889,6 +2290,7 @@
         <header>
             <h1>BridgeNode</h1>
             <div class="header-controls">
+                <button class="btn btn-secondary theme-toggle-btn" onclick="toggleTheme()" title="Toggle theme">🌙</button>
                 <button class="btn btn-secondary" onclick="window.open('/terminal.html', '_blank')">🖥️ Terminal</button>
                 <button class="btn btn-danger" onclick="clearAllData()">🗑️ 清空数据</button>
             </div>
@@ -1923,6 +2325,68 @@
 
         <!-- Main Grid -->
         <div class="main-grid">
+            <!-- Top Row: Find File + Prompt Generator -->
+            <div style="grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <!-- 🔍 Find File (fd) -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">🔍 Find File (fd)</span>
+                    </div>
+                    <div class="card-body" style="padding: 8px;">
+                        <div style="display: flex; gap: 4px; margin-bottom: 6px;">
+                            <input type="text" id="fdSearchInput" placeholder="filename..." onkeydown="if(event.key==='Enter')runFdSearch()" style="flex: 1; padding: 4px 8px; font-size: 0.75rem; border: 1px solid var(--border); border-radius: 4px; background: var(--bg-tertiary); color: var(--text-primary);">
+                            <button class="btn btn-secondary" onclick="runFdSearch()" style="padding: 4px 8px; font-size: 0.7rem;">🔍</button>
+                        </div>
+                        <div id="fdSearchResults" style="max-height: 80px; overflow-y: auto; font-size: 0.7rem; color: var(--text-secondary);">
+                            <div style="color: var(--text-muted); text-align: center;">Enter filename to search</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 🤖 BridgeNode Prompt Generator -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">🤖 BridgeNode Prompt Generator</span>
+                    </div>
+                    <div class="card-body" style="max-height: 200px; overflow-y: auto; padding: 8px;">
+                        <!-- Toggle Buttons: 3 modes -->
+                        <div style="display: flex; gap: 2px; margin-bottom: 6px;">
+                            <button class="btn" id="btnToggleInput" onclick="togglePromptMode('input')" style="flex: 1; padding: 3px 2px; font-size: 0.55rem;">📥 Input</button>
+                            <button class="btn btn-secondary" id="btnToggleContext" onclick="togglePromptMode('context')" style="flex: 1; padding: 3px 2px; font-size: 0.55rem;">📄 Context</button>
+                            <button class="btn btn-secondary" id="btnToggleSend" onclick="togglePromptMode('send')" style="flex: 1; padding: 3px 2px; font-size: 0.55rem;">📢 发送</button>
+                        </div>
+
+                        <!-- Mode 1: Read Input -->
+                        <div id="promptInputMode">
+                            <div style="display: flex; gap: 4px;">
+                                <textarea id="inputIds" placeholder="Input ID..." style="flex: 1; padding: 4px; font-size: 0.6rem; border: 1px solid var(--border); border-radius: 4px; resize: none; height: 40px; background: var(--bg-tertiary); color: var(--text-primary);"></textarea>
+                                <button class="btn btn-secondary" onclick="generateInputPrompt()" style="padding: 4px 6px; font-size: 0.6rem;">📋</button>
+                            </div>
+                        </div>
+
+                        <!-- Mode: Context -->
+                        <div id="promptContextMode" style="display: none;">
+                            <div style="display: flex; gap: 4px;">
+                                <textarea id="contextIds" placeholder="Context ID..." style="flex: 1; padding: 4px; font-size: 0.6rem; border: 1px solid var(--border); border-radius: 4px; resize: none; height: 40px; background: var(--bg-tertiary); color: var(--text-primary);"></textarea>
+                                <button class="btn btn-secondary" onclick="generateContextPrompt()" style="padding: 4px 6px; font-size: 0.6rem;">📋</button>
+                            </div>
+                        </div>
+
+                        <!-- Mode: Send -->
+                        <div id="promptSendMode" style="display: none;">
+                            <div style="display: flex; gap: 4px;">
+                                <textarea id="sendContent" placeholder="内容..." style="flex: 1; padding: 4px; font-size: 0.6rem; border: 1px solid var(--border); border-radius: 4px; resize: none; height: 40px; background: var(--bg-tertiary); color: var(--text-primary);"></textarea>
+                                <button class="btn btn-secondary" onclick="generateSendPrompt()" style="padding: 4px 6px; font-size: 0.6rem;">📋</button>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 6px;">
+                            <pre id="generatedPrompt" style="font-size: 0.5rem; margin: 0; padding: 4px; background: var(--bg-secondary); border-radius: 4px; white-space: pre-wrap; color: var(--text-secondary); max-height: 60px; overflow-y: auto;">点击生成</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Left Column -->
             <div class="left-column">
                 <!-- (a) File Manager -->
@@ -1930,6 +2394,7 @@
                     <div class="card-header">
                         <span class="card-title">📁 File Manager</span>
                         <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-secondary" onclick="toggleFavorites()" title="Favorites">⭐</button>
                             <button class="btn btn-secondary" onclick="copyCurrentPath()" title="Copy current path">📋 Path</button>
                             <button class="btn btn-secondary" onclick="uploadFile()" title="Upload file">📤 Upload</button>
                             <button class="btn btn-secondary" onclick="refreshFileList()" title="Refresh">🔄</button>
@@ -1982,6 +2447,25 @@
                     </div>
                 </div>
 
+                <!-- Favorites -->
+                <div class="card full-width">
+                    <div class="card-header">
+                        <span class="card-title">⭐ Favorites</span>
+                        <button class="btn btn-secondary" onclick="showAddFavoriteForm()" style="padding: 4px 8px; font-size: 0.7rem;">+ Add</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="favorites-bar" id="favoritesBar">
+                            <span class="favorite-empty" style="color: var(--text-muted); font-size: 0.85rem;">No favorites yet. Click "+ Add" to save frequently used paths.</span>
+                        </div>
+                        <div class="add-favorite-form hidden" id="addFavoriteForm">
+                            <input type="text" id="favoriteName" placeholder="Name (e.g., Projects)">
+                            <input type="text" id="favoritePath" placeholder="Path (e.g., ~/projects)">
+                            <button class="btn btn-primary" onclick="addFavorite()">Save</button>
+                            <button class="btn btn-secondary" onclick="hideAddFavoriteForm()">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- (b) Claude Input & History (merged) -->
                 <div class="card full-width">
                     <div class="card-header">
@@ -2004,17 +2488,25 @@
                             <div class="input-history-search">
                                 <input type="text" id="inputHistorySearch" placeholder="Search by ID or content..." onkeyup="filterInputHistory()">
                             </div>
-                            <div class="input-history-panel" id="inputHistoryPanel" style="max-height: 80px;">
+                            <div class="input-history-panel" id="inputHistoryPanel" style="max-height: 200px;">
                                 <div class="input-history-empty">Loading history...</div>
                             </div>
                         </div>
 
                         <div style="border-top: 1px solid var(--border); padding-top: 12px;">
+                            <!-- Upload Actions Bar -->
+                            <div style="display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap;">
+                                <button class="btn btn-secondary" onclick="document.getElementById('fileInput').click()" style="padding: 4px 8px; font-size: 0.7rem;">📁 单文件</button>
+                                <button class="btn btn-secondary" onclick="createPackage()" style="padding: 4px 8px; font-size: 0.7rem;">📦 创建包</button>
+                                <button class="btn btn-secondary" onclick="pasteFromClipboard()" style="padding: 4px 8px; font-size: 0.7rem;">📋 粘贴</button>
+                                <input type="file" id="packageFileInput" style="display: none;" multiple>
+                            </div>
+
                             <!-- Drop Zone -->
                             <div class="drop-zone" id="dropZone">
                                 <div class="drop-zone-icon">📎</div>
                                 <div class="drop-zone-text">Drag & drop files here or click to upload</div>
-                                <div class="drop-zone-hint">Supports PDF, TXT, MD, JSON and more</div>
+                                <div class="drop-zone-hint">Supports PDF, TXT, MD, JSON and more | Ctrl+V to paste</div>
                                 <input type="file" id="fileInput" style="display: none;" multiple accept=".pdf,.txt,.md,.json,.py,.js,.html,.css">
                             </div>
                             <div class="dropped-files" id="droppedFiles"></div>
@@ -2042,11 +2534,14 @@
                 <div class="card full-width terminal-container">
                     <div class="card-header">
                         <span class="card-title">🤖 Claude Output</span>
-                        <div class="output-connection-status">
-                            <span class="connection-dot" id="wsConnectionDot" title="WebSocket"></span>
-                            <span id="wsConnectionStatus" style="margin-right: 12px; font-size: 0.7rem;">WS: --</span>
-                            <span class="connection-dot" id="sseConnectionDot" title="SSE"></span>
-                            <span id="sseConnectionStatus">Disconnected</span>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <button class="btn btn-secondary" onclick="clearClaudeOutputCache()" title="Clear cache" style="padding: 2px 6px; font-size: 0.6rem;">🗑️ Clear</button>
+                            <div class="output-connection-status">
+                                <span class="connection-dot" id="wsConnectionDot" title="WebSocket"></span>
+                                <span id="wsConnectionStatus" style="margin-right: 12px; font-size: 0.7rem;">WS: --</span>
+                                <span class="connection-dot" id="sseConnectionDot" title="SSE"></span>
+                                <span id="sseConnectionStatus">Disconnected</span>
+                            </div>
                         </div>
                     </div>
                     <div class="terminal-output-wrapper" id="terminalWrapper">
@@ -2099,10 +2594,11 @@
                         </div>
 
                         <!-- Upload Progress -->
-                        <div class="progress-container" id="uploadProgress">
+                        <div class="progress-container hidden" id="uploadProgress">
                             <div class="progress-header">
                                 <span class="progress-filename" id="uploadFilename">uploading...</span>
                                 <span class="progress-stats" id="uploadPercent">0%</span>
+                                <button class="btn btn-secondary" onclick="cancelUpload()" style="padding: 2px 8px; font-size: 0.7rem; margin-left: 8px;">✕ Cancel</button>
                             </div>
                             <div class="progress-bar">
                                 <div class="progress-fill" id="uploadProgressBar" style="width: 0%"></div>
@@ -2114,10 +2610,11 @@
                         </div>
 
                         <!-- Download Progress -->
-                        <div class="progress-container" id="downloadProgress">
+                        <div class="progress-container hidden" id="downloadProgress">
                             <div class="progress-header">
                                 <span class="progress-filename" id="downloadFilename">downloading...</span>
                                 <span class="progress-stats" id="downloadPercent">0%</span>
+                                <button class="btn btn-secondary" onclick="cancelDownload()" style="padding: 2px 8px; font-size: 0.7rem; margin-left: 8px;">✕ Cancel</button>
                             </div>
                             <div class="progress-bar">
                                 <div class="progress-fill" id="downloadProgressBar" style="width: 0%"></div>
@@ -2171,11 +2668,11 @@
                                 <div class="cmd-output" id="output-topmem"></div>
                             </div>
                             <div class="cmd-item">
-                                <button class="cmd-btn" data-cmd="btop" onclick="runCommand('btop --quiet 2>/dev/null || htop 2>/dev/null || top', this)"><span class="icon">📺</span>btop</button>
+                                <button class="cmd-btn" data-cmd="btop" onclick="runCommand('timeout 8 sh -c \"echo === CPU Processes === && top -b -n 1 | head -12 && echo && echo === Memory === && free -h\"', this)"><span class="icon">📺</span>System</button>
                                 <div class="cmd-output" id="output-btop"></div>
                             </div>
                             <div class="cmd-item">
-                                <button class="cmd-btn" data-cmd="nvtop" onclick="runCommand('nvtop 2>/dev/null || echo "nvtop not installed"', this)"><span class="icon">🎬</span>nvtop</button>
+                                <button class="cmd-btn" data-cmd="nvtop" onclick="runCommand('nvidia-smi --query-gpu=index,name,utilization.gpu,memory.used,memory.total,temperature.gpu --format=csv,noheader', this)"><span class="icon">🎬</span>GPU</button>
                                 <div class="cmd-output" id="output-nvtop"></div>
                             </div>
                             <div class="cmd-item">
@@ -2194,6 +2691,23 @@
                                 <button class="cmd-btn" data-cmd="hostname" onclick="runCommand('hostname', this)"><span class="icon">🖥️</span>Hostname</button>
                                 <div class="cmd-output" id="output-hostname"></div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Command Output Terminal -->
+                <div class="card" style="grid-column: span 2;">
+                    <div class="card-header">
+                        <span class="card-title">💻 Command Terminal</span>
+                        <button class="btn btn-secondary" onclick="clearCommandTerminal()" style="padding: 4px 8px; font-size: 0.7rem;">Clear</button>
+                    </div>
+                    <div class="card-body" style="padding: 0; border-radius: 0 0 var(--radius-md) var(--radius-md);">
+                        <div class="terminal-output" id="commandTerminal" style="height: 450px; background: linear-gradient(180deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%); color: #00ff88; font-family: 'Fira Code', 'Consolas', monospace; font-size: 0.8rem; padding: 15px; overflow-y: auto; white-space: pre-wrap; line-height: 1.5; border: 1px solid var(--accent); box-shadow: inset 0 0 30px var(--success-glow);">
+                            <div style="color: #666; border-left: 2px solid var(--accent); padding-left: 10px;">Click a Quick Command or enter custom command below...</div>
+                        </div>
+                        <div style="display: flex; gap: 10px; padding: 12px; background: var(--bg-tertiary); border-top: 1px solid var(--border);">
+                            <input type="text" id="customCommandInput" placeholder="Enter command..." style="flex: 1; background: var(--bg-secondary); border: 1px solid var(--accent); border-radius: 8px; color: #00ff88; padding: 10px 15px; font-family: 'Fira Code', monospace; font-size: 0.85rem; outline: none; transition: all 0.3s;" onkeydown="if(event.key==='Enter')runCustomCommand()" onfocus="this.style.boxShadow='0 0 10px var(--accent-glow)'" onblur="this.style.boxShadow='none'">
+                            <button class="btn btn-primary" onclick="runCustomCommand()" style="padding: 10px 20px; background: linear-gradient(135deg, var(--accent) 0%, #764ba2 100%); border: none; border-radius: 8px; font-weight: 600;">Run</button>
                         </div>
                     </div>
                 </div>
@@ -2226,35 +2740,6 @@
                             <span class="connection-dot" id="sseConnectionDot2"></span>
                             <span style="font-size: 0.75rem;">SSE</span>
                             <span id="sseStatusText" style="font-size: 0.7rem; color: var(--text-muted);">--</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- (f) BridgeNode API Guide -->
-                <div class="card">
-                    <div class="card-header">
-                        <span class="card-title">🤖 BridgeNode API</span>
-                        <button class="btn btn-secondary" onclick="copyApiGuide()" style="padding: 2px 6px; font-size: 0.65rem;">📋 Copy</button>
-                    </div>
-                    <div class="card-body" style="max-height: 120px; overflow-y: auto; padding: 8px;">
-                        <pre style="font-size: 0.65rem; margin: 0; white-space: pre-wrap; color: var(--text-secondary);">curl -X POST "http://127.0.0.1:8888/api/claude/push" \
-  -H "Content-Type: application/json" \
-  -d '{"content": "your output here", "label": "Output"}'</pre>
-                    </div>
-                </div>
-
-                <!-- (g) File Search (fd) -->
-                <div class="card">
-                    <div class="card-header">
-                        <span class="card-title">🔍 Find File (fd)</span>
-                    </div>
-                    <div class="card-body" style="padding: 8px;">
-                        <div style="display: flex; gap: 4px; margin-bottom: 6px;">
-                            <input type="text" id="fdSearchInput" placeholder="filename..." onkeydown="if(event.key==='Enter')runFdSearch()" style="flex: 1; padding: 4px 8px; font-size: 0.75rem; border: 1px solid var(--border); border-radius: 4px;">
-                            <button class="btn btn-secondary" onclick="runFdSearch()" style="padding: 4px 8px; font-size: 0.7rem;">🔍</button>
-                        </div>
-                        <div id="fdSearchResults" style="max-height: 100px; overflow-y: auto; font-size: 0.7rem; color: var(--text-secondary);">
-                            <div style="color: var(--text-muted); text-align: center;">Enter filename to search</div>
                         </div>
                     </div>
                 </div>
@@ -2585,9 +3070,80 @@
         // Since we're not using axios, we'll implement progress tracking with fetch
         // These variables track upload/download progress
         let uploadStartTime = 0;
+        let currentUploadXHR = null;  // For cancellation
+        let currentUploadId = null;
+        let currentDownloadXHR = null;  // For download cancellation
         let downloadStartTime = 0;
         let lastUploadBytes = 0;
         let lastDownloadBytes = 0;
+
+        // ============================================
+        // Task Persistence (save state to localStorage)
+        // ============================================
+        const TASK_STORAGE_KEY = 'bridgenode_active_tasks';
+
+        function saveTaskState(type, data) {
+            try {
+                const tasks = JSON.parse(localStorage.getItem(TASK_STORAGE_KEY) || '{}');
+                tasks[type] = {
+                    ...data,
+                    timestamp: Date.now()
+                };
+                localStorage.setItem(TASK_STORAGE_KEY, JSON.stringify(tasks));
+            } catch (e) {
+                console.error('Failed to save task state:', e);
+            }
+        }
+
+        function getTaskState(type) {
+            try {
+                const tasks = JSON.parse(localStorage.getItem(TASK_STORAGE_KEY) || '{}');
+                return tasks[type] || null;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function clearTaskState(type) {
+            try {
+                const tasks = JSON.parse(localStorage.getItem(TASK_STORAGE_KEY) || '{}');
+                delete tasks[type];
+                localStorage.setItem(TASK_STORAGE_KEY, JSON.stringify(tasks));
+            } catch (e) {
+                console.error('Failed to clear task state:', e);
+            }
+        }
+
+        function restoreTasksOnLoad() {
+            // Restore upload task
+            const uploadTask = getTaskState('upload');
+            if (uploadTask) {
+                const container = document.getElementById('uploadProgress');
+                container.classList.remove('hidden');
+                document.getElementById('uploadFilename').textContent = uploadTask.filename || 'uploading...';
+                document.getElementById('uploadPercent').textContent = uploadTask.percent + '%';
+                document.getElementById('uploadProgressBar').style.width = uploadTask.percent + '%';
+                document.getElementById('uploadSpeed').textContent = uploadTask.speed || '0 MB/s';
+                document.getElementById('uploadSize').textContent = uploadTask.sizeText || '0 / 0 MB';
+                showToast('Previous upload was interrupted: ' + (uploadTask.filename || 'Unknown'), 'warning');
+            }
+
+            // Restore download task
+            const downloadTask = getTaskState('download');
+            if (downloadTask) {
+                const container = document.getElementById('downloadProgress');
+                container.classList.remove('hidden');
+                document.getElementById('downloadFilename').textContent = downloadTask.filename || 'downloading...';
+                document.getElementById('downloadPercent').textContent = downloadTask.percent + '%';
+                document.getElementById('downloadProgressBar').style.width = downloadTask.percent + '%';
+                document.getElementById('downloadSpeed').textContent = downloadTask.speed || '0 MB/s';
+                document.getElementById('downloadSize').textContent = downloadTask.sizeText || '0 / 0 MB';
+                showToast('Previous download was interrupted: ' + (downloadTask.filename || 'Unknown'), 'warning');
+            }
+        }
+
+        // Call restore on page load
+        restoreTasksOnLoad();
 
         // ============================================
         // Cluster Info
@@ -2742,32 +3298,54 @@
         // ============================================
         function showUploadProgress(filename, percent, speed, loaded, total) {
             const container = document.getElementById('uploadProgress');
-            container.classList.add('active');
+            container.classList.remove('hidden');
             document.getElementById('uploadFilename').textContent = filename;
             document.getElementById('uploadPercent').textContent = percent + '%';
             document.getElementById('uploadProgressBar').style.width = percent + '%';
             document.getElementById('uploadSpeed').textContent = speed + ' MB/s';
             document.getElementById('uploadSize').textContent = formatSize(loaded) + ' / ' + formatSize(total);
 
+            // Save task state for persistence
+            saveTaskState('upload', {
+                filename,
+                percent,
+                speed,
+                loaded,
+                total,
+                sizeText: formatSize(loaded) + ' / ' + formatSize(total)
+            });
+
             if (percent >= 100) {
                 setTimeout(() => {
-                    container.classList.remove('active');
+                    container.classList.add('hidden');
+                    clearTaskState('upload');
                 }, 1000);
             }
         }
 
         function showDownloadProgress(filename, percent, speed, loaded, total) {
             const container = document.getElementById('downloadProgress');
-            container.classList.add('active');
+            container.classList.remove('hidden');
             document.getElementById('downloadFilename').textContent = filename;
             document.getElementById('downloadPercent').textContent = percent + '%';
             document.getElementById('downloadProgressBar').style.width = percent + '%';
             document.getElementById('downloadSpeed').textContent = speed + ' MB/s';
             document.getElementById('downloadSize').textContent = formatSize(loaded) + ' / ' + formatSize(total);
 
+            // Save task state for persistence
+            saveTaskState('download', {
+                filename,
+                percent,
+                speed,
+                loaded,
+                total,
+                sizeText: formatSize(loaded) + ' / ' + formatSize(total)
+            });
+
             if (percent >= 100) {
                 setTimeout(() => {
-                    container.classList.remove('active');
+                    container.classList.add('hidden');
+                    clearTaskState('download');
                 }, 1000);
             }
         }
@@ -2782,9 +3360,10 @@
                 formData.append('chunk', file);
 
                 // Send entire file as single chunk regardless of size
-                const uploadId = 'upload_' + Date.now();
+                currentUploadId = 'upload_' + Date.now();
+                currentUploadXHR = xhr;
 
-                xhr.open('POST', `${API_BASE}/api/fs/upload?destination=${encodeURIComponent(destination)}&filename=${encodeURIComponent(file.name)}&upload_id=${uploadId}&chunk_index=0&total_chunks=1`);
+                xhr.open('POST', `${API_BASE}/api/fs/upload?destination=${encodeURIComponent(destination)}&filename=${encodeURIComponent(file.name)}&upload_id=${currentUploadId}&chunk_index=0&total_chunks=1`);
 
                 uploadStartTime = Date.now();
                 lastUploadBytes = 0;
@@ -2799,6 +3378,8 @@
                 };
 
                 xhr.onload = () => {
+                    currentUploadXHR = null;
+                    currentUploadId = null;
                     if (xhr.status >= 200 && xhr.status < 300) {
                         resolve(JSON.parse(xhr.responseText));
                     } else {
@@ -2806,9 +3387,51 @@
                     }
                 };
 
-                xhr.onerror = () => reject(new Error('Upload failed'));
+                xhr.onerror = () => {
+                    currentUploadXHR = null;
+                    currentUploadId = null;
+                    reject(new Error('Upload failed'));
+                };
+
+                xhr.onabort = () => {
+                    currentUploadXHR = null;
+                    currentUploadId = null;
+                    reject(new Error('Upload cancelled'));
+                };
+
                 xhr.send(formData);
             });
+        }
+
+        // Cancel upload function
+        function cancelUpload() {
+            if (currentUploadXHR) {
+                currentUploadXHR.abort();
+                showToast('Upload cancelled', 'warning');
+                // Hide upload progress
+                const container = document.getElementById('uploadProgress');
+                container.classList.add('hidden');
+                currentUploadXHR = null;
+                currentUploadId = null;
+                clearTaskState('upload');
+            } else {
+                showToast('No upload to cancel', 'warning');
+            }
+        }
+
+        // Cancel download function
+        function cancelDownload() {
+            if (currentDownloadXHR) {
+                currentDownloadXHR.abort();
+                showToast('Download cancelled', 'warning');
+                // Hide download progress
+                const container = document.getElementById('downloadProgress');
+                container.classList.add('hidden');
+                currentDownloadXHR = null;
+                clearTaskState('download');
+            } else {
+                showToast('No download to cancel', 'warning');
+            }
         }
 
         // ============================================
@@ -2818,6 +3441,7 @@
             return new Promise((resolve, reject) => {
                 const filename = path.split('/').pop();
                 const xhr = new XMLHttpRequest();
+                currentDownloadXHR = xhr;
 
                 xhr.open('GET', `${API_BASE}/api/fs/download?path=${encodeURIComponent(path)}`);
                 xhr.responseType = 'blob';
@@ -2835,6 +3459,7 @@
                 };
 
                 xhr.onload = () => {
+                    currentDownloadXHR = null;
                     if (xhr.status >= 200 && xhr.status < 300) {
                         const blob = xhr.response;
                         // Trigger download
@@ -2852,7 +3477,16 @@
                     }
                 };
 
-                xhr.onerror = () => reject(new Error('Download failed'));
+                xhr.onerror = () => {
+                    currentDownloadXHR = null;
+                    reject(new Error('Download failed'));
+                };
+
+                xhr.onabort = () => {
+                    currentDownloadXHR = null;
+                    reject(new Error('Download cancelled'));
+                };
+
                 xhr.send();
             });
         }
@@ -2861,6 +3495,92 @@
         // API Connection & Status (Latency Heartbeat)
         // ============================================
         const API_BASE = window.location.origin;
+
+        // Parallel download configuration
+        const PARALLEL_CHUNKS = 4; // Number of parallel download threads
+        let activeDownloads = 0;
+
+        // Parallel download function
+        async function downloadFileParallel(path) {
+            const filename = path.split('/').pop();
+            try {
+                // First, get file info
+                const res = await fetch(`${API_BASE}/api/fs/info?path=${encodeURIComponent(path)}`);
+                if (!res.ok) throw new Error('Cannot get file info');
+                const info = await res.json();
+                const fileSize = info.size || 0;
+
+                // For small files, use regular download
+                if (fileSize < 1024 * 1024) { // Less than 1MB
+                    return downloadFileWithProgress(path);
+                }
+
+                const totalChunks = PARALLEL_CHUNKS;
+                const chunkSize = Math.ceil(fileSize / totalChunks);
+
+                downloadStartTime = Date.now();
+                lastDownloadBytes = 0;
+
+                // Array to store downloaded chunks
+                const chunks = new Array(totalChunks);
+
+                // Download all chunks in parallel
+                const downloadPromises = [];
+                for (let i = 0; i < totalChunks; i++) {
+                    const promise = (async (chunkIndex) => {
+                        try {
+                            const chunkRes = await fetch(
+                                `${API_BASE}/api/fs/download/chunk?path=${encodeURIComponent(path)}&chunk=${chunkIndex}&total_chunks=${totalChunks}`
+                            );
+                            if (!chunkRes.ok) throw new Error(`Chunk ${chunkIndex} failed`);
+                            const blob = await chunkRes.blob();
+                            chunks[chunkIndex] = blob;
+
+                            // Update progress
+                            let downloaded = 0;
+                            for (let j = 0; j <= chunkIndex; j++) {
+                                if (chunks[j]) downloaded += chunks[j].size;
+                            }
+                            const percent = Math.round((downloaded / fileSize) * 100);
+                            const elapsed = (Date.now() - downloadStartTime) / 1000;
+                            const speed = elapsed > 0 ? (downloaded / 1024 / 1024 / elapsed).toFixed(2) : 0;
+                            showDownloadProgress(filename, percent, speed, downloaded, fileSize);
+                        } catch (err) {
+                            console.error(`Chunk ${chunkIndex} error:`, err);
+                            throw err;
+                        }
+                    })(i);
+                    downloadPromises.push(promise);
+                }
+
+                // Wait for all chunks
+                await Promise.all(downloadPromises);
+
+                // Merge chunks
+                const mergedBlob = new Blob(chunks, { type: 'application/octet-stream' });
+
+                // Trigger download
+                const url = URL.createObjectURL(mergedBlob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                const elapsed = (Date.now() - downloadStartTime) / 1000;
+                const speed = (fileSize / 1024 / 1024 / elapsed).toFixed(2);
+                showDownloadProgress(filename, 100, speed, fileSize, fileSize);
+
+                return true;
+            } catch (err) {
+                console.error('Parallel download error:', err);
+                // Fallback to regular download
+                return downloadFileWithProgress(path);
+            }
+        }
+
         var commandIds = {};
         let apiConnected = false;
 
@@ -2960,16 +3680,16 @@
             resultsEl.innerHTML = '<div style="color: var(--text-muted); text-align: center;">Searching...</div>';
 
             try {
-                // Use locate if available, otherwise use find in specific directories
+                // Use fd with limit, search in specific directories only
                 const res = await fetch(`${API_BASE}/api/command`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ command: `fd "${filename}" /home/pengxiang 2>/dev/null || find /home/pengxiang -maxdepth 4 -name "*${filename}*" 2>/dev/null | head -30` })
+                    body: JSON.stringify({ command: `timeout 10 fd -H -t f -L "${filename}" /home/pengxiang/bridge-node /home/pengxiang/clawbot /home/pengxiang/.claude /home/pengxiang/downloads 2>/dev/null | head -20` })
                 });
                 const data = await res.json();
 
                 if (data.success && data.result) {
-                    const stdout = data.result.stdout || '';
+                    const stdout = data.result || '';
                     const files = stdout.split('\n').filter(f => f.trim());
                     if (files.length === 0) {
                         resultsEl.innerHTML = '<div style="color: var(--text-muted); text-align: center;">No files found for "' + filename + '"</div>';
@@ -3066,6 +3786,88 @@
             showToast('File list refreshed');
         }
 
+        // ====================
+        // Favorites / Bookmarks
+        // ====================
+        const FAVORITES_KEY = 'bridge_favorites';
+
+        function getFavorites() {
+            const saved = localStorage.getItem(FAVORITES_KEY);
+            return saved ? JSON.parse(saved) : [];
+        }
+
+        function saveFavorites(favorites) {
+            localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+        }
+
+        function renderFavorites() {
+            const favorites = getFavorites();
+            const container = document.getElementById('favoritesBar');
+
+            if (!container) return;
+
+            if (favorites.length === 0) {
+                container.innerHTML = '<span class="favorite-empty" style="color: var(--text-muted); font-size: 0.85rem;">No favorites yet. Click "+ Add" to save frequently used paths.</span>';
+                return;
+            }
+
+            container.innerHTML = favorites.map((fav, index) => `
+                <div class="favorite-item" onclick="navigateToFavorite('${encodeURIComponent(fav.path)}')" title="${fav.path}">
+                    <span class="favorite-icon">${fav.icon || '📁'}</span>
+                    <span>${fav.name}</span>
+                    <span class="remove-fav" onclick="event.stopPropagation(); removeFavorite(${index})">✕</span>
+                </div>
+            `).join('');
+        }
+
+        function navigateToFavorite(path) {
+            const decodedPath = decodeURIComponent(path);
+            document.getElementById('filePath').value = decodedPath;
+            loadFiles();
+            showToast(`Navigated to: ${decodedPath}`);
+        }
+
+        function showAddFavoriteForm() {
+            document.getElementById('addFavoriteForm').classList.remove('hidden');
+            document.getElementById('favoriteName').focus();
+        }
+
+        function hideAddFavoriteForm() {
+            document.getElementById('addFavoriteForm').classList.add('hidden');
+            document.getElementById('favoriteName').value = '';
+            document.getElementById('favoritePath').value = '';
+        }
+
+        function addFavorite() {
+            const name = document.getElementById('favoriteName').value.trim();
+            const path = document.getElementById('favoritePath').value.trim();
+
+            if (!name || !path) {
+                showToast('Please enter both name and path');
+                return;
+            }
+
+            const favorites = getFavorites();
+            favorites.push({ name, path, icon: '📁' });
+            saveFavorites(favorites);
+            renderFavorites();
+            hideAddFavoriteForm();
+            showToast(`Added favorite: ${name}`);
+        }
+
+        function removeFavorite(index) {
+            const favorites = getFavorites();
+            const removed = favorites.splice(index, 1)[0];
+            saveFavorites(favorites);
+            renderFavorites();
+            showToast(`Removed: ${removed.name}`);
+        }
+
+        // Initialize favorites on load
+        document.addEventListener('DOMContentLoaded', function() {
+            renderFavorites();
+        });
+
         function formatSize(bytes) {
             if (bytes === 0) return '0 B';
             if (bytes < 1024) return bytes + ' B';
@@ -3133,7 +3935,7 @@
                     }
                     // Hide progress after a delay
                     setTimeout(() => {
-                        document.getElementById('downloadProgress').classList.remove('active');
+                        document.getElementById('downloadProgress').classList.add('hidden');
                     }, 2000);
                 };
 
@@ -3251,8 +4053,8 @@
             showToast(`Downloading ${filename}...`);
 
             try {
-                // Use progress-enabled download
-                await downloadFileWithProgress(path);
+                // Use parallel download for better speed
+                await downloadFileParallel(path);
                 showToast(`✓ Downloaded ${filename}`);
                 logActivity(`Downloaded: ${filename}`);
             } catch (err) {
@@ -3321,17 +4123,245 @@
         }
 
         function renderDroppedFiles() {
-            droppedFilesContainer.innerHTML = droppedFilesList.map((file, index) => `
-                <div class="dropped-file">
-                    <span>${file.name}</span>
+            droppedFilesContainer.innerHTML = droppedFilesList.map((file, index) => {
+                const isPackage = file.isPackage;
+                const icon = isPackage ? '📦' : '📄';
+                const label = isPackage ? `📦 包 (${file.fileCount}): ${file.originalFiles?.substring(0, 30) || ''}...` : file.name;
+                return `
+                <div class="dropped-file" style="${isPackage ? 'background: var(--accent-glow); border: 1px solid var(--accent);' : ''}" title="${isPackage ? '包含: ' + (file.originalFiles || '') : ''}">
+                    <span>${icon} ${label}</span>
                     <span class="remove-btn" onclick="removeDroppedFile(${index})">×</span>
                 </div>
-            `).join('');
+            `}).join('');
         }
 
         function removeDroppedFile(index) {
             droppedFilesList.splice(index, 1);
             renderDroppedFiles();
+        }
+
+        // ============================================
+        // Clipboard Paste & Package Upload
+        // ============================================
+
+        // Paste from clipboard (images/text)
+        async function pasteFromClipboard() {
+            try {
+                const items = await navigator.clipboard.read();
+                let pastedCount = 0;
+
+                for (const item of items) {
+                    // Check for image
+                    for (const type of item.types) {
+                        if (type.startsWith('image/')) {
+                            const blob = await item.getType(type);
+                            const file = new File([blob], `clipboard_image_${Date.now()}.png`, { type });
+                            droppedFilesList.push(file);
+                            pastedCount++;
+                        }
+                    }
+                    // Check for files
+                    if (item.types.includes('Files')) {
+                        const files = item.getAsFile();
+                        if (files) {
+                            droppedFilesList.push(files);
+                            pastedCount++;
+                        }
+                    }
+                }
+
+                if (pastedCount > 0) {
+                    renderDroppedFiles();
+                    showToast(`已粘贴 ${pastedCount} 个文件/图片`, 'success');
+                } else {
+                    // Try text paste
+                    const text = await navigator.clipboard.readText();
+                    if (text) {
+                        // Add text to input
+                        const input = document.getElementById('claudeInput');
+                        input.value = (input.value ? input.value + '\n' : '') + text;
+                        updateInputStats();
+                        showToast('已粘贴文本到输入框', 'success');
+                    } else {
+                        showToast('剪贴板为空', 'warning');
+                    }
+                }
+            } catch (err) {
+                console.error('Paste error:', err);
+                showToast('无法读取剪贴板: ' + err.message, 'error');
+            }
+        }
+
+        // Handle Ctrl+V for direct paste
+        const claudeInputArea = document.getElementById('claudeInput');
+        if (claudeInputArea) {
+            claudeInputArea.addEventListener('paste', async (e) => {
+                const items = e.clipboardData.items;
+                let hasFiles = false;
+
+                for (const item of items) {
+                    if (item.type.startsWith('image/')) {
+                        e.preventDefault();
+                        const blob = item.getAsFile();
+                        const file = new File([blob], `pasted_image_${Date.now()}.png`, { type: item.type });
+                        droppedFilesList.push(file);
+                        renderDroppedFiles();
+                        hasFiles = true;
+                        showToast('图片已添加', 'success');
+                    }
+                }
+
+                // If text, let it paste normally
+            });
+        }
+
+        // Create package from multiple files (supports any file type: text, images, pdf, ppt, tex, etc.)
+        async function createPackage() {
+            const packageInput = document.getElementById('packageFileInput');
+            packageInput.onchange = async (e) => {
+                const files = Array.from(e.target.files);
+                if (files.length === 0) return;
+
+                if (files.length === 1) {
+                    // Single file - add directly
+                    droppedFilesList.push(files[0]);
+                    renderDroppedFiles();
+                    showToast('文件已添加', 'success');
+                    return;
+                }
+
+                // Multiple files - create package
+                showToast(`正在创建文件包 (${files.length} 个文件)...`, 'info');
+
+                try {
+                    // Create a package with base64 encoding for binary files
+                    const packageData = {
+                        name: `package_${Date.now()}`,
+                        created_at: new Date().toISOString(),
+                        description: `文件包包含 ${files.length} 个文件`,
+                        files: []
+                    };
+
+                    // Helper function to check if file should be treated as binary
+                    const isBinaryFile = (file) => {
+                        const filename = file.name.toLowerCase();
+                        const mimeType = file.type.toLowerCase();
+
+                        // Binary file extensions
+                        const binaryExtensions = [
+                            // Images
+                            '.png', '.jpg', '.jpeg', '.gif', '.bmp', '.webp', '.svg', '.ico', '.tiff',
+                            // Documents
+                            '.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.odt', '.ods', '.odp',
+                            // Archives
+                            '.zip', '.rar', '.7z', '.tar', '.gz', '.bz2',
+                            // Audio/Video
+                            '.mp3', '.wav', '.ogg', '.mp4', '.avi', '.mov', '.mkv', '.webm',
+                            // Executables
+                            '.exe', '.dll', '.so', '.dylib',
+                            // Fonts
+                            '.ttf', '.otf', '.woff', '.woff2', '.eot',
+                            // Other
+                            '.bin', '.dat'
+                        ];
+
+                        // Text file extensions
+                        const textExtensions = [
+                            '.txt', '.md', '.json', '.xml', '.csv', '.yaml', '.yml', '.toml',
+                            '.html', '.htm', '.css', '.js', '.ts', '.jsx', '.tsx',
+                            '.py', '.java', '.c', '.cpp', '.h', '.hpp', '.go', '.rs', '.swift', '.kt',
+                            '.sh', '.bash', '.zsh', '.ps1', '.bat', '.cmd',
+                            '.sql', '.r', '.scala', '.php', '.rb', '.pl', '.lua',
+                            '.tex', '.latex', '.bib', '.log', '.ini', '.conf', '.cfg'
+                        ];
+
+                        // Check extension first
+                        for (const ext of binaryExtensions) {
+                            if (filename.endsWith(ext)) return true;
+                        }
+                        for (const ext of textExtensions) {
+                            if (filename.endsWith(ext)) return false;
+                        }
+
+                        // Check MIME type for images and other binary types
+                        if (mimeType.startsWith('image/')) return true;
+                        if (mimeType === 'application/pdf') return true;
+                        if (mimeType.includes('presentation') || mimeType.includes('spreadsheet')) return true;
+                        if (mimeType.includes('word') || mimeType.includes('document')) return true;
+                        if (mimeType.includes('zip') || mimeType.includes('archive')) return true;
+                        if (mimeType.includes('audio') || mimeType.includes('video')) return true;
+
+                        // Default to text (unknown types treated as text)
+                        return false;
+                    };
+
+                    // Read each file and convert to base64 if binary
+                    for (const file of files) {
+                        let fileData;
+
+                        if (isBinaryFile(file)) {
+                            // Binary file - use base64
+                            const arrayBuffer = await file.arrayBuffer();
+                            // Handle large files more safely
+                            const bytes = new Uint8Array(arrayBuffer);
+                            let binary = '';
+                            for (let i = 0; i < bytes.length; i += 8192) {
+                                const chunk = bytes.slice(i, i + 8192);
+                                binary += String.fromCharCode.apply(null, chunk);
+                            }
+                            const base64 = btoa(binary);
+                            fileData = {
+                                encoding: 'base64',
+                                data: base64
+                            };
+                        } else {
+                            // Text file - store as plain text
+                            const textContent = await file.text();
+                            fileData = {
+                                encoding: 'text',
+                                data: textContent
+                            };
+                        }
+
+                        packageData.files.push({
+                            name: file.name,
+                            type: file.type || 'application/octet-stream',
+                            size: file.size,
+                            lastModified: file.lastModified,
+                            data: fileData
+                        });
+                    }
+
+                    // Create a virtual file with package content (as base64 to preserve binary)
+                    const packageJson = JSON.stringify(packageData, null, 2);
+                    const packageBase64 = btoa(unescape(encodeURIComponent(packageJson)));
+                    const packageFile = new File(
+                        [packageBase64],
+                        `${packageData.name}.bnpkg`,
+                        { type: 'application/octet-stream' }
+                    );
+
+                    // Add to dropped files with special marker
+                    droppedFilesList.push({
+                        ...packageFile,
+                        isPackage: true,
+                        packageName: packageData.name,
+                        fileCount: files.length,
+                        originalFiles: files.map(f => f.name).join(', ')
+                    });
+                    renderDroppedFiles();
+
+                    // Calculate total size
+                    const totalSize = files.reduce((sum, f) => sum + f.size, 0);
+                    showToast(`📦 包已创建: ${files.length} 个文件 (${(totalSize/1024).toFixed(1)} KB)`, 'success');
+                } catch (err) {
+                    showToast('创建包失败: ' + err.message, 'error');
+                }
+
+                // Reset input
+                packageInput.value = '';
+            };
+            packageInput.click();
         }
 
         // ============================================
@@ -3419,22 +4449,164 @@
             // Show sending state
             claudeInput.classList.add('sending');
             const submitBtn = document.querySelector('.input-actions .btn-primary');
-            const originalText = submitBtn.textContent;
-            submitBtn.classList.add('loading');
-            submitBtn.textContent = 'Sending...';
-            submitBtn.disabled = true;
+            const originalText = submitBtn ? submitBtn.textContent : 'Submit';
+            if (submitBtn) {
+                submitBtn.classList.add('loading');
+                submitBtn.textContent = 'Sending...';
+                submitBtn.disabled = true;
+            }
 
             // Add user input to output
             addOutput(`[User] ${content.substring(0, 100)}${content.length > 100 ? '...' : ''}`, 'user');
 
             try {
-                // If there are dropped files, use the context submit API
+                // If there are dropped files, choose endpoint based on current mode
                 if (hasFiles) {
-                    // Submit each file separately, then text-only if needed
+                    // Determine which API to use based on current prompt mode
+                    const useInputAPI = currentPromptMode === 'input';
+
+                    // For Input mode, create a package if multiple files or single binary file
+                    if (useInputAPI && droppedFilesList.length > 0) {
+                        // Check if we need to create a package
+                        let filesToUpload = [...droppedFilesList];
+                        let needsPackage = false;
+
+                        // Create package if multiple files or single binary file
+                        if (droppedFilesList.length > 1) {
+                            needsPackage = true;
+                        } else if (droppedFilesList.length === 1) {
+                            const file = droppedFilesList[0];
+                            // Check if it's a binary file that needs special handling
+                            const fileType = file.type || '';
+                            const isBinary = fileType.startsWith('image/') ||
+                                           fileType === 'application/pdf' ||
+                                           file.name.match(/\.(png|jpg|jpeg|gif|webp|pdf|ppt|pptx|doc|docx)$/i);
+                            if (isBinary) {
+                                needsPackage = true;
+                            }
+                        }
+
+                        if (needsPackage) {
+                            // Create a package for Input API
+                            const packageData = {
+                                name: `input_package_${Date.now()}`,
+                                created_at: new Date().toISOString(),
+                                description: content || `Input files: ${droppedFilesList.map(f => f.name).join(', ')}`,
+                                files: []
+                            };
+
+                            for (const file of droppedFilesList) {
+                                let fileData;
+                                const fileType = file.type || '';
+                                const isBinary = fileType.startsWith('image/') ||
+                                               fileType === 'application/pdf' ||
+                                               file.name.match(/\.(png|jpg|jpeg|gif|webp|pdf|ppt|pptx|doc|docx|tex)$/i);
+
+                                if (isBinary) {
+                                    const arrayBuffer = await file.arrayBuffer();
+                                    const bytes = new Uint8Array(arrayBuffer);
+                                    let binary = '';
+                                    const chunkSize = 8192;
+                                    for (let i = 0; i < bytes.length; i += chunkSize) {
+                                        const chunk = bytes.slice(i, i + chunkSize);
+                                        binary += String.fromCharCode.apply(null, chunk);
+                                    }
+                                    const base64 = btoa(binary);
+                                    fileData = { encoding: 'base64', data: base64 };
+                                } else {
+                                    const textContent = await file.text();
+                                    fileData = { encoding: 'text', data: textContent };
+                                }
+
+                                packageData.files.push({
+                                    name: file.name,
+                                    type: file.type || 'application/octet-stream',
+                                    size: file.size,
+                                    lastModified: file.lastModified,
+                                    data: fileData
+                                });
+                            }
+
+                            // Submit package
+                            const packageJson = JSON.stringify(packageData, null, 2);
+                            const packageBase64 = btoa(unescape(encodeURIComponent(packageJson)));
+                            const packageFile = new File(
+                                [packageBase64],
+                                `${packageData.name}.bnpkg`,
+                                { type: 'application/octet-stream' }
+                            );
+
+                            const formData = new FormData();
+                            formData.append('title', packageData.description);
+                            formData.append('description', content || '');
+                            formData.append('file', packageFile);
+
+                            showToast(`📦 正在上传文件包 (${droppedFilesList.length} 个文件)...`, 'info');
+
+                            const res = await fetch(`${API_BASE}/api/claude/input/package`, {
+                                method: 'POST',
+                                body: formData
+                            });
+                            const data = await res.json();
+
+                            if (data.success) {
+                                showInputResponse(`✓ Input Package: ${data.input_id}`, true);
+                                loadInputHistory();
+                            } else {
+                                showInputResponse('Error: ' + (data.error || 'Failed to submit'), false);
+                                showToast('Error: ' + (data.error || 'Failed to submit'), 'error');
+                            }
+                        } else {
+                            // Single text file - use regular Input API
+                            const file = droppedFilesList[0];
+                            const textContent = await file.text();
+
+                            const res = await fetch(`${API_BASE}/api/claude/input`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    content: textContent,
+                                    title: content || file.name
+                                })
+                            });
+                            const data = await res.json();
+
+                            if (data.success) {
+                                showInputResponse(`✓ Input: ${data.input_id}`, true);
+                                loadInputHistory();
+                            } else {
+                                showInputResponse('Error: ' + (data.error || 'Failed to submit'), false);
+                                showToast('Error: ' + (data.error || 'Failed to submit'), 'error');
+                            }
+                        }
+
+                        // Clear input and files
+                        claudeInput.value = '';
+                        droppedFilesList = [];
+                        renderDroppedFiles();
+                        updateInputStats();
+                        return;
+                    }
+
+                    // Context mode or other cases - use Context API
+                    // Context mode - use Context API
+                    // Submit each file separately
                     for (const file of droppedFilesList) {
                         const formData = new FormData();
-                        formData.append('description', content);
-                        formData.append('file', file);
+
+                        // Check if this is a package
+                        if (file.isPackage) {
+                            // Package is already base64 encoded, just submit as-is
+                            const packageContent = await file.text();
+                            const blob = new Blob([packageContent], { type: 'application/octet-stream' });
+                            const pkgFile = new File([blob], file.packageName + '.bnpkg', { type: 'application/octet-stream' });
+                            formData.append('description', content || `📦 文件包: ${file.fileCount} 个文件\n包含: ${file.originalFiles}`);
+                            formData.append('file', pkgFile);
+                            showToast(`📦 正在上传文件包 (${file.fileCount} 个文件)...`, 'info');
+                        } else {
+                            formData.append('description', content);
+                            formData.append('file', file);
+                        }
 
                         const res = await fetch(`${API_BASE}/api/context/submit`, {
                             method: 'POST',
@@ -3453,6 +4625,7 @@
                                 pdf_extracted: data.pdf_extracted
                             };
                             saveContextCard(cardData);
+                            loadContextCards();
                         } else {
                             showInputResponse('Error: ' + (data.error || 'Failed to submit'), false);
                             showToast('Error: ' + (data.error || 'Failed to submit'), 'error');
@@ -3460,11 +4633,9 @@
                         }
                     }
 
-                    loadContextCards();
                     showInputResponse(`✓ Submitted ${droppedFilesList.length} file(s)!`, true);
                     showToast('Submitted to Claude ✓', 'success');
-                    logActivity(`Claude Input: ${droppedFilesList.length} file(s) submitted`);
-                    loadInputHistory();
+                    logActivity(`Claude Context: ${droppedFilesList.length} file(s) submitted`);
 
                     // Clear input and files
                     claudeInput.value = '';
@@ -3499,9 +4670,11 @@
                 logActivity(`Claude Input Error: ${err.message}`);
             } finally {
                 claudeInput.classList.remove('sending');
-                submitBtn.classList.remove('loading');
-                submitBtn.disabled = false;
-                submitBtn.textContent = originalText;
+                if (submitBtn) {
+                    submitBtn.classList.remove('loading');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalText;
+                }
             }
         }
 
@@ -3512,7 +4685,10 @@
             updateInputStats();
             inputResponse.className = 'input-response';
             inputResponse.innerHTML = '';
-            showToast('Cleared');
+            // Clear context cards (submitted PDFs)
+            localStorage.removeItem('claudeContextCards');
+            document.getElementById('contextCards').innerHTML = '';
+            showToast('Cleared (including submitted files)');
         }
 
         // ============================================
@@ -3581,15 +4757,23 @@
                 const shortId = item.id.substring(0, 8);
                 const summary = item.summary ? item.summary.substring(0, 60) + (item.summary.length > 60 ? '...' : '') : 'Untitled';
 
+                // 区分文件 vs 文本
+                const isFile = item.type === 'file' || item.filename;
+                const icon = isFile ? '📄' : '💬';
+                const typeLabel = isFile ? '📄 File' : '💬 Text';
+                const fileInfo = isFile && item.filename ? `<span style="color: var(--accent);">${escapeHtml(item.filename)}</span>` : '';
+                const sizeInfo = isFile ? `${Math.round(item.content_length / 1024)}KB` : `${item.content_length} chars`;
+
                 return `
                     <div class="input-history-item" data-id="${item.id}" onclick="toggleInputHistoryItem(this, '${item.id}')">
                         <div class="input-history-header">
-                            <span class="input-history-id">${shortId}</span>
+                            <span class="input-history-id" onclick="event.stopPropagation(); copyToClipboard('${item.id}')" title="点击复制ID">${icon} ${shortId}</span>
                             <span class="input-history-time">${time}</span>
                         </div>
-                        <div class="input-history-summary">${escapeHtml(summary)}</div>
+                        <div class="input-history-summary">${escapeHtml(summary)} ${fileInfo}</div>
                         <div class="input-history-meta">
-                            <span>${item.content_length} chars</span>
+                            <span>${typeLabel}</span>
+                            <span>${sizeInfo}</span>
                         </div>
                         <div class="input-history-content" id="content-${item.id}">
                             <div class="input-history-full" id="full-${item.id}">Loading...</div>
@@ -3786,14 +4970,20 @@
         }
 
         function addClaudeOutput(data) {
+            // Server returns 'id', frontend expects 'output_id'
+            const outputId = data.output_id || data.id || 'out_' + Date.now().toString(36);
+
             const outputBlock = {
                 content: data.content,
                 label: data.label || 'Claude Output',
-                timestamp: data.timestamp || new Date().toISOString()
+                timestamp: data.timestamp || new Date().toISOString(),
+                output_id: outputId
             };
 
-            claudeOutputs.push(outputBlock);
-            if (claudeOutputs.length > 50) claudeOutputs.shift();
+            console.log('[Claude Output] Received:', outputId, data.label);
+
+            claudeOutputs.unshift(outputBlock); // Add to beginning (newest first)
+            if (claudeOutputs.length > 50) claudeOutputs.pop();
 
             renderClaudeOutputs();
             saveClaudeOutputsToStorage();
@@ -3805,17 +4995,22 @@
                 return;
             }
 
-            claudeOutputContent.innerHTML = claudeOutputs.map((output, index) => `
+            claudeOutputContent.innerHTML = claudeOutputs.map((output, index) => {
+                const time = new Date(output.timestamp).toLocaleString();
+                const shortId = output.output_id ? output.output_id.substring(0, 10) : '';
+                return `
                 <div class="output-block">
                     <div class="output-block-header">
                         <span class="output-block-label">${escapeHtml(output.label)}</span>
+                        <span class="output-block-meta" title="Click to copy ID" onclick="copyToClipboard('${output.output_id}')">🆔 ${shortId}</span>
+                        <span class="output-block-time">${time}</span>
                         <button class="output-block-copy" onclick="copyClaudeOutput(${index}, this)">📋 Copy</button>
                     </div>
                     <div class="output-block-content">${parseMarkdown(output.content)}</div>
                 </div>
-            `).join('');
+            `}).join('');
 
-            claudeOutputContent.scrollTop = claudeOutputContent.scrollHeight;
+            // Don't auto-scroll to bottom since newest is at top
         }
 
         function copyClaudeOutput(index, btn) {
@@ -4250,9 +5445,21 @@
                     if (outputEl) {
                         outputEl.classList.add('success');
                         outputEl.classList.remove('failed', 'timeout');
-                        outputEl.innerHTML = escapeHtml(data.result || 'Success');
+                        outputEl.innerHTML = escapeHtml(data.result || 'Success') + ' <button class="btn-clear" onclick="clearCmdOutput(\'' + cmdName + '\', this)" style="margin-left: 8px; padding: 1px 6px; font-size: 0.6rem;">✕</button>';
                     }
                     logActivity(`Command: ${cmd} - Success`);
+
+                    // Auto-clear quick info commands after 3 seconds (keep green for a moment then clear)
+                    setTimeout(() => {
+                        if (btn && btn.classList.contains('success')) {
+                            btn.classList.remove('success');
+                            btn.innerHTML = originalContent;
+                        }
+                        if (outputEl && outputEl.classList.contains('success')) {
+                            // Don't auto-clear output content, just the green state
+                            outputEl.classList.remove('success');
+                        }
+                    }, 3000);
                 } else {
                     btn.classList.remove('executing');
                     btn.classList.add(data.state === 'timeout' ? 'timeout' : 'failed');
@@ -4368,6 +5575,18 @@
             return reverseMap[cmd] || cmd;
         }
 
+        function clearCmdOutput(cmdName, btn) {
+            const outputEl = document.getElementById('output-' + cmdName);
+            const cmdBtn = document.querySelector(`.cmd-btn[data-cmd="${cmdName}"]`);
+            if (outputEl) {
+                outputEl.innerHTML = '';
+                outputEl.classList.remove('success', 'failed', 'timeout');
+            }
+            if (cmdBtn) {
+                cmdBtn.classList.remove('success', 'failed', 'timeout', 'executing');
+            }
+        }
+
         function clearAllCommandOutputs() {
             document.querySelectorAll('.cmd-output').forEach(el => {
                 el.innerHTML = '';
@@ -4379,6 +5598,86 @@
             showToast('All command outputs cleared');
         }
 
+        function appendToTerminal(content, type = 'info') {
+            const terminal = document.getElementById('commandTerminal');
+            const timestamp = new Date().toLocaleTimeString();
+            let color = '#00ff88';
+            let prefix = '>';
+            if (type === 'error') { color = '#ff4757'; prefix = '✕'; }
+            if (type === 'warning') { color = '#ffa502'; prefix = '!'; }
+            if (type === 'running') { color = '#00d9ff'; prefix = '...' }
+            if (type === 'success') { color = '#2ed573'; prefix = '✓'; }
+
+            // Style command with $ prefix
+            if (content.startsWith('$ ')) {
+                terminal.innerHTML += `<div style="margin-top: 8px; padding: 4px 0; border-left: 2px solid #00d9ff; padding-left: 8px;"><span style="color: #666;">[${timestamp}]</span> <span style="color: #00d9ff; font-weight: bold;">${escapeHtml(content)}</span></div>`;
+            } else {
+                terminal.innerHTML += `<div style="padding: 2px 0; padding-left: 10px; border-left: 2px solid ${color};"><span style="color: #666;">[${timestamp}]</span> <span style="color: ${color};">${prefix} ${escapeHtml(content)}</span></div>`;
+            }
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        function clearCommandTerminal() {
+            const terminal = document.getElementById('commandTerminal');
+            terminal.innerHTML = '<div style="color: #666; border-left: 2px solid var(--accent); padding-left: 10px;">Terminal cleared. Ready for commands...</div>';
+        }
+
+        async function runCustomCommand() {
+            const input = document.getElementById('customCommandInput');
+            const cmd = input.value.trim();
+            if (!cmd) return;
+
+            appendToTerminal('$ ' + cmd, 'running');
+
+            try {
+                const res = await fetch(`${API_BASE}/api/command`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ command: cmd })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    appendToTerminal(data.result || 'Success', 'success');
+                } else {
+                    appendToTerminal(data.error || 'Error', 'error');
+                }
+            } catch (e) {
+                appendToTerminal('Error: ' + e.message, 'error');
+            }
+
+            input.value = '';
+        }
+
+        // Modify runCommand to also output to terminal
+        const originalRunCommand = runCommand;
+        runCommand = async function(cmd, btn) {
+            const cmdName = btn ? btn.getAttribute('data-cmd') : 'custom';
+            appendToTerminal('$ ' + cmd, 'running');
+
+            // Call original function
+            await originalRunCommand(cmd, btn);
+
+            // Also append result to terminal after a delay (since it's async)
+            setTimeout(async () => {
+                try {
+                    const res = await fetch(`${API_BASE}/api/command`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ command: cmd })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        appendToTerminal(data.result || 'Success', 'success');
+                    } else {
+                        appendToTerminal(data.error || 'Error', 'error');
+                    }
+                } catch (e) {
+                    appendToTerminal('Error: ' + e.message, 'error');
+                }
+            }, 500);
+        };
+
         async function checkStatus() {
             await checkAPI();
             showToast('Status updated');
@@ -4388,6 +5687,17 @@
             localStorage.clear();
             showToast('Cache cleared ✓');
             logActivity('Cache cleared');
+        }
+
+        function clearClaudeOutputCache() {
+            localStorage.removeItem('claudeOutputs');
+            claudeOutputs = [];
+            const outputContent = document.getElementById('claudeOutputContent');
+            if (outputContent) {
+                outputContent.innerHTML = '<div class="output-empty">Output cache cleared. Waiting for new output...</div>';
+            }
+            showToast('Claude Output cache cleared ✓');
+            logActivity('Claude Output cache cleared');
         }
 
         async function restartAPI() {
@@ -4470,6 +5780,164 @@
             }
         }
         loadQuickLinks();
+
+        // ============================================
+        // Right-Click Context Menu
+        // ============================================
+        const contextMenu = document.getElementById('contextMenu');
+        let currentSection = 'general';
+
+        // Menu options for different sections
+        const menuOptions = {
+            general: [
+                { action: 'refresh', icon: '🔄', label: '刷新页面' },
+                { action: 'copy', icon: '📋', label: '复制' },
+                { action: 'clearCache', icon: '🗑️', label: '清除缓存' },
+                { action: 'viewSource', icon: '📄', label: '查看源码' },
+                { action: 'toggleTheme', icon: '🌗', label: '切换主题' }
+            ],
+            claudeOutput: [
+                { action: 'coClear', icon: '🗑️', label: '清空输出' },
+                { action: 'coCopyAll', icon: '📋', label: '复制全部' },
+                { action: 'coExport', icon: '💾', label: '导出输出' },
+                { action: 'refresh', icon: '🔄', label: '刷新页面' },
+                { action: 'toggleTheme', icon: '🌗', label: '切换主题' }
+            ],
+            quickCommands: [
+                { action: 'qcRefresh', icon: '🔄', label: '刷新命令' },
+                { action: 'qcClearAll', icon: '🗑️', label: '清空全部' },
+                { action: 'qcStopAll', icon: '⏹️', label: '停止全部' },
+                { action: 'refresh', icon: '🔄', label: '刷新页面' },
+                { action: 'toggleTheme', icon: '🌗', label: '切换主题' }
+            ]
+        };
+
+        function renderContextMenu(section) {
+            const options = menuOptions[section] || menuOptions.general;
+            let html = '';
+            options.forEach(opt => {
+                html += `<div class="context-menu-item" onclick="contextMenuAction('${opt.action}')">${opt.icon} ${opt.label}</div>`;
+            });
+            contextMenu.innerHTML = html;
+        }
+
+        // Prevent default context menu and show custom menu
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+
+            // Detect which section was clicked
+            const target = e.target;
+            const claudeOutputEl = document.getElementById('claudeOutputContent');
+            const quickCommandsEl = document.getElementById('commandTerminal');
+
+            // Check if clicked inside Claude Output
+            if (claudeOutputEl && (claudeOutputEl.contains(target) || target.closest('.terminal-container'))) {
+                currentSection = 'claudeOutput';
+            }
+            // Check if clicked inside Quick Commands
+            else if (quickCommandsEl && (quickCommandsEl.contains(target) || target.closest('.quick-commands') || target.closest('#commandTerminal'))) {
+                currentSection = 'quickCommands';
+            }
+            else {
+                currentSection = 'general';
+            }
+
+            // Render menu based on section
+            renderContextMenu(currentSection);
+
+            // Hide any existing menu first
+            contextMenu.style.display = 'none';
+
+            // Calculate position
+            let x = e.clientX;
+            let y = e.clientY;
+
+            // Adjust if menu would go off screen
+            const menuWidth = 180;
+            const menuHeight = contextMenu.offsetHeight || 250;
+
+            if (x + menuWidth > window.innerWidth) {
+                x = window.innerWidth - menuWidth - 10;
+            }
+            if (y + menuHeight > window.innerHeight) {
+                y = window.innerHeight - menuHeight - 10;
+            }
+
+            contextMenu.style.left = x + 'px';
+            contextMenu.style.top = y + 'px';
+            contextMenu.style.display = 'block';
+        });
+
+        // Hide menu when clicking elsewhere
+        document.addEventListener('click', function(e) {
+            if (!contextMenu.contains(e.target)) {
+                contextMenu.style.display = 'none';
+            }
+        });
+
+        // Context menu actions
+        function contextMenuAction(action) {
+            contextMenu.style.display = 'none';
+
+            switch(action) {
+                case 'refresh':
+                    location.reload();
+                    break;
+                case 'copy':
+                    if (window.getSelection().toString()) {
+                        navigator.clipboard.writeText(window.getSelection().toString());
+                        showToast('已复制到剪贴板');
+                    } else {
+                        showToast('请先选中要复制的内容');
+                    }
+                    break;
+                case 'paste':
+                    navigator.clipboard.readText().then(text => {
+                        showToast('粘贴功能需在输入框使用');
+                    }).catch(() => {
+                        showToast('无法读取剪贴板');
+                    });
+                    break;
+                case 'clearCache':
+                    if (confirm('确定清除所有缓存数据?')) {
+                        localStorage.clear();
+                        showToast('缓存已清除');
+                        logActivity('Cache cleared via context menu');
+                    }
+                    break;
+                case 'viewSource':
+                    window.open('view-source:' + location.href, '_blank');
+                    break;
+                case 'toggleTheme':
+                    toggleTheme();
+                    break;
+                // Claude Output actions
+                case 'coClear':
+                    clearClaudeOutputCache();
+                    break;
+                case 'coCopyAll':
+                    copyAllOutput();
+                    break;
+                case 'coExport':
+                    exportOutputs();
+                    break;
+                // Quick Commands actions
+                case 'qcRefresh':
+                    location.reload();
+                    break;
+                case 'qcClearAll':
+                    clearAllCommandOutputs();
+                    break;
+                case 'qcStopAll':
+                    // Cancel all running commands
+                    document.querySelectorAll('.cmd-output.running').forEach(el => {
+                        const cmdId = el.dataset.cmdId;
+                        if (cmdId) cancelCommand(cmdId);
+                    });
+                    showToast('已停止所有运行中的命令');
+                    break;
+            }
+        }
 
         // ============================================
         // Utility Functions
