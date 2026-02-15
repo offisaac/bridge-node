@@ -575,18 +575,28 @@ async def send_command(request: CommandRequest, token: str = Depends(simple_auth
     command_id = request.command_id or str(uuid.uuid4())
 
     # SEC-002: Full-string whitelist match prevents command injection
+    # Support prefix matching for commands with arguments (e.g., fd -H "pattern" ~)
     cmd = request.command.strip()
-    if ALLOWED_COMMANDS is not None and cmd not in ALLOWED_COMMANDS:
-        update_command_state(command_id, "rejected", error="Command not in whitelist")
-        return {
-            "success": False,
-            "command_id": command_id,
-            "command": cmd,
-            "result": None,
-            "error": "Command not allowed. Only predefined system commands are permitted.",
-            "exit_code": -1,
-            "state": "rejected"
-        }
+    if ALLOWED_COMMANDS is not None:
+        # Check exact match first, then prefix match
+        allowed = cmd in ALLOWED_COMMANDS
+        if not allowed:
+            # Check if command starts with any allowed prefix
+            for allowed_cmd in ALLOWED_COMMANDS:
+                if cmd.startswith(allowed_cmd.split()[0]) and len(cmd) > len(allowed_cmd.split()[0]):
+                    allowed = True
+                    break
+        if not allowed:
+            update_command_state(command_id, "rejected", error="Command not in whitelist")
+            return {
+                "success": False,
+                "command_id": command_id,
+                "command": cmd,
+                "result": None,
+                "error": "Command not allowed. Only predefined system commands are permitted.",
+                "exit_code": -1,
+                "state": "rejected"
+            }
 
     try:
         update_command_state(command_id, "running", command=cmd, start_time=datetime.now().isoformat())
