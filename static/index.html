@@ -3870,8 +3870,7 @@
                             // Keepalive
                         } else if (data.type === 'claude_output') {
                             addClaudeOutput(data);
-                            // Also add to legacy output for compatibility
-                            addOutput(`[Claude] ${data.content.substring(0, 200)}...`, 'claude');
+                            // Legacy log removed - only show in CLAUDE OUTPUT section
                         }
                     } catch (e) {
                         console.error('SSE parse error:', e);
