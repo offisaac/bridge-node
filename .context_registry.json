@@ -9,11 +9,21 @@
       "created_at": "2026-02-15T16:04:56.275691",
       "data_file": "context_db.json",
       "pdf_extracted": true
+    },
+    {
+      "uuid": "813f4ef9-a4d8-4da4-8463-10889dd46dd9",
+      "title": "pdf_to_ppt.py",
+      "filename": "pdf_to_ppt.py",
+      "md5": "1a8dd2c716a49d142ac007549bd0a8cb",
+      "content_length": 1654,
+      "created_at": "2026-02-15T17:01:43.128218",
+      "data_file": "context_db.json",
+      "pdf_extracted": true
     }
   ],
   "metadata": {
     "created_at": "2026-02-15T16:04:56.298029",
-    "last_updated": "2026-02-15T16:04:56.275691",
-    "total_entries": 1
+    "last_updated": "2026-02-15T17:01:43.128218",
+    "total_entries": 2
   }
 }
