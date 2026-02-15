@@ -65,6 +65,14 @@ ALLOWED_COMMANDS: Optional[List[str]] = [
     'uptime',
     'whoami',
     'hostname',
+    # File search and system monitoring
+    'btop --quiet',
+    'btop',
+    'htop',
+    'nvtop',
+    'fd -H',
+    'fd',
+    'find ~ -name',
 ]
 
 # Predefined quick commands (can be extended)

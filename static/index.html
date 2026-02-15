@@ -878,11 +878,14 @@
 
         /* Clipboard History */
         .clipboard-history {
-            height: 280px;
+            max-height: 200px;
             overflow-y: auto;
             background: var(--bg-primary);
             border-radius: var(--radius-md);
             padding: 8px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
         }
 
         .clipboard-empty {
