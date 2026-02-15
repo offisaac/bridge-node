@@ -1922,6 +1922,7 @@
                     <div class="card-header">
                         <span class="card-title">📁 File Manager</span>
                         <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-secondary" onclick="copyCurrentPath()" title="Copy current path">📋 Path</button>
                             <button class="btn btn-secondary" onclick="uploadFile()" title="Upload file">📤 Upload</button>
                             <button class="btn btn-secondary" onclick="refreshFileList()" title="Refresh">🔄</button>
                         </div>
@@ -1967,7 +1968,7 @@
                         </div>
                         <div class="file-list" id="fileList">
                             <div style="text-align: center; padding: 40px; color: var(--text-muted);">
-                                Click "Go" to load files
+                                Enter path and click Go, or use 🔍 Find File below
                             </div>
                         </div>
                     </div>
@@ -2223,6 +2224,22 @@
                         <pre style="font-size: 0.65rem; margin: 0; white-space: pre-wrap; color: var(--text-secondary);">curl -X POST "http://127.0.0.1:8888/api/claude/push" \
   -H "Content-Type: application/json" \
   -d '{"content": "your output here", "label": "Output"}'</pre>
+                    </div>
+                </div>
+
+                <!-- (g) File Search (fd) -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">🔍 Find File (fd)</span>
+                    </div>
+                    <div class="card-body" style="padding: 8px;">
+                        <div style="display: flex; gap: 4px; margin-bottom: 6px;">
+                            <input type="text" id="fdSearchInput" placeholder="filename..." style="flex: 1; padding: 4px 8px; font-size: 0.75rem; border: 1px solid var(--border); border-radius: 4px;">
+                            <button class="btn btn-secondary" onclick="runFdSearch()" style="padding: 4px 8px; font-size: 0.7rem;">🔍</button>
+                        </div>
+                        <div id="fdSearchResults" style="max-height: 100px; overflow-y: auto; font-size: 0.7rem; color: var(--text-secondary);">
+                            <div style="color: var(--text-muted); text-align: center;">Enter filename to search</div>
+                        </div>
                     </div>
                 </div>
 
@@ -2904,6 +2921,61 @@
             dot.className = 'file-status-dot' + (status === 'loading' ? ' loading' : '');
             text.textContent = status === 'loading' ? 'Loading...' : status === 'ready' ? 'Ready' : 'Error';
             countEl.textContent = count;
+        }
+
+        function copyCurrentPath() {
+            const pathInput = document.getElementById('filePath');
+            const path = pathInput.value;
+            navigator.clipboard.writeText(path).then(() => {
+                showToast('Path copied: ' + path);
+            });
+        }
+
+        async function runFdSearch() {
+            const input = document.getElementById('fdSearchInput');
+            const resultsEl = document.getElementById('fdSearchResults');
+            const filename = input.value.trim();
+
+            if (!filename) {
+                resultsEl.innerHTML = '<div style="color: var(--text-muted); text-align: center;">Enter filename to search</div>';
+                return;
+            }
+
+            resultsEl.innerHTML = '<div style="color: var(--text-muted); text-align: center;">Searching...</div>';
+
+            try {
+                const res = await fetch(`${API_BASE}/api/command`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ command: `fd -H "${filename}" ~` })
+                });
+                const data = await res.json();
+
+                if (data.success && data.result?.stdout) {
+                    const files = data.result.stdout.split('\n').filter(f => f.trim());
+                    if (files.length === 0) {
+                        resultsEl.innerHTML = '<div style="color: var(--text-muted); text-align: center;">No files found</div>';
+                    } else {
+                        resultsEl.innerHTML = files.map(f => `
+                            <div style="padding: 4px 0; cursor: pointer; display: flex; align-items: center; gap: 6px;" onclick="copyToClipboard('${f.replace(/'/g, "\\'")}')">
+                                <span style="color: var(--accent);">📄</span>
+                                <span style="flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${f}</span>
+                                <span style="opacity: 0.5; font-size: 0.6rem;">📋</span>
+                            </div>
+                        `).join('');
+                    }
+                } else {
+                    resultsEl.innerHTML = '<div style="color: var(--error);">Error: ' + (data.error || 'Unknown') + '</div>';
+                }
+            } catch (e) {
+                resultsEl.innerHTML = '<div style="color: var(--error);">Failed to search</div>';
+            }
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Copied: ' + text);
+            });
         }
 
         async function loadFiles() {
