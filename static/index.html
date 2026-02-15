@@ -3724,6 +3724,8 @@
 
         // Initialize input history on page load
         document.addEventListener('DOMContentLoaded', () => {
+            // Clear old localStorage to remove stale output
+            localStorage.removeItem('claudeOutputs');
             loadInputHistory();
         });
 
