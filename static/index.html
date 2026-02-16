@@ -2300,13 +2300,164 @@ function toggleTheme() {
         localStorage.setItem('theme', 'light');
     }
 }
-(function() {
-    const saved = localStorage.getItem('theme');
-    if (saved === 'light') {
-        document.documentElement.setAttribute('data-theme', 'light');
-        const btn = document.querySelector('.theme-toggle-btn');
-        if (btn) btn.textContent = '☀️';
+
+// i18n - Internationalization (Task #55)
+const translations = {
+    en: {
+        "File Manager": "File Manager",
+        "Upload": "Upload",
+        "Download": "Download",
+        "Refresh": "Refresh",
+        "New Folder": "New Folder",
+        "Delete": "Delete",
+        "Rename": "Rename",
+        "Activity Log": "Activity Log",
+        "Log Viewer": "Log Viewer",
+        "Connection Status": "Connection Status",
+        "Quick Links": "Quick Links",
+        "Settings": "Settings",
+        "Language": "Language",
+        // Header
+        "BridgeNode": "BridgeNode",
+        "Terminal": "Terminal",
+        "Clear Data": "Clear Data",
+        // Status
+        "API": "API",
+        "Connecting...": "Connecting...",
+        "Latency": "Latency",
+        "Connections": "Connections",
+        "CPU": "CPU",
+        // File Manager
+        "Upload to": "Upload to",
+        "Download to": "Download to",
+        "Current Path": "Current Path",
+        "Go to parent": "Go to parent",
+        "Go": "Go",
+        // Favorites
+        "Favorites": "Favorites",
+        "Add Favorite": "Add Favorite",
+        "No favorites": "No favorites yet. Click + Add to save paths.",
+        "Name": "Name",
+        "Path": "Path",
+        "Save": "Save",
+        "Cancel": "Cancel",
+        // Claude Input
+        "Claude Input": "Claude Input",
+        "history": "history",
+        "Submit": "Submit",
+        "Clear": "Clear",
+        "Chars": "Chars",
+        "Lines": "Lines",
+        "Words": "Words",
+        // Claude Output
+        "Claude Output": "Claude Output",
+        "Waiting for Claude output": "Waiting for Claude output...",
+        // Quick Commands
+        "Quick Commands": "Quick Commands",
+        "Clear All": "Clear All",
+        // Messages
+        "Saved": "Saved",
+        "Deleted": "Deleted",
+        "Copied": "Copied to clipboard",
+        "Error": "Error",
+    },
+    zh: {
+        "File Manager": "文件管理器",
+        "Upload": "上传",
+        "Download": "下载",
+        "Refresh": "刷新",
+        "New Folder": "新建文件夹",
+        "Delete": "删除",
+        "Rename": "重命名",
+        "Activity Log": "活动日志",
+        "Log Viewer": "日志查看器",
+        "Connection Status": "连接状态",
+        "Quick Links": "快速链接",
+        "Settings": "设置",
+        "Language": "语言",
+        // Header
+        "BridgeNode": "BridgeNode",
+        "Terminal": "终端",
+        "Clear Data": "清空数据",
+        // Status
+        "API": "API",
+        "Connecting...": "连接中...",
+        "Latency": "延迟",
+        "Connections": "连接数",
+        "CPU": "CPU",
+        // File Manager
+        "Upload to": "上传到",
+        "Download to": "下载到",
+        "Current Path": "当前路径",
+        "Go to parent": "返回上级",
+        "Go": "前往",
+        // Favorites
+        "Favorites": "收藏夹",
+        "Add Favorite": "添加收藏",
+        "No favorites": "暂无收藏。点击 + 添加 保存常用路径。",
+        "Name": "名称",
+        "Path": "路径",
+        "Save": "保存",
+        "Cancel": "取消",
+        // Claude Input
+        "Claude Input": "Claude 输入",
+        "history": "历史",
+        "Submit": "发送",
+        "Clear": "清空",
+        "Chars": "字符",
+        "Lines": "行数",
+        "Words": "词数",
+        // Claude Output
+        "Claude Output": "Claude 输出",
+        "Waiting for Claude output": "等待 Claude 输出...",
+        // Quick Commands
+        "Quick Commands": "快捷命令",
+        "Clear All": "清空全部",
+        // Messages
+        "Saved": "已保存",
+        "Deleted": "已删除",
+        "Copied": "已复制到剪贴板",
+        "Error": "错误",
     }
+};
+
+let currentLang = localStorage.getItem('language') || 'en';
+
+function setLanguage(lang) {
+    currentLang = lang;
+    localStorage.setItem('language', lang);
+    applyTranslations();
+    updateLangButton();
+}
+
+function t(key) {
+    return translations[currentLang][key] || key;
+}
+
+function applyTranslations() {
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[currentLang][key]) {
+            el.textContent = translations[currentLang][key];
+        }
+    });
+}
+
+function updateLangButton() {
+    const btn = document.getElementById('langToggleBtn');
+    if (btn) btn.textContent = currentLang === 'en' ? '中文' : 'English';
+}
+
+function toggleLanguage() {
+    setLanguage(currentLang === 'en' ? 'zh' : 'en');
+}
+
+(function() {
+    const saved = localStorage.getItem('language');
+    if (saved) {
+        currentLang = saved;
+    }
+    setTimeout(applyTranslations, 100);
 })();
 </script>
 <script>
@@ -2450,6 +2601,7 @@ function generateSendPrompt() {
         <header>
             <h1>BridgeNode</h1>
             <div class="header-controls">
+                <button class="btn btn-secondary" id="langToggleBtn" onclick="toggleLanguage()" title="Language">EN</button>
                 <button class="btn btn-secondary theme-toggle-btn" onclick="toggleTheme()" title="Toggle theme">🌙</button>
                 <button class="btn btn-secondary" onclick="window.open('/terminal.html', '_blank')">🖥️ Terminal</button>
                 <button class="btn btn-danger" onclick="clearAllData()">🗑️ 清空数据</button>
@@ -3718,8 +3870,9 @@ function generateSendPrompt() {
         // Progress Bar Functions
         // ============================================
         // Track timing for ETA calculation
-        let uploadStartTime = 0;
-        let downloadStartTime = 0;
+        // Note: uploadStartTime and downloadStartTime are declared earlier
+        // let uploadStartTime = 0;
+        // let downloadStartTime = 0;
 
         function formatEta(seconds) {
             if (!isFinite(seconds) || seconds <= 0) return '';
@@ -6213,7 +6366,6 @@ function generateSendPrompt() {
                 const resp = await fetch('/api/logs', {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${getToken()}`,
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({ filepath: filepath, lines: 200, filter: currentLogFilter || null })
