@@ -1859,6 +1859,11 @@
             color: var(--text-muted);
         }
 
+        .progress-eta {
+            color: var(--accent);
+            font-weight: 500;
+        }
+
         /* Drop Zone */
         .drop-zone {
             border: 2px dashed var(--border);
@@ -2801,7 +2806,7 @@ function generateSendPrompt() {
                                 <div class="progress-fill" id="uploadProgressBar" style="width: 0%"></div>
                             </div>
                             <div class="progress-speed">
-                                <span id="uploadSpeed">0 MB/s</span>
+                                <span><span id="uploadSpeed">0 MB/s</span> <span id="uploadEta" class="progress-eta"></span></span>
                                 <span id="uploadSize">0 / 0 MB</span>
                             </div>
                         </div>
@@ -2817,7 +2822,7 @@ function generateSendPrompt() {
                                 <div class="progress-fill" id="downloadProgressBar" style="width: 0%"></div>
                             </div>
                             <div class="progress-speed">
-                                <span id="downloadSpeed">0 MB/s</span>
+                                <span><span id="downloadSpeed">0 MB/s</span> <span id="downloadEta" class="progress-eta"></span></span>
                                 <span id="downloadSize">0 / 0 MB</span>
                             </div>
                         </div>
@@ -2909,13 +2914,42 @@ function generateSendPrompt() {
                     </div>
                 </div>
 
+                <!-- Log Viewer -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">📋 Log Viewer</span>
+                        <button class="btn btn-secondary" onclick="refreshLogs()" style="padding: 4px 8px; font-size: 0.7rem;">⟳</button>
+                    </div>
+                    <div class="card-body" style="padding: 8px;">
+                        <select id="logFileSelect" onchange="loadLogFile()" style="width: 100%; margin-bottom: 6px; padding: 4px; font-size: 0.75rem;">
+                            <option value="/tmp/server.log">server.log</option>
+                            <option value="/tmp/agent_driver.log">agent_driver.log</option>
+                            <option value="/tmp/agent_driver_state.json">driver_state.json</option>
+                            <option value="/home/pengxiang/bridge-node/debug.log">debug.log</option>
+                        </select>
+                        <input type="text" id="logFilterInput" placeholder="Filter logs..." oninput="filterLogs()"
+                               style="width: 100%; margin-bottom: 6px; padding: 4px; font-size: 0.75rem;">
+                        <div style="display: flex; gap: 4px; margin-bottom: 6px;">
+                            <label style="font-size: 0.7rem; display: flex; align-items: center; gap: 4px;">
+                                <input type="checkbox" id="logAutoRefresh" onchange="toggleLogAutoRefresh()"> Auto
+                            </label>
+                            <label style="font-size: 0.7rem; display: flex; align-items: center; gap: 4px;">
+                                <input type="checkbox" id="logRealtime" onchange="toggleLogRealtime()"> Realtime
+                            </label>
+                        </div>
+                        <div id="logViewerContent" style="max-height: 180px; overflow-y: auto; font-family: monospace; font-size: 0.65rem; background: var(--bg-secondary); padding: 6px; border-radius: 4px; white-space: pre-wrap; word-break: break-all;">
+                            <span style="color: var(--text-muted);">Select a log file...</span>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Activity Log -->
                 <div class="card">
                     <div class="card-header">
-                        <span class="card-title">📋 Activity Log</span>
+                        <span class="card-title">📝 Activity Log</span>
                         <button class="btn btn-secondary" onclick="clearActivityLog()" style="padding: 4px 8px; font-size: 0.7rem;">Clear</button>
                     </div>
-                    <div class="card-body" style="max-height: 200px; overflow-y: auto;">
+                    <div class="card-body" style="max-height: 150px; overflow-y: auto;">
                         <div id="activityLog" style="font-size: 0.75rem; color: var(--text-secondary);">
                             Activity log...
                         </div>
@@ -3683,6 +3717,23 @@ function generateSendPrompt() {
         // ============================================
         // Progress Bar Functions
         // ============================================
+        // Track timing for ETA calculation
+        let uploadStartTime = 0;
+        let downloadStartTime = 0;
+
+        function formatEta(seconds) {
+            if (!isFinite(seconds) || seconds <= 0) return '';
+            if (seconds < 60) return `ETA ${Math.ceil(seconds)}s`;
+            if (seconds < 3600) {
+                const mins = Math.floor(seconds / 60);
+                const secs = Math.ceil(seconds % 60);
+                return `ETA ${mins}m ${secs}s`;
+            }
+            const hours = Math.floor(seconds / 3600);
+            const mins = Math.floor((seconds % 3600) / 60);
+            return `ETA ${hours}h ${mins}m`;
+        }
+
         function showUploadProgress(filename, percent, speed, loaded, total) {
             const container = document.getElementById('uploadProgress');
             container.classList.remove('hidden');
@@ -3691,6 +3742,20 @@ function generateSendPrompt() {
             document.getElementById('uploadProgressBar').style.width = percent + '%';
             document.getElementById('uploadSpeed').textContent = speed + ' MB/s';
             document.getElementById('uploadSize').textContent = formatSize(loaded) + ' / ' + formatSize(total);
+
+            // Calculate ETA
+            if (percent > 0 && percent < 100) {
+                if (uploadStartTime === 0) uploadStartTime = Date.now();
+                const elapsed = (Date.now() - uploadStartTime) / 1000;
+                const speedNum = parseFloat(speed);
+                if (speedNum > 0) {
+                    const remaining = (total - loaded) / (speedNum * 1024 * 1024);
+                    document.getElementById('uploadEta').textContent = formatEta(remaining);
+                }
+            } else if (percent >= 100) {
+                uploadStartTime = 0;
+                document.getElementById('uploadEta').textContent = 'Done!';
+            }
 
             // Save task state for persistence
             saveTaskState('upload', {
@@ -3718,6 +3783,20 @@ function generateSendPrompt() {
             document.getElementById('downloadProgressBar').style.width = percent + '%';
             document.getElementById('downloadSpeed').textContent = speed + ' MB/s';
             document.getElementById('downloadSize').textContent = formatSize(loaded) + ' / ' + formatSize(total);
+
+            // Calculate ETA
+            if (percent > 0 && percent < 100) {
+                if (downloadStartTime === 0) downloadStartTime = Date.now();
+                const elapsed = (Date.now() - downloadStartTime) / 1000;
+                const speedNum = parseFloat(speed);
+                if (speedNum > 0) {
+                    const remaining = (total - loaded) / (speedNum * 1024 * 1024);
+                    document.getElementById('downloadEta').textContent = formatEta(remaining);
+                }
+            } else if (percent >= 100) {
+                downloadStartTime = 0;
+                document.getElementById('downloadEta').textContent = 'Done!';
+            }
 
             // Save task state for persistence
             saveTaskState('download', {
@@ -6118,6 +6197,84 @@ function generateSendPrompt() {
         function clearActivityLog() {
             document.getElementById('activityLog').innerHTML = 'Activity log cleared';
             localStorage.removeItem('activityLog');
+        }
+
+        // Log Viewer Functions
+        let logAutoRefreshInterval = null;
+        let logRealtimeWS = null;
+        let currentLogFilter = '';
+
+        async function loadLogFile() {
+            const filepath = document.getElementById('logFileSelect').value;
+            const contentEl = document.getElementById('logViewerContent');
+            contentEl.innerHTML = '<span style="color: var(--text-muted);">Loading...</span>';
+
+            try {
+                const resp = await fetch('/api/logs', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${getToken()}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ filepath: filepath, lines: 200, filter: currentLogFilter || null })
+                });
+                const data = await resp.json();
+                let logs = data.lines || [];
+
+                // Apply filter
+                if (currentLogFilter) {
+                    logs = logs.filter(l => l.toLowerCase().includes(currentLogFilter.toLowerCase()));
+                }
+
+                if (logs.length === 0) {
+                    contentEl.innerHTML = '<span style="color: var(--text-muted);">No logs</span>';
+                } else {
+                    contentEl.innerHTML = logs.join('\n');
+                    contentEl.scrollTop = contentEl.scrollHeight;
+                }
+            } catch (err) {
+                contentEl.innerHTML = `<span style="color: #f5576c;">Error: ${err.message}</span>`;
+            }
+        }
+
+        function filterLogs() {
+            currentLogFilter = document.getElementById('logFilterInput').value;
+            loadLogFile();
+        }
+
+        function refreshLogs() {
+            loadLogFile();
+        }
+
+        function toggleLogAutoRefresh() {
+            const enabled = document.getElementById('logAutoRefresh').checked;
+            if (enabled) {
+                logAutoRefreshInterval = setInterval(loadLogFile, 3000);
+            } else {
+                clearInterval(logAutoRefreshInterval);
+                logAutoRefreshInterval = null;
+            }
+        }
+
+        function toggleLogRealtime() {
+            const enabled = document.getElementById('logRealtime').checked;
+            if (enabled) {
+                // Subscribe to log updates via WebSocket
+                if (ws && ws.readyState === WebSocket.OPEN) {
+                    const filepath = document.getElementById('logFileSelect').value;
+                    ws.send(JSON.stringify({ type: 'subscribe_logs', filepath: filepath }));
+                }
+            }
+        }
+
+        // Handle incoming log messages
+        function handleLogMessage(data) {
+            const contentEl = document.getElementById('logViewerContent');
+            if (currentLogFilter && !data.line.toLowerCase().includes(currentLogFilter.toLowerCase())) {
+                return;
+            }
+            contentEl.innerHTML += '\n' + data.line;
+            contentEl.scrollTop = contentEl.scrollHeight;
         }
 
         // Load activity log
