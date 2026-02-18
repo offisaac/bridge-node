@@ -73,6 +73,8 @@ ALLOWED_COMMANDS: Optional[List[str]] = [
     'fd -H',
     'fd',
     'find ~ -name',
+    # File search with timeout (for frontend fd search)
+    'timeout',
 ]
 
 # Predefined quick commands (can be extended)
@@ -618,14 +620,25 @@ async def send_command(request: CommandRequest, token: str = Depends(simple_auth
     # Support prefix matching for commands with arguments (e.g., fd -H "pattern" ~)
     cmd = request.command.strip()
     if ALLOWED_COMMANDS is not None:
-        # Check exact match first, then prefix match
+        # Check exact match first
         allowed = cmd in ALLOWED_COMMANDS
         if not allowed:
-            # Check if command starts with any allowed prefix
+            # Extract all command parts (handle pipes, &&, ||, ;)
+            cmd_parts = cmd.replace('|', ' ').replace('&&', ' ').replace('||', ' ').replace(';', ' ').split()
+
+            # Check if any command part is in allowed commands
             for allowed_cmd in ALLOWED_COMMANDS:
-                if cmd.startswith(allowed_cmd.split()[0]) and len(cmd) > len(allowed_cmd.split()[0]):
+                cmd_base = allowed_cmd.split()[0]
+                if cmd_base in cmd_parts:
                     allowed = True
                     break
+
+            # Also check prefix match
+            if not allowed:
+                for allowed_cmd in ALLOWED_COMMANDS:
+                    if cmd.startswith(allowed_cmd.split()[0]) and len(cmd) > len(allowed_cmd.split()[0]):
+                        allowed = True
+                        break
         if not allowed:
             update_command_state(command_id, "rejected", error="Command not in whitelist")
             return {
