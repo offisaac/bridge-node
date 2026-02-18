@@ -1,0 +1,86 @@
+[
+  {
+    "id": "service_1771301461339",
+    "name": "API Gateway",
+    "description": "Main API endpoint",
+    "category": "core",
+    "status": "operational",
+    "uptime": 99.99,
+    "latency": 45,
+    "lastChecked": 1771301461339,
+    "incidentHistory": [],
+    "metadata": {}
+  },
+  {
+    "id": "service_1771301461354",
+    "name": "User Service",
+    "description": "User authentication and management",
+    "category": "core",
+    "status": "operational",
+    "uptime": 99.95,
+    "latency": 32,
+    "lastChecked": 1771301461354,
+    "incidentHistory": [],
+    "metadata": {}
+  },
+  {
+    "id": "service_1771301461374",
+    "name": "Payment Service",
+    "description": "Payment processing",
+    "category": "core",
+    "status": "operational",
+    "uptime": 99.98,
+    "latency": 120,
+    "lastChecked": 1771301461374,
+    "incidentHistory": [],
+    "metadata": {}
+  },
+  {
+    "id": "service_1771301461388",
+    "name": "Database",
+    "description": "Primary database cluster",
+    "category": "core",
+    "status": "operational",
+    "uptime": 99.999,
+    "latency": 5,
+    "lastChecked": 1771301461388,
+    "incidentHistory": [],
+    "metadata": {}
+  },
+  {
+    "id": "service_1771301461403",
+    "name": "Cache Layer",
+    "description": "Redis cache cluster",
+    "category": "supporting",
+    "status": "operational",
+    "uptime": 99.9,
+    "latency": 2,
+    "lastChecked": 1771301461403,
+    "incidentHistory": [],
+    "metadata": {}
+  },
+  {
+    "id": "service_1771301461426",
+    "name": "CDN",
+    "description": "Content delivery network",
+    "category": "external",
+    "status": "operational",
+    "uptime": 99.99,
+    "latency": 15,
+    "lastChecked": 1771301461426,
+    "incidentHistory": [],
+    "metadata": {}
+  },
+  {
+    "id": "service_1771301461440",
+    "name": "Email Service",
+    "description": "Email delivery",
+    "category": "external",
+    "status": "degraded",
+    "uptime": 98.5,
+    "latency": 500,
+    "lastChecked": 1771301461440,
+    "incidentHistory": [],
+    "metadata": {}
+  }
+]

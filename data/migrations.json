@@ -1,0 +1,169 @@
+{
+  "history": [
+    {
+      "id": "migration-v1-to-v5",
+      "fromVersion": "v1",
+      "toVersion": "v5",
+      "status": "completed",
+      "startTime": 1771372554538,
+      "endTime": 1771372554539,
+      "steps": [
+        {
+          "id": "rename-id",
+          "status": "completed",
+          "duration": 0
+        },
+        {
+          "id": "add-metadata",
+          "status": "completed",
+          "duration": 0
+        },
+        {
+          "id": "flatten-config",
+          "status": "completed",
+          "duration": 0
+        },
+        {
+          "id": "add-tags",
+          "status": "completed",
+          "duration": 0
+        },
+        {
+          "id": "update-status",
+          "status": "completed",
+          "duration": 0
+        },
+        {
+          "id": "add-capabilities",
+          "status": "completed",
+          "duration": 0
+        },
+        {
+          "id": "convert-metrics",
+          "status": "completed",
+          "duration": 0
+        },
+        {
+          "id": "add-runtime",
+          "status": "completed",
+          "duration": 0
+        },
+        {
+          "id": "add-health",
+          "status": "completed",
+          "duration": 0
+        }
+      ]
+    },
+    {
+      "id": "migration-v1-to-v5",
+      "fromVersion": "v1",
+      "toVersion": "v5",
+      "status": "completed",
+      "startTime": 1771317181612,
+      "endTime": 1771317181613,
+      "steps": [
+        {
+          "id": "rename-id",
+          "status": "completed",
+          "duration": 1
+        },
+        {
+          "id": "add-metadata",
+          "status": "completed",
+          "duration": 0
+        },
+        {
+          "id": "flatten-config",
+          "status": "completed",
+          "duration": 0
+        },
+        {
+          "id": "add-tags",
+          "status": "completed",
+          "duration": 0
+        },
+        {
+          "id": "update-status",
+          "status": "completed",
+          "duration": 0
+        },
+        {
+          "id": "add-capabilities",
+          "status": "completed",
+          "duration": 0
+        },
+        {
+          "id": "convert-metrics",
+          "status": "completed",
+          "duration": 0
+        },
+        {
+          "id": "add-runtime",
+          "status": "completed",
+          "duration": 0
+        },
+        {
+          "id": "add-health",
+          "status": "completed",
+          "duration": 0
+        }
+      ]
+    },
+    {
+      "id": "migration-v1-to-v5",
+      "fromVersion": "v1",
+      "toVersion": "v5",
+      "status": "completed",
+      "startTime": 1771317127677,
+      "endTime": 1771317127677,
+      "steps": [
+        {
+          "id": "rename-id",
+          "status": "completed",
+          "duration": 0
+        },
+        {
+          "id": "add-metadata",
+          "status": "completed",
+          "duration": 0
+        },
+        {
+          "id": "flatten-config",
+          "status": "completed",
+          "duration": 0
+        },
+        {
+          "id": "add-tags",
+          "status": "completed",
+          "duration": 0
+        },
+        {
+          "id": "update-status",
+          "status": "completed",
+          "duration": 0
+        },
+        {
+          "id": "add-capabilities",
+          "status": "completed",
+          "duration": 0
+        },
+        {
+          "id": "convert-metrics",
+          "status": "completed",
+          "duration": 0
+        },
+        {
+          "id": "add-runtime",
+          "status": "completed",
+          "duration": 0
+        },
+        {
+          "id": "add-health",
+          "status": "completed",
+          "duration": 0
+        }
+      ]
+    }
+  ]
+}

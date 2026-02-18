@@ -1,0 +1,15 @@
+{
+  "id": "fd747489-e81d-414e-99f7-b0f972f8e4c6",
+  "content": "Manual fix needed: SEC-019",
+  "cleaned_content": "Manual fix needed: SEC-019",
+  "label": "PM",
+  "output_type": "text",
+  "metadata": {},
+  "timestamp": "2026-02-17T15:34:25.051667",
+  "content_hash": "df6e3033",
+  "content_length": 26,
+  "has_debug_markers": false,
+  "debug_markers": [],
+  "code_blocks": [],
+  "code_block_count": 0
+}

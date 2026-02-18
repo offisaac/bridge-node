@@ -1,0 +1,23 @@
+{
+  "id": "1dd2b28a-48c9-4ca3-9c87-1704f490a3e6",
+  "content": "Issue: Broad exception catch in server.py",
+  "cleaned_content": "Issue: Broad exception catch in server.py",
+  "label": "Issue",
+  "output_type": "text",
+  "metadata": {},
+  "timestamp": "2026-02-17T01:55:10.930104",
+  "content_hash": "6a420ee7",
+  "content_length": 41,
+  "has_debug_markers": true,
+  "debug_markers": [
+    {
+      "keyword": "exception",
+      "context": "Issue: Broad exception catch in server.py",
+      "line_number": null,
+      "timestamp": "2026-02-17T01:55:10.930104",
+      "severity": "high"
+    }
+  ],
+  "code_blocks": [],
+  "code_block_count": 0
+}

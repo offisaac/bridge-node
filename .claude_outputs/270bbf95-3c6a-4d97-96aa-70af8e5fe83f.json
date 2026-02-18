@@ -1,0 +1,15 @@
+{
+  "id": "270bbf95-3c6a-4d97-96aa-70af8e5fe83f",
+  "content": "test with token",
+  "cleaned_content": "test with token",
+  "label": "test",
+  "output_type": "text",
+  "metadata": {},
+  "timestamp": "2026-02-17T10:05:49.932599",
+  "content_hash": "5d8d3522",
+  "content_length": 15,
+  "has_debug_markers": false,
+  "debug_markers": [],
+  "code_blocks": [],
+  "code_block_count": 0
+}

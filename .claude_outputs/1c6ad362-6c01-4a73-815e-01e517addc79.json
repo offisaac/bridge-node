@@ -1,0 +1,23 @@
+{
+  "id": "1c6ad362-6c01-4a73-815e-01e517addc79",
+  "content": "Issue: Broad exception catch in agent_scheduler.py",
+  "cleaned_content": "Issue: Broad exception catch in agent_scheduler.py",
+  "label": "Issue",
+  "output_type": "text",
+  "metadata": {},
+  "timestamp": "2026-02-17T15:33:28.317394",
+  "content_hash": "6cea6784",
+  "content_length": 50,
+  "has_debug_markers": true,
+  "debug_markers": [
+    {
+      "keyword": "exception",
+      "context": "Issue: Broad exception catch in agent_scheduler.py",
+      "line_number": null,
+      "timestamp": "2026-02-17T15:33:28.317394",
+      "severity": "high"
+    }
+  ],
+  "code_blocks": [],
+  "code_block_count": 0
+}

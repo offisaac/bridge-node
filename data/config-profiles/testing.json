@@ -1,0 +1,8 @@
+{
+  "logLevel": "warn",
+  "maxAgents": 2,
+  "timeout": 5000,
+  "retryAttempts": 1,
+  "cacheEnabled": false,
+  "debugMode": false
+}

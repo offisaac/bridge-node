@@ -6,9 +6,29 @@ import aiofiles
 import json
 import time
 from typing import Dict, Optional, List, Set
-from fastapi import UploadFile
+from fastapi import UploadFile, HTTPException
 
 from config import UPLOAD_DIR, CHUNK_SIZE
+
+
+def validate_filename(filename: str) -> str:
+    """Validate filename to prevent path traversal attacks.
+    Returns the safe filename or raises HTTPException."""
+    if not filename:
+        raise HTTPException(status_code=400, detail="Filename cannot be empty")
+
+    # Get only the basename to remove any path components
+    safe_filename = os.path.basename(filename)
+
+    # Check for path traversal patterns
+    if ".." in safe_filename or "/" in safe_filename or "\\" in safe_filename:
+        raise HTTPException(status_code=400, detail="Invalid filename: path traversal not allowed")
+
+    # Prevent hidden files
+    if safe_filename.startswith('.'):
+        raise HTTPException(status_code=400, detail="Hidden files not allowed")
+
+    return safe_filename
 
 
 class FileTransfer:
@@ -257,7 +277,10 @@ class FileTransfer:
 
         upload = self.uploads[upload_id]
         chunk_dir = self._get_chunk_dir(upload_id)
-        final_path = os.path.join(UPLOAD_DIR, f"{upload_id}_{upload['filename']}")
+
+        # SEC-015: Validate filename to prevent path traversal
+        safe_filename = validate_filename(upload['filename'])
+        final_path = os.path.join(UPLOAD_DIR, f"{upload_id}_{safe_filename}")
 
         os.makedirs(UPLOAD_DIR, exist_ok=True)
 

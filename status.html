@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acme Corp Status</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+      line-height: 1.6;
+    }
+    .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+    header {
+      text-align: center;
+      padding: 40px 0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .logo { font-size: 24px; font-weight: bold; color: #2563eb; }
+    .overall-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 20px;
+      background: #f59e0b20;
+      color: #f59e0b;
+      font-weight: 600;
+      margin-top: 16px;
+    }
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #f59e0b;
+    }
+    main { padding: 20px 0; }
+    h2 { margin: 30px 0 15px; font-size: 18px; }
+    h3 { margin: 20px 0 10px; font-size: 14px; text-transform: uppercase; color: #64748b; }
+    .category { margin-bottom: 20px; }
+    .service-list { background: white; border-radius: 8px; overflow: hidden; }
+    .service-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .service-item:last-child { border-bottom: none; }
+    .service-info { display: flex; flex-direction: column; }
+    .service-name { font-weight: 600; }
+    .service-desc { font-size: 14px; color: #64748b; }
+    .service-status { text-align: right; font-weight: 500; }
+    .uptime, .latency { display: block; font-size: 12px; color: #94a3b8; font-weight: normal; }
+    .incident { background: white; border-radius: 8px; padding: 20px; margin-bottom: 15px; border-left: 4px solid; }
+    .incident-low { border-color: #f59e0b; }
+    .incident-medium { border-color: #f97316; }
+    .incident-high { border-color: #ef4444; }
+    .incident-critical { border-color: #dc2626; }
+    .incident-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
+    .incident-title { font-weight: 600; }
+    .incident-status { text-transform: capitalize; font-size: 14px; color: #64748b; }
+    .incident-time { font-size: 12px; color: #94a3b8; }
+    .update { padding: 10px 0; border-top: 1px solid #e2e8f0; }
+    .update-time { font-size: 12px; color: #64748b; }
+    footer { text-align: center; padding: 30px; color: #94a3b8; font-size: 14px; }
+    
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">Acme Corp Status</div>
+      <p>Real-time system status</p>
+      <div class="overall-status">
+        <span class="status-dot"></span>
+        Degraded Performance
+      </div>
+    </header>
+
+    <main>
+      
+        <div class="active-incidents">
+          <h2>Active Incidents</h2>
+          
+            <div class="incident incident-medium">
+              <div class="incident-header">
+                <span class="incident-title">Email Service Degradation</span>
+                <span class="incident-status">investigating</span>
+              </div>
+              <p>Email delivery is experiencing delays due to high volume.</p>
+              <div class="incident-updates">
+                
+              </div>
+            </div>
+          
+        </div>
+      
+
+      <h2>System Status</h2>
+      
+        <div class="category">
+          <h3>Core Services</h3>
+          <div class="service-list">
+            
+              <div class="service-item">
+                <div class="service-info">
+                  <span class="service-name">API Gateway</span>
+                  <span class="service-desc">Main API endpoint</span>
+                </div>
+                <div class="service-status" style="color: #22c55e">
+                  Operational
+                  <span class="uptime">99.99% uptime</span>
+                  <span class="latency">45ms</span>
+                </div>
+              </div>
+            
+              <div class="service-item">
+                <div class="service-info">
+                  <span class="service-name">Database</span>
+                  <span class="service-desc">Primary database cluster</span>
+                </div>
+                <div class="service-status" style="color: #22c55e">
+                  Operational
+                  <span class="uptime">99.999% uptime</span>
+                  <span class="latency">5ms</span>
+                </div>
+              </div>
+            
+              <div class="service-item">
+                <div class="service-info">
+                  <span class="service-name">Payment Service</span>
+                  <span class="service-desc">Payment processing</span>
+                </div>
+                <div class="service-status" style="color: #22c55e">
+                  Operational
+                  <span class="uptime">99.98% uptime</span>
+                  <span class="latency">120ms</span>
+                </div>
+              </div>
+            
+              <div class="service-item">
+                <div class="service-info">
+                  <span class="service-name">User Service</span>
+                  <span class="service-desc">User authentication and management</span>
+                </div>
+                <div class="service-status" style="color: #22c55e">
+                  Operational
+                  <span class="uptime">99.95% uptime</span>
+                  <span class="latency">32ms</span>
+                </div>
+              </div>
+            
+          </div>
+        </div>
+      
+        <div class="category">
+          <h3>Supporting Services</h3>
+          <div class="service-list">
+            
+              <div class="service-item">
+                <div class="service-info">
+                  <span class="service-name">Cache Layer</span>
+                  <span class="service-desc">Redis cache cluster</span>
+                </div>
+                <div class="service-status" style="color: #22c55e">
+                  Operational
+                  <span class="uptime">99.9% uptime</span>
+                  <span class="latency">2ms</span>
+                </div>
+              </div>
+            
+          </div>
+        </div>
+      
+        <div class="category">
+          <h3>External Services</h3>
+          <div class="service-list">
+            
+              <div class="service-item">
+                <div class="service-info">
+                  <span class="service-name">CDN</span>
+                  <span class="service-desc">Content delivery network</span>
+                </div>
+                <div class="service-status" style="color: #22c55e">
+                  Operational
+                  <span class="uptime">99.99% uptime</span>
+                  <span class="latency">15ms</span>
+                </div>
+              </div>
+            
+              <div class="service-item">
+                <div class="service-info">
+                  <span class="service-name">Email Service</span>
+                  <span class="service-desc">Email delivery</span>
+                </div>
+                <div class="service-status" style="color: #f59e0b">
+                  Degraded Performance
+                  <span class="uptime">98.5% uptime</span>
+                  <span class="latency">500ms</span>
+                </div>
+              </div>
+            
+          </div>
+        </div>
+      
+
+      
+        <div class="past-incidents">
+          <h2>Past Incidents</h2>
+          
+            <div class="incident incident-medium">
+              <div class="incident-header">
+                <span class="incident-title">Email Service Degradation</span>
+                <span class="incident-status">investigating</span>
+              </div>
+              <p>Email delivery is experiencing delays due to high volume.</p>
+              <span class="incident-time">
+                2026/2/17 12:11:01 - Ongoing
+              </span>
+            </div>
+          
+        </div>
+      
+    </main>
+
+    <footer>
+      <p>Last updated: 2026/2/17 12:11:01</p>
+    </footer>
+  </div>
+</body>
+</html>

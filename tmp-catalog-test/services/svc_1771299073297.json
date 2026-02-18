@@ -1,0 +1,41 @@
+{
+  "id": "svc_1771299073297",
+  "name": "web-frontend",
+  "description": "Customer facing web application",
+  "status": "active",
+  "tier": "supporting",
+  "lifecycle": "production",
+  "owners": [
+    {
+      "id": "owner4",
+      "name": "Diana",
+      "email": "diana@example.com",
+      "team": "frontend",
+      "role": "owner",
+      "slack": null,
+      "oncall": null
+    }
+  ],
+  "team": "frontend",
+  "type": "frontend",
+  "language": null,
+  "framework": "react",
+  "repository": null,
+  "documentation": null,
+  "endpoints": [],
+  "healthCheck": null,
+  "dependsOn": [
+    "svc_1771299073224"
+  ],
+  "dependents": [],
+  "uptime": 100,
+  "latency": null,
+  "requestsPerDay": null,
+  "tags": [
+    "web",
+    "customer-facing"
+  ],
+  "metadata": {},
+  "createdAt": 1771299073297,
+  "updatedAt": 1771299073617
+}

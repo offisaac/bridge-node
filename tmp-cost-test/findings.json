@@ -1,0 +1,99 @@
+[
+  {
+    "id": "finding_1771298901749",
+    "type": "idle_resource",
+    "title": "Idle ec2 Resource",
+    "description": "Resource dev-server has been idle for 30 days",
+    "category": "compute",
+    "resourceType": "ec2",
+    "resourceId": "res_1771298901690",
+    "resourceName": "dev-server",
+    "region": "us-east-1",
+    "priority": "high",
+    "currentCost": 80,
+    "potentialSavings": 80,
+    "savingsPercentage": 100,
+    "details": {
+      "idleDays": 30
+    },
+    "recommendation": "Consider terminating or downsizing this resource",
+    "estimatedEffort": "low",
+    "riskLevel": "low",
+    "tags": {},
+    "detectedAt": 1771298901749,
+    "metadata": {}
+  },
+  {
+    "id": "finding_1771298901749",
+    "type": "underutilized",
+    "title": "Underutilized ec2",
+    "description": "Resource web-server-1 has low utilization (5%)",
+    "category": "compute",
+    "resourceType": "ec2",
+    "resourceId": "res_1771298901674",
+    "resourceName": "web-server-1",
+    "region": "us-east-1",
+    "priority": "medium",
+    "currentCost": 150,
+    "potentialSavings": 60,
+    "savingsPercentage": 40,
+    "details": {
+      "utilization": 5
+    },
+    "recommendation": "Consider downsizing to a smaller instance type",
+    "estimatedEffort": "medium",
+    "riskLevel": "low",
+    "tags": {},
+    "detectedAt": 1771298901749,
+    "metadata": {}
+  },
+  {
+    "id": "finding_1771298901750",
+    "type": "old_snapshot",
+    "title": "Old Snapshot",
+    "description": "Snapshot backups is 120 days old",
+    "category": "storage",
+    "resourceType": "ebs",
+    "resourceId": "res_1771298901722",
+    "resourceName": "backups",
+    "region": "us-east-1",
+    "priority": "low",
+    "currentCost": 50,
+    "potentialSavings": 50,
+    "savingsPercentage": 100,
+    "details": {
+      "ageDays": 120
+    },
+    "recommendation": "Delete old snapshots or archive to cheaper storage",
+    "estimatedEffort": "low",
+    "riskLevel": "low",
+    "tags": {},
+    "detectedAt": 1771298901750,
+    "metadata": {}
+  },
+  {
+    "id": "finding_1771298901750",
+    "type": "oversized",
+    "title": "Unnecessary Multi-AZ Deployment",
+    "description": "RDS instance dev-database uses Multi-AZ but environment is development",
+    "category": "database",
+    "resourceType": "rds",
+    "resourceId": "res_1771298901707",
+    "resourceName": "dev-database",
+    "region": "us-east-1",
+    "priority": "medium",
+    "currentCost": 200,
+    "potentialSavings": 100,
+    "savingsPercentage": 50,
+    "details": {
+      "multiAz": true,
+      "environment": "development"
+    },
+    "recommendation": "Switch to Single-AZ for non-production environments",
+    "estimatedEffort": "low",
+    "riskLevel": "low",
+    "tags": {},
+    "detectedAt": 1771298901750,
+    "metadata": {}
+  }
+]

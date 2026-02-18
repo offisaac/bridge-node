@@ -1,0 +1,30 @@
+{
+  "agent_a367df15": {
+    "id": "agent_a367df15",
+    "name": "CLAUDE_A",
+    "role": "developer",
+    "status": "working",
+    "current_task": "task_71048f06",
+    "capabilities": [
+      "python",
+      "frontend"
+    ],
+    "registered_at": "2026-02-16T22:45:48.086579",
+    "last_heartbeat": "2026-02-16T22:45:48.086618",
+    "workspace": ""
+  },
+  "agent_c37d50dd": {
+    "id": "agent_c37d50dd",
+    "name": "CLAUDE_B",
+    "role": "reviewer",
+    "status": "working",
+    "current_task": "task_73604eab",
+    "capabilities": [
+      "security",
+      "code-review"
+    ],
+    "registered_at": "2026-02-16T22:45:48.167125",
+    "last_heartbeat": "2026-02-16T22:45:48.167156",
+    "workspace": ""
+  }
+}

@@ -1,0 +1,11 @@
+[
+  {
+    "id": "quota_1771312525819",
+    "name": "Storage (Free)",
+    "resource": "storage",
+    "limit": 1000000000,
+    "window": "month",
+    "scope": "user",
+    "createdAt": 1771312525819
+  }
+]

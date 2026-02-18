@@ -1,0 +1,13 @@
+{
+  "name": "NODE_ENV",
+  "value": "production",
+  "type": "string",
+  "description": "",
+  "required": false,
+  "scope": "user",
+  "validation": null,
+  "encrypted": false,
+  "deprecated": false,
+  "deprecatedMessage": "",
+  "metadata": {}
+}

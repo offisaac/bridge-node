@@ -1,0 +1,64 @@
+{
+  "timestamp": "2026-02-18T01:45:00Z",
+  "project": "bridge-node",
+  "test_framework": "pytest",
+  "test_command": "pytest tests/ --cov=. --cov-report=term-missing",
+  "test_results": {
+    "total_tests": 85,
+    "passed": 85,
+    "failed": 0,
+    "skipped": 0,
+    "errors": 0,
+    "test_files_found": 9,
+    "status": "PASS"
+  },
+  "test_framework_status": {
+    "pytest_installed": true,
+    "pytest_collected": 85,
+    "pytest_version": "9.0.2",
+    "pytest_cov_installed": true,
+    "pytest_asyncio_installed": true
+  },
+  "test_files": [
+    "tests/conftest.py",
+    "tests/test_api/test_auth.py",
+    "tests/test_api/test_encryption.py",
+    "tests/test_api/test_tunnel.py",
+    "tests/test_api/test_websocket.py",
+    "tests/test_agents/test_agent_cache.py",
+    "tests/test_agents/test_agent_queue.py",
+    "tests/test_agents/test_agent_security.py",
+    "tests/test_shared.py",
+    "tests/test_auth.py"
+  ],
+  "coverage_by_module": {
+    "auth.py": "93%",
+    "encryption.py": "85%",
+    "websocket_manager.py": "100%",
+    "tunnel_config.py": "25%",
+    "agent_cache.py": "high",
+    "agent_queue.py": "high",
+    "agent_security.py": "high"
+  },
+  "overall_coverage": "3%",
+  "core_modules_coverage": "90%",
+  "known_issues": {
+    "total": 16,
+    "fixed": 16,
+    "critical": 2,
+    "high": 5,
+    "medium": 9
+  },
+  "sandbox_environment": {
+    "python_version": "3.13.11",
+    "node_version_available": ">=18.0.0",
+    "dependencies_installed": false
+  },
+  "recommendations": [
+    "Add more tests for tunnel_config.py to increase coverage",
+    "Add integration tests for server.py",
+    "Add more agent module tests",
+    "Consider adding integration tests"
+  ],
+  "status": "COMPLETED"
+}

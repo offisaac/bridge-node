@@ -1,0 +1,53 @@
+{
+  "pools": {
+    "production": {
+      "agents": [
+        {
+          "id": "agent-1771316413513-1",
+          "status": "active",
+          "createdAt": 1771316413513
+        },
+        {
+          "id": "agent-1771316413513-2",
+          "status": "active",
+          "createdAt": 1771316413513
+        },
+        {
+          "id": "agent-1771316413514-0",
+          "status": "active",
+          "createdAt": 1771316413514
+        },
+        {
+          "id": "agent-1771316471937-0",
+          "status": "active",
+          "createdAt": 1771316471937
+        }
+      ]
+    },
+    "batch": {
+      "agents": [
+        {
+          "id": "agent-1771316413527-0",
+          "status": "active",
+          "createdAt": 1771316413527
+        },
+        {
+          "id": "agent-1771316413527-1",
+          "status": "active",
+          "createdAt": 1771316413527
+        },
+        {
+          "id": "agent-1771316471953-0",
+          "status": "active",
+          "createdAt": 1771316471953
+        },
+        {
+          "id": "agent-1771316471953-1",
+          "status": "active",
+          "createdAt": 1771316471953
+        }
+      ]
+    }
+  },
+  "lastUpdate": 1771316471953
+}

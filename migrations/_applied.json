@@ -1,0 +1,12 @@
+{
+  "1": {
+    "name": "initial_schema",
+    "appliedAt": "2026-02-17T02:16:41.159Z",
+    "status": "applied"
+  },
+  "2": {
+    "name": "add_posts_table",
+    "appliedAt": "2026-02-17T02:16:41.160Z",
+    "status": "applied"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "id": "0183c187-8539-47d5-b92a-9043611b6854",
+  "content": "Issue: Shell injection risk in server.py",
+  "cleaned_content": "Issue: Shell injection risk in server.py",
+  "label": "Issue",
+  "output_type": "text",
+  "metadata": {},
+  "timestamp": "2026-02-17T09:58:56.239804",
+  "content_hash": "60ecf3a9",
+  "content_length": 40,
+  "has_debug_markers": false,
+  "debug_markers": [],
+  "code_blocks": [],
+  "code_block_count": 0
+}

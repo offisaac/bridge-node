@@ -1,0 +1,144 @@
+{
+  "queues": {
+    "0": [],
+    "1": [],
+    "2": [],
+    "3": [
+      {
+        "id": "item_1771313520822_qgtud343j",
+        "agentId": "agent-1",
+        "task": {
+          "action": "cleanup",
+          "data": "temp-files"
+        },
+        "priority": 3,
+        "priorityLabel": "LOW",
+        "payload": {},
+        "metadata": {},
+        "status": "pending",
+        "createdAt": 1771313520822,
+        "startedAt": null,
+        "completedAt": null,
+        "processedBy": null,
+        "retries": 0,
+        "maxRetries": 3,
+        "timeout": 300000,
+        "deadline": null
+      },
+      {
+        "id": "item_1771330441730_3lple9b5k",
+        "agentId": "agent-1",
+        "task": {
+          "action": "cleanup",
+          "data": "temp-files"
+        },
+        "priority": 3,
+        "priorityLabel": "LOW",
+        "payload": {},
+        "metadata": {},
+        "status": "pending",
+        "createdAt": 1771330441730,
+        "startedAt": null,
+        "completedAt": null,
+        "processedBy": null,
+        "retries": 0,
+        "maxRetries": 3,
+        "timeout": 300000,
+        "deadline": null
+      },
+      {
+        "id": "item_1771349437255_ngdh9nsom",
+        "agentId": "agent-1",
+        "task": {
+          "action": "cleanup",
+          "data": "temp-files"
+        },
+        "priority": 3,
+        "priorityLabel": "LOW",
+        "payload": {},
+        "metadata": {},
+        "status": "pending",
+        "createdAt": 1771349437255,
+        "startedAt": null,
+        "completedAt": null,
+        "processedBy": null,
+        "retries": 0,
+        "maxRetries": 3,
+        "timeout": 300000,
+        "deadline": null
+      }
+    ],
+    "4": [
+      {
+        "id": "item_1771313520859_3zr8yy3jh",
+        "agentId": "agent-2",
+        "task": {
+          "action": "backup",
+          "data": "db"
+        },
+        "priority": 4,
+        "priorityLabel": "IDLE",
+        "payload": {},
+        "metadata": {},
+        "status": "pending",
+        "createdAt": 1771313520859,
+        "startedAt": null,
+        "completedAt": null,
+        "processedBy": null,
+        "retries": 0,
+        "maxRetries": 3,
+        "timeout": 300000,
+        "deadline": null
+      },
+      {
+        "id": "item_1771330441756_hyq0bt64p",
+        "agentId": "agent-2",
+        "task": {
+          "action": "backup",
+          "data": "db"
+        },
+        "priority": 4,
+        "priorityLabel": "IDLE",
+        "payload": {},
+        "metadata": {},
+        "status": "pending",
+        "createdAt": 1771330441756,
+        "startedAt": null,
+        "completedAt": null,
+        "processedBy": null,
+        "retries": 0,
+        "maxRetries": 3,
+        "timeout": 300000,
+        "deadline": null
+      },
+      {
+        "id": "item_1771349437285_0korr14xe",
+        "agentId": "agent-2",
+        "task": {
+          "action": "backup",
+          "data": "db"
+        },
+        "priority": 4,
+        "priorityLabel": "IDLE",
+        "payload": {},
+        "metadata": {},
+        "status": "pending",
+        "createdAt": 1771349437285,
+        "startedAt": null,
+        "completedAt": null,
+        "processedBy": null,
+        "retries": 0,
+        "maxRetries": 3,
+        "timeout": 300000,
+        "deadline": null
+      }
+    ]
+  },
+  "stats": {
+    "enqueued": 15,
+    "processed": 9,
+    "failed": 0,
+    "cancelled": 0,
+    "expired": 0
+  }
+}

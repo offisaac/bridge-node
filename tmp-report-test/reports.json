@@ -1,0 +1,79 @@
+{
+  "templates": [
+    {
+      "id": "template_1771299997083",
+      "name": "Daily Summary",
+      "description": "",
+      "type": "summary",
+      "format": "json",
+      "query": null,
+      "transformer": null,
+      "sections": [
+        "overview",
+        "metrics",
+        "alerts"
+      ],
+      "metadata": {}
+    },
+    {
+      "id": "template_1771299997101",
+      "name": "Weekly Performance",
+      "description": "",
+      "type": "performance",
+      "format": "markdown",
+      "query": null,
+      "transformer": null,
+      "sections": [
+        "throughput",
+        "latency",
+        "errors"
+      ],
+      "metadata": {}
+    }
+  ],
+  "schedules": [
+    {
+      "id": "scheduled_1771299997127",
+      "name": "Daily Report",
+      "templateId": "template_1771299997083",
+      "frequency": "daily",
+      "cronExpression": null,
+      "timeOfDay": "09:00",
+      "dayOfWeek": 1,
+      "dayOfMonth": 1,
+      "recipients": [
+        "team@example.com"
+      ],
+      "channels": [
+        "email",
+        "slack"
+      ],
+      "enabled": true,
+      "lastRun": 1771299997181,
+      "nextRun": "2026-02-18T01:00:00.000Z",
+      "status": "completed",
+      "createdAt": 1771299997127
+    },
+    {
+      "id": "scheduled_1771299997142",
+      "name": "Weekly Report",
+      "templateId": "template_1771299997101",
+      "frequency": "weekly",
+      "cronExpression": null,
+      "timeOfDay": "10:00",
+      "dayOfWeek": 1,
+      "dayOfMonth": 1,
+      "recipients": [
+        "manager@example.com"
+      ],
+      "channels": [
+        "email"
+      ],
+      "enabled": true,
+      "lastRun": null,
+      "nextRun": "2026-02-23T02:00:00.000Z",
+      "status": "pending",
+      "createdAt": 1771299997142
+    }
+  ]
+}

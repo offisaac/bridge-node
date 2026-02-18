@@ -1,0 +1,44 @@
+{
+  "res_1771298901674": {
+    "type": "ec2",
+    "name": "web-server-1",
+    "region": "us-east-1",
+    "monthlyCost": 150,
+    "utilization": 5,
+    "idleDays": 0,
+    "size": "t3.large",
+    "recommendedSize": "t3.medium",
+    "id": "res_1771298901674",
+    "addedAt": 1771298901674
+  },
+  "res_1771298901690": {
+    "type": "ec2",
+    "name": "dev-server",
+    "region": "us-east-1",
+    "monthlyCost": 80,
+    "utilization": 0,
+    "idleDays": 30,
+    "status": "running",
+    "id": "res_1771298901690",
+    "addedAt": 1771298901690
+  },
+  "res_1771298901707": {
+    "type": "rds",
+    "name": "dev-database",
+    "region": "us-east-1",
+    "monthlyCost": 200,
+    "multiAz": true,
+    "environment": "development",
+    "id": "res_1771298901707",
+    "addedAt": 1771298901707
+  },
+  "res_1771298901722": {
+    "type": "snapshot",
+    "name": "backups",
+    "region": "us-east-1",
+    "monthlyCost": 50,
+    "ageDays": 120,
+    "id": "res_1771298901722",
+    "addedAt": 1771298901722
+  }
+}

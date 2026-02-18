@@ -1,0 +1,8 @@
+{
+  "logLevel": "info",
+  "maxAgents": 20,
+  "timeout": 60000,
+  "retryAttempts": 5,
+  "cacheEnabled": true,
+  "debugMode": false
+}

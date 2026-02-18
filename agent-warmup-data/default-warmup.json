@@ -1,0 +1,86 @@
+{
+  "profiles": [
+    {
+      "id": "profile_1771314420409",
+      "name": "Default Warmup",
+      "description": "Standard warmup for all agents",
+      "tasks": [
+        {
+          "taskType": "warm-connection",
+          "priority": 10,
+          "timeout": 5000
+        },
+        {
+          "taskType": "init-cache",
+          "priority": 8,
+          "timeout": 10000
+        },
+        {
+          "taskType": "prepare-data",
+          "priority": 5,
+          "timeout": 30000
+        }
+      ],
+      "parallel": true,
+      "timeout": 300000,
+      "retryPolicy": {
+        "maxRetries": 3,
+        "backoff": "exponential",
+        "initialDelay": 1000
+      }
+    },
+    {
+      "id": "profile_1771314420430",
+      "name": "ML Model Warmup",
+      "description": "Warmup for ML agents",
+      "tasks": [
+        {
+          "taskType": "warm-connection",
+          "priority": 10,
+          "timeout": 5000
+        },
+        {
+          "taskType": "load-model",
+          "priority": 9,
+          "timeout": 120000
+        },
+        {
+          "taskType": "init-cache",
+          "priority": 7,
+          "timeout": 10000
+        },
+        {
+          "taskType": "prepare-data",
+          "priority": 5,
+          "timeout": 60000
+        }
+      ],
+      "parallel": true,
+      "timeout": 300000,
+      "retryPolicy": {
+        "maxRetries": 3,
+        "backoff": "exponential",
+        "initialDelay": 1000
+      }
+    },
+    {
+      "id": "profile_1771314420477",
+      "name": "Fast Start",
+      "description": "Quick warmup for fast startup",
+      "tasks": [
+        {
+          "taskType": "warm-connection",
+          "priority": 10,
+          "timeout": 3000
+        }
+      ],
+      "parallel": true,
+      "timeout": 300000,
+      "retryPolicy": {
+        "maxRetries": 3,
+        "backoff": "exponential",
+        "initialDelay": 1000
+      }
+    }
+  ]
+}

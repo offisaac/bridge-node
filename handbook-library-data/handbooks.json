@@ -1,0 +1,130 @@
+[
+  {
+    "id": "handbook_1771301197640",
+    "title": "Quick Start Guide",
+    "content": "Welcome to our platform! This guide will help you get started quickly. First, install the CLI tool...",
+    "category": "getting-started",
+    "tags": [
+      "quick-start",
+      "beginner",
+      "installation"
+    ],
+    "author": "admin",
+    "version": "1.0.0",
+    "createdAt": 1771301197640,
+    "updatedAt": 1771301197640,
+    "metadata": {}
+  },
+  {
+    "id": "handbook_1771301197652",
+    "title": "API Authentication",
+    "content": "To authenticate with our API, you need to obtain an API key. Send a POST request to /auth/login with your credentials...",
+    "category": "api-reference",
+    "tags": [
+      "api",
+      "authentication",
+      "security"
+    ],
+    "author": "dev-team",
+    "version": "1.0.0",
+    "createdAt": 1771301197652,
+    "updatedAt": 1771301197652,
+    "metadata": {}
+  },
+  {
+    "id": "handbook_1771301197668",
+    "title": "Configuration Options",
+    "content": "Our application supports various configuration options. You can configure them via config.yaml or environment variables...",
+    "category": "configuration",
+    "tags": [
+      "config",
+      "yaml",
+      "environment"
+    ],
+    "author": "ops-team",
+    "version": "1.0.0",
+    "createdAt": 1771301197668,
+    "updatedAt": 1771301197668,
+    "metadata": {}
+  },
+  {
+    "id": "handbook_1771301197680",
+    "title": "Troubleshooting Common Errors",
+    "content": "Common errors and their solutions: Connection timeout - check network. Out of memory - increase heap size. Permission denied - check file permissions...",
+    "category": "troubleshooting",
+    "tags": [
+      "errors",
+      "debugging",
+      "solutions"
+    ],
+    "author": "support-team",
+    "version": "1.0.0",
+    "createdAt": 1771301197680,
+    "updatedAt": 1771301197680,
+    "metadata": {}
+  },
+  {
+    "id": "handbook_1771301197695",
+    "title": "Security Best Practices",
+    "content": "Always use HTTPS. Rotate API keys regularly. Never commit secrets to version control. Enable two-factor authentication...",
+    "category": "security",
+    "tags": [
+      "security",
+      "best-practices",
+      "encryption"
+    ],
+    "author": "security-team",
+    "version": "1.0.0",
+    "createdAt": 1771301197695,
+    "updatedAt": 1771301197695,
+    "metadata": {}
+  },
+  {
+    "id": "handbook_1771301198370",
+    "title": "Deployment Strategies",
+    "content": "We support multiple deployment strategies: Rolling updates, Blue-green deployments, Canary releases. Choose based on your risk tolerance...",
+    "category": "deployment",
+    "tags": [
+      "deployment",
+      "devops",
+      "ci-cd"
+    ],
+    "author": "ops-team",
+    "version": "1.0.0",
+    "createdAt": 1771301198370,
+    "updatedAt": 1771301198370,
+    "metadata": {}
+  },
+  {
+    "id": "handbook_1771301198409",
+    "title": "Rate Limiting Guide",
+    "content": "Our API has rate limits to prevent abuse. Free tier: 100 requests/min. Pro tier: 1000 requests/min. Enterprise: unlimited...",
+    "category": "api-reference",
+    "tags": [
+      "api",
+      "rate-limit",
+      " quotas"
+    ],
+    "author": "dev-team",
+    "version": "1.0.0",
+    "createdAt": 1771301198409,
+    "updatedAt": 1771301198409,
+    "metadata": {}
+  },
+  {
+    "id": "handbook_1771301198424",
+    "title": "Database Migration",
+    "content": "When migrating databases, always backup first. Use transactions for data integrity. Test in staging before production...",
+    "category": "deployment",
+    "tags": [
+      "database",
+      "migration",
+      "backup"
+    ],
+    "author": "dba-team",
+    "version": "1.0.0",
+    "createdAt": 1771301198424,
+    "updatedAt": 1771301198424,
+    "metadata": {}
+  }
+]

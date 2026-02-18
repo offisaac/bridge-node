@@ -1,0 +1,53 @@
+{
+  "version": "1.0",
+  "updatedAt": "2026-02-17T02:41:35.214Z",
+  "versions": {
+    "v1": {
+      "version": "v1",
+      "status": "deprecated",
+      "deprecationPhase": "announced",
+      "deprecatedAt": "2026-02-17T02:41:35.202Z",
+      "sunsetDate": "2026-03-01",
+      "retiredAt": null,
+      "releaseDate": "2026-02-17T02:41:35.165Z",
+      "changelog": [],
+      "endpoints": [],
+      "metadata": {}
+    },
+    "v2": {
+      "version": "v2",
+      "status": "active",
+      "deprecationPhase": null,
+      "deprecatedAt": null,
+      "sunsetDate": null,
+      "retiredAt": null,
+      "releaseDate": "2026-02-17T02:41:35.178Z",
+      "changelog": [
+        {
+          "type": "feature",
+          "description": "New API version"
+        }
+      ],
+      "endpoints": [],
+      "metadata": {}
+    }
+  },
+  "endpoints": {
+    "GET:/users:v2": {
+      "path": "/users",
+      "method": "GET",
+      "version": "v2",
+      "deprecated": false,
+      "deprecationMessage": null,
+      "replacement": null,
+      "since": null,
+      "removalDate": null,
+      "requestSchema": null,
+      "responseSchema": null,
+      "examples": {},
+      "metadata": {
+        "summary": "Get users"
+      }
+    }
+  }
+}

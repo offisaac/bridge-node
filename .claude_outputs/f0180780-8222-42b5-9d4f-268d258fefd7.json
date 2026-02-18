@@ -1,0 +1,15 @@
+{
+  "id": "f0180780-8222-42b5-9d4f-268d258fefd7",
+  "content": "trace test",
+  "cleaned_content": "trace test",
+  "label": "test",
+  "output_type": "text",
+  "metadata": {},
+  "timestamp": "2026-02-17T10:07:54.470067",
+  "content_hash": "52ebf671",
+  "content_length": 10,
+  "has_debug_markers": false,
+  "debug_markers": [],
+  "code_blocks": [],
+  "code_block_count": 0
+}

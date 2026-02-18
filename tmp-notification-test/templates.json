@@ -1,0 +1,120 @@
+{
+  "templates": [
+    {
+      "id": "template_1771300158586",
+      "name": "Alert Notification",
+      "description": "",
+      "type": "email",
+      "category": "alerts",
+      "subject": "Alert: {{alert_type}}",
+      "content": "Hello {{recipient_name}},\n\n{{message}}\n\nTimestamp: {{timestamp}}",
+      "htmlContent": null,
+      "variables": [
+        {
+          "name": "recipient_name",
+          "type": "string",
+          "required": true,
+          "description": "",
+          "enum": null
+        },
+        {
+          "name": "alert_type",
+          "type": "string",
+          "required": true,
+          "description": "",
+          "enum": null
+        },
+        {
+          "name": "message",
+          "type": "string",
+          "required": true,
+          "description": "",
+          "enum": null
+        },
+        {
+          "name": "timestamp",
+          "type": "datetime",
+          "required": true,
+          "default": "now",
+          "description": "",
+          "enum": null
+        }
+      ],
+      "metadata": {},
+      "version": 1,
+      "active": true,
+      "createdAt": 1771300158586,
+      "updatedAt": 1771300158586
+    },
+    {
+      "id": "template_1771300158607",
+      "name": "Daily Report",
+      "description": "",
+      "type": "slack",
+      "category": "reports",
+      "subject": "",
+      "content": "Daily Report for {{date}}\n\nTotal Users: {{total_users}}\nRevenue: ${{revenue}}",
+      "htmlContent": null,
+      "variables": [
+        {
+          "name": "date",
+          "type": "string",
+          "required": true,
+          "description": "",
+          "enum": null
+        },
+        {
+          "name": "total_users",
+          "type": "number",
+          "required": true,
+          "description": "",
+          "enum": null
+        },
+        {
+          "name": "revenue",
+          "type": "number",
+          "required": true,
+          "description": "",
+          "enum": null
+        }
+      ],
+      "metadata": {},
+      "version": 1,
+      "active": true,
+      "createdAt": 1771300158607,
+      "updatedAt": 1771300158607
+    }
+  ],
+  "channels": [
+    {
+      "id": "channel_1771300158628",
+      "name": "Email",
+      "type": "email",
+      "config": {
+        "smtp": "smtp.example.com"
+      },
+      "enabled": true,
+      "rateLimit": null,
+      "retryConfig": {
+        "maxRetries": 3,
+        "retryDelay": 1000,
+        "backoff": "exponential"
+      }
+    },
+    {
+      "id": "channel_1771300158641",
+      "name": "Slack",
+      "type": "slack",
+      "config": {
+        "webhook": "https://hooks.slack.com/..."
+      },
+      "enabled": true,
+      "rateLimit": null,
+      "retryConfig": {
+        "maxRetries": 3,
+        "retryDelay": 1000,
+        "backoff": "exponential"
+      }
+    }
+  ]
+}

@@ -1,0 +1,126 @@
+{
+  "version": "1.0.0",
+  "title": "User Management API",
+  "description": "API for managing users",
+  "basePath": "/api",
+  "endpoints": [
+    {
+      "id": "endpoint_1771299384432",
+      "path": "/users",
+      "method": "GET",
+      "summary": "List users",
+      "description": "Get a paginated list of users",
+      "tags": [
+        "users"
+      ],
+      "deprecated": false,
+      "parameters": [
+        {
+          "name": "page",
+          "location": "query",
+          "type": "integer",
+          "required": false,
+          "description": "",
+          "default": 1,
+          "enum": null,
+          "schema": null,
+          "deprecated": false
+        },
+        {
+          "name": "limit",
+          "location": "query",
+          "type": "integer",
+          "required": false,
+          "description": "",
+          "default": 10,
+          "enum": null,
+          "schema": null,
+          "deprecated": false
+        }
+      ],
+      "requestBody": null,
+      "responses": {
+        "200": {
+          "description": "Success"
+        },
+        "401": {
+          "description": "Unauthorized"
+        }
+      },
+      "security": [],
+      "authRequired": true,
+      "rateLimit": null
+    },
+    {
+      "id": "endpoint_1771299384455",
+      "path": "/users/{id}",
+      "method": "GET",
+      "summary": "Get user",
+      "description": "Get a user by ID",
+      "tags": [
+        "users"
+      ],
+      "deprecated": false,
+      "parameters": [
+        {
+          "name": "id",
+          "location": "path",
+          "type": "string",
+          "required": true,
+          "description": "",
+          "enum": null,
+          "schema": null,
+          "deprecated": false
+        }
+      ],
+      "requestBody": null,
+      "responses": {
+        "200": {
+          "description": "Success"
+        },
+        "404": {
+          "description": "User not found"
+        }
+      },
+      "security": [],
+      "authRequired": true,
+      "rateLimit": null
+    },
+    {
+      "id": "endpoint_1771299384469",
+      "path": "/users",
+      "method": "POST",
+      "summary": "Create user",
+      "description": "Create a new user",
+      "tags": [
+        "users"
+      ],
+      "deprecated": false,
+      "parameters": [],
+      "requestBody": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "email"
+        ]
+      },
+      "responses": {
+        "201": {
+          "description": "Created"
+        }
+      },
+      "security": [],
+      "authRequired": true,
+      "rateLimit": null
+    }
+  ],
+  "schemas": []
+}

@@ -1,0 +1,28 @@
+[
+  {
+    "id": "quota_1771298339382",
+    "name": "API Calls Daily",
+    "type": "api_calls",
+    "limit": 100,
+    "period": "day",
+    "scope": "user",
+    "action": "block",
+    "throttleAfter": null,
+    "throttleTo": null,
+    "softLimit": 80,
+    "metadata": {}
+  },
+  {
+    "id": "quota_1771298339394",
+    "name": "Bandwidth Monthly",
+    "type": "bandwidth",
+    "limit": 1000,
+    "period": "month",
+    "scope": "api_key",
+    "action": "throttle",
+    "throttleAfter": 800,
+    "throttleTo": 10,
+    "softLimit": null,
+    "metadata": {}
+  }
+]

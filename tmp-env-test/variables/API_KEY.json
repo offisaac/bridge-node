@@ -1,0 +1,13 @@
+{
+  "name": "API_KEY",
+  "value": "secret-key-123",
+  "type": "secret",
+  "description": "",
+  "required": false,
+  "scope": "project",
+  "validation": null,
+  "encrypted": false,
+  "deprecated": false,
+  "deprecatedMessage": "",
+  "metadata": {}
+}

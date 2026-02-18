@@ -1,0 +1,50 @@
+{
+  "id": "wf_f5f5de93",
+  "name": "\u6d4b\u8bd5\u5de5\u4f5c\u6d41",
+  "description": "\u8fd9\u662f\u4e00\u4e2a\u6d4b\u8bd5",
+  "nodes": [
+    {
+      "id": "start",
+      "name": "\u5f00\u59cb",
+      "node_type": "task",
+      "config": {
+        "type": "shell",
+        "command": "echo Hello"
+      },
+      "inputs": {},
+      "outputs": {},
+      "retry_count": 0,
+      "max_retries": 3,
+      "timeout": 300,
+      "conditions": [],
+      "on_failure": ""
+    },
+    {
+      "id": "end",
+      "name": "\u7ed3\u675f",
+      "node_type": "task",
+      "config": {
+        "type": "shell",
+        "command": "echo Done"
+      },
+      "inputs": {},
+      "outputs": {},
+      "retry_count": 0,
+      "max_retries": 3,
+      "timeout": 300,
+      "conditions": [],
+      "on_failure": ""
+    }
+  ],
+  "edges": [
+    {
+      "source": "start",
+      "target": "end",
+      "condition": "",
+      "label": ""
+    }
+  ],
+  "status": "draft",
+  "created_at": "2026-02-16T22:50:30.939142",
+  "updated_at": "2026-02-16T22:50:31.143244"
+}

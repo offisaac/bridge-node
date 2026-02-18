@@ -1,0 +1,14 @@
+{
+  "id": "5906b12b-157b-4da1-adf3-ec2e1e530b30",
+  "content": "Test message from integration test",
+  "cleaned_content": "Test message from integration test",
+  "label": "Test",
+  "metadata": {},
+  "timestamp": "2026-02-18T12:09:34.194763",
+  "content_hash": "bbc68a9b",
+  "content_length": 34,
+  "has_debug_markers": false,
+  "debug_markers": [],
+  "code_blocks": [],
+  "code_block_count": 0
+}

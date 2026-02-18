@@ -1,0 +1,20 @@
+{
+  "version": "1.0",
+  "updatedAt": "2026-02-17T02:24:10.127Z",
+  "flags": {
+    "dark-mode": {
+      "name": "dark-mode",
+      "enabled": false,
+      "type": "boolean",
+      "defaultValue": null,
+      "description": "Enable dark mode theme",
+      "tags": [],
+      "rollout": 50,
+      "targets": [],
+      "variants": [],
+      "createdAt": "2026-02-17T02:21:08.443Z",
+      "updatedAt": "2026-02-17T02:24:10.126Z",
+      "metadata": {}
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "id": "399e1c25-8a49-4e09-b4ed-09c759cd5119",
+  "content": "Issue: Broad exception catch in response_viewer.py",
+  "cleaned_content": "Issue: Broad exception catch in response_viewer.py",
+  "label": "Issue",
+  "output_type": "text",
+  "metadata": {},
+  "timestamp": "2026-02-17T11:34:01.123219",
+  "content_hash": "83d9a45c",
+  "content_length": 50,
+  "has_debug_markers": true,
+  "debug_markers": [
+    {
+      "keyword": "exception",
+      "context": "Issue: Broad exception catch in response_viewer.py",
+      "line_number": null,
+      "timestamp": "2026-02-17T11:34:01.123219",
+      "severity": "high"
+    }
+  ],
+  "code_blocks": [],
+  "code_block_count": 0
+}

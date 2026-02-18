@@ -1,0 +1,36 @@
+{
+  "id": "wf_1771298714183_5f7w7ngs4",
+  "ruleId": "rule_1771298714150",
+  "event": {
+    "type": "error",
+    "level": "fatal",
+    "message": "Out of memory",
+    "timestamp": 1771298714163
+  },
+  "status": "resolved",
+  "severity": "critical",
+  "actions": [
+    {
+      "id": "action_1771298714183",
+      "type": "escalate"
+    }
+  ],
+  "results": [
+    {
+      "actionId": "action_1771298714183",
+      "actionType": "escalate",
+      "success": true,
+      "result": {
+        "level": 3,
+        "to": "oncall_manager",
+        "escalated": true
+      },
+      "timestamp": 1771298714184
+    }
+  ],
+  "startedAt": 1771298714183,
+  "completedAt": 1771298714184,
+  "error": null,
+  "resolution": null,
+  "context": {}
+}

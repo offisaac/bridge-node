@@ -1,0 +1,85 @@
+[
+  {
+    "id": "rule_1771312768203",
+    "name": "A/B Test - Homepage",
+    "routes": [
+      {
+        "name": "control",
+        "target": "http://localhost:3000",
+        "weight": 50,
+        "condition": null,
+        "active": true
+      },
+      {
+        "name": "variant",
+        "target": "http://localhost:3001",
+        "weight": 50,
+        "condition": null,
+        "active": true
+      },
+      {
+        "name": "premium",
+        "target": "http://localhost:3002",
+        "weight": 50,
+        "condition": {
+          "type": "cookie",
+          "key": "tier",
+          "value": "premium",
+          "operator": "equals"
+        },
+        "active": true
+      }
+    ],
+    "sticky": true,
+    "description": "Testing new homepage design",
+    "active": true,
+    "stats": {
+      "totalRequests": 0,
+      "routeStats": {}
+    }
+  },
+  {
+    "id": "rule_1771312813837",
+    "name": "A/B Test - Homepage",
+    "routes": [
+      {
+        "name": "control",
+        "target": "http://localhost:3000",
+        "weight": 50,
+        "condition": null,
+        "active": true
+      },
+      {
+        "name": "variant",
+        "target": "http://localhost:3001",
+        "weight": 50,
+        "condition": null,
+        "active": true
+      },
+      {
+        "name": "premium",
+        "target": "http://localhost:3002",
+        "weight": 50,
+        "condition": {
+          "type": "cookie",
+          "key": "tier",
+          "value": "premium",
+          "operator": "equals"
+        },
+        "active": true
+      }
+    ],
+    "sticky": true,
+    "description": "Testing new homepage design",
+    "active": true,
+    "stats": {
+      "totalRequests": 0,
+      "routeStats": {
+        "premium": {
+          "requests": 0,
+          "errors": 0
+        }
+      }
+    }
+  }
+]

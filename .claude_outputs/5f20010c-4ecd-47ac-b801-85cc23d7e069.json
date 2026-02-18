@@ -1,0 +1,15 @@
+{
+  "id": "5f20010c-4ecd-47ac-b801-85cc23d7e069",
+  "content": "Issue: Debug print statement in cache_layer.py",
+  "cleaned_content": "Issue: Debug print statement in cache_layer.py",
+  "label": "Issue",
+  "output_type": "text",
+  "metadata": {},
+  "timestamp": "2026-02-17T09:55:15.649005",
+  "content_hash": "33e86020",
+  "content_length": 46,
+  "has_debug_markers": false,
+  "debug_markers": [],
+  "code_blocks": [],
+  "code_block_count": 0
+}

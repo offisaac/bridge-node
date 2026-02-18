@@ -1,0 +1,41 @@
+{
+  "id": "svc_1771299073284",
+  "name": "payment-service",
+  "description": "Payment processing service",
+  "status": "active",
+  "tier": "core",
+  "lifecycle": "production",
+  "owners": [
+    {
+      "id": "owner3",
+      "name": "Charlie",
+      "email": "charlie@example.com",
+      "team": "finance",
+      "role": "owner",
+      "slack": null,
+      "oncall": null
+    }
+  ],
+  "team": "finance",
+  "type": "backend",
+  "language": "go",
+  "framework": null,
+  "repository": null,
+  "documentation": null,
+  "endpoints": [],
+  "healthCheck": null,
+  "dependsOn": [
+    "svc_1771299073224"
+  ],
+  "dependents": [],
+  "uptime": 100,
+  "latency": null,
+  "requestsPerDay": null,
+  "tags": [
+    "payments",
+    "finance"
+  ],
+  "metadata": {},
+  "createdAt": 1771299073284,
+  "updatedAt": 1771299073326
+}

@@ -1,0 +1,13 @@
+{
+  "agent-001": {
+    "agentId": "agent-001",
+    "currentVersion": "1.1.0",
+    "status": "deployed",
+    "deployedAt": 1771315558026,
+    "healthStatus": "healthy",
+    "config": {},
+    "environment": "production",
+    "rollbackAvailable": true,
+    "previousVersion": "1.2.0"
+  }
+}

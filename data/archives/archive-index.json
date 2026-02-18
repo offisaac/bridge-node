@@ -1,0 +1,54 @@
+[
+  {
+    "id": "archive-1771322973548-0f9k607cw",
+    "name": "users-backup",
+    "metadata": {},
+    "format": "gzip",
+    "size": 9330,
+    "compressedSize": 854,
+    "compressionRatio": "90.85",
+    "checksum": "ef9bdc6e11c630f21684cb68206957a6f710646ece52799c88b3f8487c6c3c19",
+    "createdAt": 1771322973548,
+    "status": "stored",
+    "policyId": "long"
+  },
+  {
+    "id": "archive-1771322973575-1tp56mamr",
+    "name": "logs-2024",
+    "metadata": {},
+    "format": "gzip",
+    "size": 610,
+    "compressedSize": 46,
+    "compressionRatio": "92.46",
+    "checksum": "2d029117fac291807bd409b5eecc270c9567b4a901f102468af14ad2aec30eec",
+    "createdAt": 1771322973575,
+    "status": "stored",
+    "policyId": "short"
+  },
+  {
+    "id": "archive-1771322973666-sitxpay8u",
+    "name": "config-backup",
+    "metadata": {},
+    "format": "gzip",
+    "size": 26,
+    "compressedSize": 46,
+    "compressionRatio": "-76.92",
+    "checksum": "6038d9e0a7327feadda9f2185491ca637b84cf0ec543aebe5736d9518dbef7e0",
+    "createdAt": 1771322973666,
+    "status": "stored",
+    "policyId": "short"
+  },
+  {
+    "id": "archive-1771322973748-jcicrqlil",
+    "name": "metrics",
+    "metadata": {},
+    "format": "gzip",
+    "size": 34,
+    "compressedSize": 54,
+    "compressionRatio": "-58.82",
+    "checksum": "a38dad04090937edcc043fad294871aaa47173fd6141002a6d8408092f513626",
+    "createdAt": 1771322973748,
+    "status": "stored",
+    "policyId": "short"
+  }
+]

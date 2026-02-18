@@ -1,0 +1,231 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '18'
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  # ========== 代码质量检查 ==========
+  lint:
+    name: Lint & Code Quality
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install linting tools
+        run: |
+          pip install flake8 black isort mypy
+
+      - name: Run Flake8
+        run: |
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+
+      - name: Run Black check
+        run: |
+          black --check .
+
+      - name: Run isort check
+        run: |
+          isort --check-only .
+
+      - name: Run mypy type check
+        run: |
+          mypy . --ignore-missing-imports --no-error-summary || true
+
+  # ========== 安全扫描 ==========
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install security tools
+        run: |
+          pip install safety bandit
+
+      - name: Run Safety check
+        run: |
+          pip freeze | safety check --stdin || true
+
+      - name: Run Bandit scan
+        run: |
+          bandit -r . -f json -o bandit-report.json || true
+
+      - name: Upload security report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: security-reports
+          path: bandit-report.json
+
+  # ========== 单元测试 ==========
+  test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pytest pytest-cov pytest-asyncio
+
+      - name: Run pytest
+        run: |
+          pytest --cov=. --cov-report=xml --cov-report=term --maxfail=3
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage.xml
+          flags: unittests
+
+  # ========== 集成测试 ==========
+  integration-test:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install httpx pytest
+
+      - name: Start server
+        run: |
+          timeout 10 python server.py &
+          sleep 5
+
+      - name: Run integration tests
+        run: |
+          python -c "import requests; r = requests.get('http://127.0.0.1:8888/api/status'); print(r.status_code)"
+        shell: bash
+
+      - name: Check server health
+        run: |
+          curl -f http://127.0.0.1:8888/api/status || exit 1
+
+  # ========== 构建 ==========
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: [lint, security, test]
+    if: github.event_name == 'push'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install build tools
+        run: |
+          pip install build wheel setuptools
+
+      - name: Build package
+        run: |
+          python -m build
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  # ========== 部署到测试环境 ==========
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: github.ref == 'refs/heads/develop'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to staging server
+        run: |
+          echo "Deploying to staging..."
+          # SSH to staging server and pull latest
+          # This requires SSH keys configured in repo secrets
+        shell: bash
+        env:
+          STAGING_HOST: ${{ secrets.STAGING_HOST }}
+          STAGING_KEY: ${{ secrets.STAGING_SSH_KEY }}
+
+  # ========== 部署到生产环境 ==========
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to production
+        run: |
+          echo "Deploying to production..."
+          # SSH to production server and pull latest
+        shell: bash
+        env:
+          PROD_HOST: ${{ secrets.PRODUCTION_HOST }}
+          PROD_KEY: ${{ secrets.PRODUCTION_SSH_KEY }}
+
+  # ========== 通知 ==========
+  notify:
+    name: Notify
+    runs-on: ubuntu-latest
+    needs: [deploy-staging, deploy-production]
+    if: always()
+
+    steps:
+      - name: Send failure notification
+        if: failure()
+        run: |
+          echo "CI/CD Pipeline failed!"
+          # Could integrate with Slack, Discord, etc.

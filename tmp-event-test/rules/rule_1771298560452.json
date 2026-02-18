@@ -1,0 +1,39 @@
+{
+  "id": "rule_1771298560452",
+  "name": "High CPU Alert",
+  "description": "",
+  "eventType": "cpu_alert",
+  "condition": {
+    "field": "value",
+    "gt": 80
+  },
+  "severity": "high",
+  "actions": [
+    {
+      "type": "send_notification",
+      "name": "Notify Team",
+      "config": {
+        "channel": "slack",
+        "recipients": [
+          "oncall"
+        ]
+      }
+    },
+    {
+      "type": "auto_remedy",
+      "name": "Scale Down",
+      "config": {
+        "remedyId": "scale_down",
+        "params": {
+          "percentage": 20
+        }
+      }
+    }
+  ],
+  "enabled": true,
+  "cooldown": 60000,
+  "timeout": 300000,
+  "lastTriggered": null,
+  "triggerCount": 0,
+  "metadata": {}
+}

@@ -1,0 +1,21 @@
+[
+  {
+    "id": "config_1771300679347",
+    "name": "Custom Prettier",
+    "formatter": "prettier",
+    "language": "javascript",
+    "config": {
+      "printWidth": 100,
+      "tabWidth": 4,
+      "semi": false,
+      "singleQuote": true
+    },
+    "extends": null,
+    "rules": {},
+    "metadata": {},
+    "version": "1.0.0",
+    "active": true,
+    "createdAt": 1771300679347,
+    "updatedAt": 1771300679347
+  }
+]

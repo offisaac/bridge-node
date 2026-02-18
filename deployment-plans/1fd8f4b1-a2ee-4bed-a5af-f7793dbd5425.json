@@ -1,0 +1,16 @@
+{
+  "id": "1fd8f4b1-a2ee-4bed-a5af-f7793dbd5425",
+  "name": "Test Deployment",
+  "description": "Testing deployment planner",
+  "tasks": [],
+  "status": "planning",
+  "createdAt": "2026-02-17T03:15:56.778Z",
+  "startedAt": null,
+  "completedAt": null,
+  "metadata": {},
+  "validation": {
+    "valid": true,
+    "errors": []
+  },
+  "totalDuration": 0
+}

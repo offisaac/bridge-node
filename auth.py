@@ -28,12 +28,12 @@ def verify_token(token: str) -> bool:
         return False
     if datetime.now() > _token_expiry:
         return False
-    return token == _token
+    return secrets.compare_digest(token, _token)
 
 
 def verify_credentials(username: str, password: str) -> bool:
-    """Verify username and password."""
-    return username == DEFAULT_USERNAME and password == DEFAULT_PASSWORD
+    """Verify username and password using constant-time comparison."""
+    return secrets.compare_digest(username, DEFAULT_USERNAME) and secrets.compare_digest(password, DEFAULT_PASSWORD)
 
 
 def get_current_token() -> Optional[str]:

@@ -7,12 +7,12 @@ SEC-005,SSH密码明文存储 - GET /api/ssh/config可能返回密码,critical,o
 SEC-006,路径遍历漏洞 - 文件上传filename无验证,high,resolved,2026-02-15,2026-02-15
 SEC-007,路径遍历漏洞 - 日志读取filepath无验证,high,resolved,2026-02-15,2026-02-15
 SEC-008,路径遍历漏洞 - 远程文件列表path参数无验证,high,resolved,2026-02-15,2026-02-15
-SEC-009,时序攻击风险 - 密码比较使用==而非secrets.compare_digest,high,open,2026-02-15,
-SEC-010,CORS允许credentials - 配合通配符可能导致漏洞,high,open,2026-02-15,
-SEC-011,全局异常处理器泄露敏感信息 - 异常详情直接返回,high,open,2026-02-15,
-SEC-012,文件上传无类型验证,medium,open,2026-02-15,
+SEC-009,时序攻击风险 - 密码比较使用==而非secrets.compare_digest,high,resolved,2026-02-15,2026-02-18
+SEC-010,CORS允许credentials - 配合通配符可能导致漏洞,high,resolved,2026-02-15,2026-02-18
+SEC-011,全局异常处理器泄露敏感信息 - 异常详情直接返回,high,resolved,2026-02-15,2026-02-18
+SEC-012,文件上传无类型验证,medium,resolved,2026-02-15,2026-02-18
 SEC-013,WebSocket无认证,medium,open,2026-02-15,
 SEC-014,Token无刷新机制,medium,open,2026-02-15,
-SEC-015,文件上传filename未验证路径遍历 - file_transfer.py line 260,low,open,2026-02-15,
+SEC-015,文件上传filename未验证路径遍历 - file_transfer.py line 260,low,resolved,2026-02-15,2026-02-18
 SEC-016,WebSocket连接返回403被拒绝 - server.py WebSocket认证逻辑问题,high,resolved,2026-02-15,2026-02-15
 SEC-017,速率限制未启用 - rate_limit_check未应用到任何端点,medium,resolved,2026-02-15,2026-02-15

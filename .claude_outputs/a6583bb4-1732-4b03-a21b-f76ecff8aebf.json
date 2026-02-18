@@ -1,0 +1,23 @@
+{
+  "id": "a6583bb4-1732-4b03-a21b-f76ecff8aebf",
+  "content": "Issue: Broad exception catch in agent_timeout.py",
+  "cleaned_content": "Issue: Broad exception catch in agent_timeout.py",
+  "label": "Issue",
+  "output_type": "text",
+  "metadata": {},
+  "timestamp": "2026-02-17T15:50:46.571671",
+  "content_hash": "f6889108",
+  "content_length": 48,
+  "has_debug_markers": true,
+  "debug_markers": [
+    {
+      "keyword": "exception",
+      "context": "Issue: Broad exception catch in agent_timeout.py",
+      "line_number": null,
+      "timestamp": "2026-02-17T15:50:46.571671",
+      "severity": "high"
+    }
+  ],
+  "code_blocks": [],
+  "code_block_count": 0
+}

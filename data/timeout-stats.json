@@ -1,0 +1,12 @@
+{
+  "total": 9,
+  "success": 7,
+  "timeout": 2,
+  "cancelled": 0,
+  "byPolicy": {
+    "default": {
+      "total": 9,
+      "timeout": 2
+    }
+  }
+}

@@ -1,0 +1,15 @@
+[
+  {
+    "id": "incident_1771301461459",
+    "title": "Email Service Degradation",
+    "description": "Email delivery is experiencing delays due to high volume.",
+    "severity": "medium",
+    "status": "investigating",
+    "services": [
+      "service_1771301447238"
+    ],
+    "startTime": 1771301461459,
+    "endTime": null,
+    "updates": []
+  }
+]

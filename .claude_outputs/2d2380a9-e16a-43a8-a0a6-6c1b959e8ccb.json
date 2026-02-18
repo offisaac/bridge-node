@@ -1,0 +1,23 @@
+{
+  "id": "2d2380a9-e16a-43a8-a0a6-6c1b959e8ccb",
+  "content": "Issue: Broad exception catch in agent_gateway.py",
+  "cleaned_content": "Issue: Broad exception catch in agent_gateway.py",
+  "label": "Issue",
+  "output_type": "text",
+  "metadata": {},
+  "timestamp": "2026-02-17T15:53:55.743317",
+  "content_hash": "3227ddb9",
+  "content_length": 48,
+  "has_debug_markers": true,
+  "debug_markers": [
+    {
+      "keyword": "exception",
+      "context": "Issue: Broad exception catch in agent_gateway.py",
+      "line_number": null,
+      "timestamp": "2026-02-17T15:53:55.743317",
+      "severity": "high"
+    }
+  ],
+  "code_blocks": [],
+  "code_block_count": 0
+}

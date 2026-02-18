@@ -1,0 +1,41 @@
+{
+  "agent-gateway": {
+    "id": "agent-gateway",
+    "name": "API Gateway",
+    "segment": "public",
+    "verified": true,
+    "mfaVerified": false,
+    "trustScore": 90,
+    "lastVerified": 1771371874383,
+    "attributes": {
+      "type": "gateway",
+      "role": "ingress"
+    }
+  },
+  "agent-worker-001": {
+    "id": "agent-worker-001",
+    "name": "Worker Agent 1",
+    "segment": "internal",
+    "verified": true,
+    "mfaVerified": true,
+    "trustScore": 45,
+    "lastVerified": 1771371874597,
+    "attributes": {
+      "type": "worker",
+      "role": "processor"
+    }
+  },
+  "agent-db": {
+    "id": "agent-db",
+    "name": "Database Agent",
+    "segment": "database",
+    "verified": true,
+    "mfaVerified": false,
+    "trustScore": 80,
+    "lastVerified": 1771371874556,
+    "attributes": {
+      "type": "service",
+      "role": "database"
+    }
+  }
+}

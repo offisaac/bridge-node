@@ -1,0 +1,15 @@
+{
+  "id": "a2b99614-7eb5-4cf4-847f-ea087a56e8be",
+  "content": "test message",
+  "cleaned_content": "test message",
+  "label": "Claude Output",
+  "output_type": "text",
+  "metadata": {},
+  "timestamp": "2026-02-17T01:45:24.913192",
+  "content_hash": "c72b9698",
+  "content_length": 12,
+  "has_debug_markers": false,
+  "debug_markers": [],
+  "code_blocks": [],
+  "code_block_count": 0
+}

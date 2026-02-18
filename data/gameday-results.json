@@ -1,0 +1,60 @@
+[
+  {
+    "scenario": "network-failure",
+    "startTime": 1771315728758,
+    "status": "completed",
+    "steps": [
+      {
+        "action": "inject-latency",
+        "target": "all",
+        "value": "5000ms",
+        "executedAt": 1771315729285,
+        "status": "success"
+      },
+      {
+        "action": "drop-packets",
+        "target": "all",
+        "percentage": 30,
+        "executedAt": 1771315730365,
+        "status": "success"
+      },
+      {
+        "action": "block-dns",
+        "target": "dns-server",
+        "executedAt": 1771315731166,
+        "status": "success"
+      }
+    ],
+    "logs": [],
+    "endTime": 1771315731666,
+    "duration": 2908
+  },
+  {
+    "scenario": "service-crash",
+    "startTime": 1771315726132,
+    "status": "completed",
+    "steps": [
+      {
+        "action": "kill-service",
+        "target": "api-gateway",
+        "executedAt": 1771315726796,
+        "status": "success"
+      },
+      {
+        "action": "alert-oncall",
+        "target": "pagerduty",
+        "executedAt": 1771315727504,
+        "status": "success"
+      },
+      {
+        "action": "verify-fallback",
+        "target": "backup-gateway",
+        "executedAt": 1771315728243,
+        "status": "success"
+      }
+    ],
+    "logs": [],
+    "endTime": 1771315728744,
+    "duration": 2612
+  }
+]

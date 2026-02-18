@@ -1,0 +1,51 @@
+{
+  "id": "wf_1771298714118_cb00vqx1d",
+  "ruleId": "rule_1771298713858",
+  "event": {
+    "type": "cpu_alert",
+    "value": 95,
+    "timestamp": 1771298714088
+  },
+  "status": "resolved",
+  "severity": "high",
+  "actions": [
+    {
+      "id": "action_1771298714118",
+      "type": "send_notification"
+    },
+    {
+      "id": "action_1771298714118",
+      "type": "auto_remedy"
+    }
+  ],
+  "results": [
+    {
+      "actionId": "action_1771298714118",
+      "actionType": "send_notification",
+      "success": true,
+      "result": {
+        "channel": "slack",
+        "recipients": [
+          "oncall"
+        ],
+        "sent": true
+      },
+      "timestamp": 1771298714119
+    },
+    {
+      "actionId": "action_1771298714118",
+      "actionType": "auto_remedy",
+      "success": true,
+      "result": {
+        "remedyId": "scale_down",
+        "applied": true
+      },
+      "timestamp": 1771298714119
+    }
+  ],
+  "startedAt": 1771298714118,
+  "completedAt": 1771298714119,
+  "error": null,
+  "resolution": null,
+  "context": {}
+}

@@ -1,0 +1,23 @@
+{
+  "id": "da9b5d44-390a-4b39-858c-76d2c3886b01",
+  "content": "Issue: Requests without error handling in mock_server.py",
+  "cleaned_content": "Issue: Requests without error handling in mock_server.py",
+  "label": "Issue",
+  "output_type": "text",
+  "metadata": {},
+  "timestamp": "2026-02-17T10:31:21.272793",
+  "content_hash": "471bc39e",
+  "content_length": 56,
+  "has_debug_markers": true,
+  "debug_markers": [
+    {
+      "keyword": "error",
+      "context": "Issue: Requests without error handling in mock_server.py",
+      "line_number": null,
+      "timestamp": "2026-02-17T10:31:21.272793",
+      "severity": "high"
+    }
+  ],
+  "code_blocks": [],
+  "code_block_count": 0
+}

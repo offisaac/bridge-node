@@ -1,0 +1,13 @@
+{
+  "logLevel": "info",
+  "maxAgents": 10,
+  "timeout": 30000,
+  "retryAttempts": 3,
+  "cacheEnabled": true,
+  "debugMode": false,
+  "region": "us-east-1",
+  "enableMetrics": true,
+  "enableTracing": false,
+  "maxConcurrentRequests": 100,
+  "connectionPoolSize": 20
+}

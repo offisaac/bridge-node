@@ -1,0 +1,82 @@
+{
+  "templates": [
+    {
+      "id": "template_1771300197290",
+      "name": "Alert Notification",
+      "description": "",
+      "type": "email",
+      "category": "alerts",
+      "subject": "Alert: {{alert_type}}",
+      "content": "Hello {{recipient_name}},\n\n{{message}}\n\nTimestamp: {{timestamp}}",
+      "htmlContent": null,
+      "variables": [
+        {
+          "name": "recipient_name",
+          "type": "string",
+          "required": true,
+          "description": "",
+          "enum": null
+        },
+        {
+          "name": "alert_type",
+          "type": "string",
+          "required": true,
+          "description": "",
+          "enum": null
+        },
+        {
+          "name": "message",
+          "type": "string",
+          "required": true,
+          "description": "",
+          "enum": null
+        },
+        {
+          "name": "timestamp",
+          "type": "string",
+          "required": true,
+          "default": "now",
+          "description": "",
+          "enum": null
+        }
+      ],
+      "metadata": {},
+      "version": 1,
+      "active": true,
+      "createdAt": 1771300197290,
+      "updatedAt": 1771300197290
+    }
+  ],
+  "channels": [
+    {
+      "id": "channel_1771300197308",
+      "name": "Email",
+      "type": "email",
+      "config": {
+        "smtp": "smtp.example.com"
+      },
+      "enabled": true,
+      "rateLimit": null,
+      "retryConfig": {
+        "maxRetries": 3,
+        "retryDelay": 1000,
+        "backoff": "exponential"
+      }
+    },
+    {
+      "id": "channel_1771300197322",
+      "name": "Slack",
+      "type": "slack",
+      "config": {
+        "webhook": "https://hooks.slack.com/..."
+      },
+      "enabled": true,
+      "rateLimit": null,
+      "retryConfig": {
+        "maxRetries": 3,
+        "retryDelay": 1000,
+        "backoff": "exponential"
+      }
+    }
+  ]
+}

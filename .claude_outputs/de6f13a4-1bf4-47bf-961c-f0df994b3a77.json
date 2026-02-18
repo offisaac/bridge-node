@@ -1,0 +1,15 @@
+{
+  "id": "de6f13a4-1bf4-47bf-961c-f0df994b3a77",
+  "content": "test fresh",
+  "cleaned_content": "test fresh",
+  "label": "test",
+  "output_type": "text",
+  "metadata": {},
+  "timestamp": "2026-02-17T10:04:23.171851",
+  "content_hash": "46943d94",
+  "content_length": 10,
+  "has_debug_markers": false,
+  "debug_markers": [],
+  "code_blocks": [],
+  "code_block_count": 0
+}

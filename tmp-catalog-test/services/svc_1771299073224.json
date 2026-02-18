@@ -1,0 +1,55 @@
+{
+  "id": "svc_1771299073224",
+  "name": "user-service",
+  "description": "User management microservice",
+  "status": "active",
+  "tier": "core",
+  "lifecycle": "production",
+  "owners": [
+    {
+      "id": "owner1",
+      "name": "Alice",
+      "email": "alice@example.com",
+      "team": "platform",
+      "role": "owner",
+      "slack": null,
+      "oncall": null
+    },
+    {
+      "id": "owner2",
+      "name": "Bob",
+      "email": "bob@example.com",
+      "team": "platform",
+      "role": "owner",
+      "slack": null,
+      "oncall": null
+    }
+  ],
+  "team": "platform",
+  "type": "backend",
+  "language": "nodejs",
+  "framework": null,
+  "repository": null,
+  "documentation": null,
+  "endpoints": [
+    "/api/users",
+    "/api/users/:id"
+  ],
+  "healthCheck": null,
+  "dependsOn": [],
+  "dependents": [
+    "svc_1771299073284",
+    "svc_1771299073297"
+  ],
+  "uptime": 100,
+  "latency": null,
+  "requestsPerDay": null,
+  "tags": [
+    "users",
+    "auth",
+    "core"
+  ],
+  "metadata": {},
+  "createdAt": 1771299073224,
+  "updatedAt": 1771299073224
+}

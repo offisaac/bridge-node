@@ -1,0 +1,156 @@
+{
+  "subscriptions": [
+    {
+      "id": "sub-1771317323317-avn90a",
+      "url": "http://localhost:8080/webhook/agent-events",
+      "events": [
+        "agent.*",
+        "task.*"
+      ],
+      "secret": null,
+      "enabled": true,
+      "retryPolicy": {
+        "maxRetries": 3,
+        "backoff": "exponential"
+      },
+      "timeout": 30000,
+      "filters": {},
+      "createdAt": 1771317377744,
+      "lastTriggered": 1771317377801
+    },
+    {
+      "id": "sub-1771317323332-pglvde",
+      "url": "http://api.example.com/webhooks/agents",
+      "events": [
+        "agent.created",
+        "agent.deleted",
+        "task.*"
+      ],
+      "secret": null,
+      "enabled": true,
+      "retryPolicy": {
+        "maxRetries": 3,
+        "backoff": "exponential"
+      },
+      "timeout": 30000,
+      "filters": {
+        "data": {
+          "exclude": [
+            "password",
+            "secret"
+          ]
+        }
+      },
+      "createdAt": 1771317377744,
+      "lastTriggered": 1771317377815
+    },
+    {
+      "id": "sub-1771317377745-me2ktu",
+      "url": "http://api.example.com/webhooks/agents",
+      "events": [
+        "agent.created",
+        "agent.deleted",
+        "task.*"
+      ],
+      "secret": null,
+      "enabled": true,
+      "retryPolicy": {
+        "maxRetries": 3,
+        "backoff": "exponential"
+      },
+      "timeout": 30000,
+      "filters": {
+        "data": {
+          "exclude": [
+            "password",
+            "secret"
+          ]
+        }
+      },
+      "createdAt": 1771317377745,
+      "lastTriggered": 1771317377829
+    }
+  ],
+  "history": [
+    {
+      "subscriptionId": "sub-1771317377745-me2ktu",
+      "payloadId": "wh-1771317377800-g59p9s85j",
+      "status": "success",
+      "responseCode": 200,
+      "duration": 0,
+      "timestamp": 1771317377829
+    },
+    {
+      "subscriptionId": "sub-1771317323332-pglvde",
+      "payloadId": "wh-1771317377800-g59p9s85j",
+      "status": "success",
+      "responseCode": 200,
+      "duration": 0,
+      "timestamp": 1771317377815
+    },
+    {
+      "subscriptionId": "sub-1771317323317-avn90a",
+      "payloadId": "wh-1771317377800-g59p9s85j",
+      "status": "success",
+      "responseCode": 200,
+      "duration": 0,
+      "timestamp": 1771317377801
+    },
+    {
+      "subscriptionId": "sub-1771317377745-me2ktu",
+      "payloadId": "wh-1771317377759-530j3tzrn",
+      "status": "success",
+      "responseCode": 200,
+      "duration": 0,
+      "timestamp": 1771317377787
+    },
+    {
+      "subscriptionId": "sub-1771317323332-pglvde",
+      "payloadId": "wh-1771317377759-530j3tzrn",
+      "status": "success",
+      "responseCode": 200,
+      "duration": 0,
+      "timestamp": 1771317377774
+    },
+    {
+      "subscriptionId": "sub-1771317323317-avn90a",
+      "payloadId": "wh-1771317377759-530j3tzrn",
+      "status": "success",
+      "responseCode": 200,
+      "duration": 0,
+      "timestamp": 1771317377761
+    },
+    {
+      "subscriptionId": "sub-1771317323332-pglvde",
+      "payloadId": "wh-1771317323391-k568ksbqb",
+      "status": "success",
+      "responseCode": 200,
+      "duration": 0,
+      "timestamp": 1771317323405
+    },
+    {
+      "subscriptionId": "sub-1771317323317-avn90a",
+      "payloadId": "wh-1771317323391-k568ksbqb",
+      "status": "success",
+      "responseCode": 200,
+      "duration": 0,
+      "timestamp": 1771317323391
+    },
+    {
+      "subscriptionId": "sub-1771317323332-pglvde",
+      "payloadId": "wh-1771317323358-oyu9x35pq",
+      "status": "success",
+      "responseCode": 200,
+      "duration": 0,
+      "timestamp": 1771317323375
+    },
+    {
+      "subscriptionId": "sub-1771317323317-avn90a",
+      "payloadId": "wh-1771317323358-oyu9x35pq",
+      "status": "success",
+      "responseCode": 200,
+      "duration": 0,
+      "timestamp": 1771317323360
+    }
+  ]
+}

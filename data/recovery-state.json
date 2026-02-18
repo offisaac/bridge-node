@@ -1,0 +1,32 @@
+{
+  "history": [
+    {
+      "agentId": "agent-002",
+      "error": "External service unavailable",
+      "category": "external",
+      "result": "completed",
+      "timestamp": 1771318324749
+    },
+    {
+      "agentId": "agent-001",
+      "error": "Temporary network error",
+      "category": "transient",
+      "result": "completed",
+      "timestamp": 1771318324731
+    },
+    {
+      "agentId": "agent-002",
+      "error": "External service unavailable",
+      "category": "external",
+      "result": "completed",
+      "timestamp": 1771318245890
+    },
+    {
+      "agentId": "agent-001",
+      "error": "Temporary network error",
+      "category": "transient",
+      "result": "completed",
+      "timestamp": 1771318245877
+    }
+  ]
+}

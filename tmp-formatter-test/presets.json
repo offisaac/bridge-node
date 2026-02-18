@@ -1,0 +1,72 @@
+[
+  {
+    "id": "prettier-default",
+    "name": "Prettier Default",
+    "description": "Official Prettier defaults",
+    "language": "javascript",
+    "formatters": [
+      {
+        "formatter": "prettier",
+        "config": {
+          "printWidth": 80,
+          "tabWidth": 2,
+          "useTabs": false,
+          "semi": true,
+          "singleQuote": true,
+          "trailingComma": "es5",
+          "bracketSpacing": true,
+          "arrowParens": "always"
+        }
+      }
+    ],
+    "metadata": {}
+  },
+  {
+    "id": "black-default",
+    "name": "Black Default",
+    "description": "Official Black defaults",
+    "language": "python",
+    "formatters": [
+      {
+        "formatter": "black",
+        "config": {
+          "lineLength": 88,
+          "targetVersion": "py311",
+          "skipStringNormalization": false,
+          "extendSkipmagicComments": []
+        }
+      }
+    ],
+    "metadata": {}
+  },
+  {
+    "id": "eslint-recommended",
+    "name": "ESLint Recommended",
+    "description": "ESLint recommended rules",
+    "language": "javascript",
+    "formatters": [
+      {
+        "formatter": "eslint",
+        "config": {
+          "env": {
+            "browser": true,
+            "es2021": true,
+            "node": true
+          },
+          "extends": [
+            "eslint:recommended"
+          ],
+          "parserOptions": {
+            "ecmaVersion": "latest",
+            "sourceType": "module"
+          },
+          "rules": {
+            "no-unused-vars": "warn",
+            "no-console": "off"
+          }
+        }
+      }
+    ],
+    "metadata": {}
+  }
+]

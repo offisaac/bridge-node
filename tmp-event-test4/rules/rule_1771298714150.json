@@ -1,0 +1,28 @@
+{
+  "id": "rule_1771298714150",
+  "name": "Critical Error",
+  "description": "",
+  "eventType": "error",
+  "condition": {
+    "field": "level",
+    "operator": "eq",
+    "value": "fatal"
+  },
+  "severity": "critical",
+  "actions": [
+    {
+      "type": "escalate",
+      "name": "Escalate",
+      "config": {
+        "level": 3,
+        "to": "oncall_manager"
+      }
+    }
+  ],
+  "enabled": true,
+  "cooldown": 60000,
+  "timeout": 300000,
+  "lastTriggered": 1771298714163,
+  "triggerCount": 1,
+  "metadata": {}
+}

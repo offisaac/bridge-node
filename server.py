@@ -289,6 +289,46 @@ def validate_path(path: str) -> str:
     )
 
 
+# SEC-012: Allowed file extensions for upload
+ALLOWED_EXTENSIONS = {
+    '.txt', '.pdf', '.json', '.zip', '.py', '.js', '.html', '.css',
+    '.md', '.yaml', '.yml', '.xml', '.csv', '.log', '.sh', '.bat',
+    '.png', '.jpg', '.jpeg', '.gif', '.ico', '.svg',
+    '.tar', '.gz', '.bz2', '.xz',
+}
+
+ALLOWED_MIME_TYPES = {
+    'text/plain', 'application/json', 'application/pdf', 'application/zip',
+    'application/x-python-code', 'application/javascript', 'text/html', 'text/css',
+    'text/markdown', 'application/x-yaml', 'text/xml', 'text/csv', 'text/log',
+    'image/png', 'image/jpeg', 'image/gif', 'image/svg+xml',
+    'application/x-tar', 'application/gzip', 'application/x-bzip2', 'application/x-xz',
+}
+
+
+def validate_file_type(filename: str, content_type: str = None) -> bool:
+    """Validate file extension and MIME type.
+    Returns True if allowed, raises HTTPException otherwise."""
+    # Check extension
+    ext = os.path.splitext(filename)[1].lower()
+    if ext not in ALLOWED_EXTENSIONS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"File type not allowed: {ext}. Allowed: {', '.join(sorted(ALLOWED_EXTENSIONS))}"
+        )
+
+    # Check MIME type if provided
+    if content_type and content_type not in ALLOWED_MIME_TYPES:
+        # Also accept types with charset
+        if not any(content_type.startswith(t) for t in ALLOWED_MIME_TYPES):
+            raise HTTPException(
+                status_code=400,
+                detail=f"MIME type not allowed: {content_type}"
+            )
+
+    return True
+
+
 # Simple auth dependency - verify token from Authorization header
 async def simple_auth(authorization: str = Header(None)):
     """Verify Bearer token from Authorization header.
@@ -1628,6 +1668,11 @@ async def fs_upload(
         if ".." in destination:
             raise HTTPException(status_code=400, detail="Invalid destination path")
 
+        # SEC-012: Validate file type
+        if filename:
+            content_type = chunk.content_type if chunk else None
+            validate_file_type(filename, content_type)
+
         # 获取集群上传目录（从环境变量或使用默认值）
         cluster_upload_dir = os.getenv(
             "CLUSTER_UPLOAD_DIR",
@@ -2687,6 +2732,11 @@ async def upload_to_local(
     try:
         import shutil
         import tempfile
+
+        # SEC-012: Validate file type
+        if filename:
+            content_type = chunk.content_type if chunk else None
+            validate_file_type(filename, content_type)
 
         expanded_dest = os.path.expanduser(destination)
         os.makedirs(os.path.dirname(expanded_dest) or ".", exist_ok=True)

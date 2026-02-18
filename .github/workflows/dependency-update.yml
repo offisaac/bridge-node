@@ -1,0 +1,68 @@
+name: Dependency Update
+
+on:
+  schedule:
+    - cron: '0 0 * * 0'  # Weekly on Sunday
+  workflow_dispatch:
+
+jobs:
+  # ========== 检查依赖更新 ==========
+  check-dependencies:
+    name: Check Dependencies
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Check for outdated packages
+        run: |
+          pip install pip-updater || pip install pip-review
+          pip-review --local || true
+
+      - name: Create issue for outdated dependencies
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const outdated = `
+            # Outdated Dependencies
+
+            Please review and update the following packages:
+            `
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: 'Weekly: Update Dependencies',
+              body: outdated,
+              labels: ['dependencies']
+            })
+
+  # ========== 安全漏洞扫描 ==========
+  security-scan:
+    name: Security Vulnerability Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run Grype vulnerability scanner
+        uses: anchore/sbom-action@v0
+        with:
+          path: .
+          format: cyclonedx-json
+          output-file: sbom.json
+
+      - name: Check for vulnerabilities
+        run: |
+          pip install safety
+          pip freeze | safety check --stdin || true

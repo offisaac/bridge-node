@@ -1,0 +1,198 @@
+[
+  {
+    "id": "agent_1771312975323",
+    "name": "DataProcessor-1",
+    "type": "worker",
+    "capabilities": [
+      "data-processing",
+      "etl",
+      "transform"
+    ],
+    "status": "offline",
+    "endpoint": "http://worker-1:8080",
+    "metadata": {},
+    "tags": [
+      "production",
+      "high-memory"
+    ],
+    "version": "1.0.0",
+    "health": {
+      "status": "healthy",
+      "lastCheck": 1771313110824,
+      "responseTime": 35
+    },
+    "createdAt": 1771312975323,
+    "lastSeen": 1771313110824
+  },
+  {
+    "id": "agent_1771312975348",
+    "name": "DataProcessor-2",
+    "type": "worker",
+    "capabilities": [
+      "data-processing",
+      "etl"
+    ],
+    "status": "offline",
+    "endpoint": "http://worker-2:8080",
+    "metadata": {},
+    "tags": [
+      "production"
+    ],
+    "version": "1.0.0",
+    "health": {
+      "status": "healthy",
+      "lastCheck": 1771313110796,
+      "responseTime": 16
+    },
+    "createdAt": 1771312975348,
+    "lastSeen": 1771313110796
+  },
+  {
+    "id": "agent_1771312975417",
+    "name": "APICoordinator",
+    "type": "coordinator",
+    "capabilities": [
+      "api-gateway",
+      "routing",
+      "orchestration"
+    ],
+    "status": "offline",
+    "endpoint": "http://coordinator:8080",
+    "metadata": {},
+    "tags": [
+      "production",
+      "api"
+    ],
+    "version": "1.0.0",
+    "health": {
+      "status": "healthy",
+      "lastCheck": 1771313110662,
+      "responseTime": 22
+    },
+    "createdAt": 1771312975417,
+    "lastSeen": 1771313110662
+  },
+  {
+    "id": "agent_1771312975450",
+    "name": "MonitorAgent",
+    "type": "monitor",
+    "capabilities": [
+      "monitoring",
+      "alerting",
+      "metrics"
+    ],
+    "status": "offline",
+    "endpoint": "http://monitor:8080",
+    "metadata": {},
+    "tags": [
+      "production",
+      "monitoring"
+    ],
+    "version": "1.0.0",
+    "health": {
+      "status": "healthy",
+      "lastCheck": 1771313110634,
+      "responseTime": 39
+    },
+    "createdAt": 1771312975450,
+    "lastSeen": 1771313110634
+  },
+  {
+    "id": "agent_1771313110400",
+    "name": "DataProcessor-1",
+    "type": "worker",
+    "capabilities": [
+      "data-processing",
+      "etl",
+      "transform"
+    ],
+    "status": "offline",
+    "endpoint": "http://worker-1:8080",
+    "metadata": {},
+    "tags": [
+      "production",
+      "high-memory"
+    ],
+    "version": "1.0.0",
+    "health": {
+      "status": "healthy",
+      "lastCheck": 1771313110607,
+      "responseTime": 49
+    },
+    "createdAt": 1771313110400,
+    "lastSeen": 1771313110607
+  },
+  {
+    "id": "agent_1771313110441",
+    "name": "DataProcessor-2",
+    "type": "worker",
+    "capabilities": [
+      "data-processing",
+      "etl"
+    ],
+    "status": "offline",
+    "endpoint": "http://worker-2:8080",
+    "metadata": {},
+    "tags": [
+      "production"
+    ],
+    "version": "1.0.0",
+    "health": {
+      "status": "healthy",
+      "lastCheck": 1771313110578,
+      "responseTime": 45
+    },
+    "createdAt": 1771313110441,
+    "lastSeen": 1771313110578
+  },
+  {
+    "id": "agent_1771313110470",
+    "name": "APICoordinator",
+    "type": "coordinator",
+    "capabilities": [
+      "api-gateway",
+      "routing",
+      "orchestration"
+    ],
+    "status": "offline",
+    "endpoint": "http://coordinator:8080",
+    "metadata": {},
+    "tags": [
+      "production",
+      "api"
+    ],
+    "version": "1.0.0",
+    "health": {
+      "status": "healthy",
+      "lastCheck": 1771313110552,
+      "responseTime": 48
+    },
+    "createdAt": 1771313110470,
+    "lastSeen": 1771313110552
+  },
+  {
+    "id": "agent_1771313110496",
+    "name": "MonitorAgent",
+    "type": "monitor",
+    "capabilities": [
+      "monitoring",
+      "alerting",
+      "metrics"
+    ],
+    "status": "offline",
+    "endpoint": "http://monitor:8080",
+    "metadata": {},
+    "tags": [
+      "production",
+      "monitoring"
+    ],
+    "version": "1.0.0",
+    "health": {
+      "status": "healthy",
+      "lastCheck": 1771313110521,
+      "responseTime": 53
+    },
+    "createdAt": 1771313110496,
+    "lastSeen": 1771313110521
+  }
+]

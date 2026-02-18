@@ -1,0 +1,36 @@
+{
+  "agent-001": [
+    {
+      "id": "3df2edebeebd3e4e",
+      "timestamp": "2026-02-17T08:05:58.059Z",
+      "type": "rollback",
+      "fromVersion": "1.2.0",
+      "toVersion": "1.1.0",
+      "status": "success"
+    },
+    {
+      "id": "380c7d0d999c9d0d",
+      "timestamp": "2026-02-17T08:05:58.011Z",
+      "type": "deploy",
+      "version": "1.2.0",
+      "previousVersion": "1.1.0",
+      "status": "success"
+    },
+    {
+      "id": "235c621de1f9784e",
+      "timestamp": "2026-02-17T08:05:57.675Z",
+      "type": "deploy",
+      "version": "1.1.0",
+      "previousVersion": "1.0.0",
+      "status": "success"
+    },
+    {
+      "id": "933fb5084726be24",
+      "timestamp": "2026-02-17T08:05:57.648Z",
+      "type": "deploy",
+      "version": "1.0.0",
+      "previousVersion": null,
+      "status": "success"
+    }
+  ]
+}

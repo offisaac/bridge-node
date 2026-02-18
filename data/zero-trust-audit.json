@@ -1,0 +1,100 @@
+[
+  {
+    "id": "c4a0d24a6dfca596",
+    "timestamp": "2026-02-17T23:44:34.569Z",
+    "type": "ACCESS_DENIED",
+    "agentId": "agent-db",
+    "resource": "internal",
+    "sourceSegment": "database",
+    "reason": "Segment not allowed"
+  },
+  {
+    "id": "2a1daf7da3555b37",
+    "timestamp": "2026-02-17T23:44:34.521Z",
+    "type": "ACCESS_ALLOWED",
+    "agentId": "agent-db",
+    "resource": "database",
+    "action": "read",
+    "sourceSegment": "database",
+    "rule": "verified"
+  },
+  {
+    "id": "89687e14bec9edb2",
+    "timestamp": "2026-02-17T23:44:34.494Z",
+    "type": "ACCESS_ALLOWED",
+    "agentId": "agent-worker-001",
+    "resource": "cache",
+    "action": "read",
+    "sourceSegment": "internal",
+    "rule": "verified"
+  },
+  {
+    "id": "98d19f5f7a349432",
+    "timestamp": "2026-02-17T23:44:34.450Z",
+    "type": "ACCESS_ALLOWED",
+    "agentId": "agent-worker-001",
+    "resource": "internal",
+    "action": "read",
+    "sourceSegment": "internal",
+    "rule": "verified"
+  },
+  {
+    "id": "39845d44aebcb02c",
+    "timestamp": "2026-02-17T23:44:34.397Z",
+    "type": "ACCESS_ALLOWED",
+    "agentId": "agent-gateway",
+    "resource": "public",
+    "action": "read",
+    "sourceSegment": "public",
+    "rule": "verified"
+  },
+  {
+    "id": "c1a58250be2ae42b",
+    "timestamp": "2026-02-17T08:00:27.629Z",
+    "type": "ACCESS_DENIED",
+    "agentId": "agent-db",
+    "resource": "internal",
+    "sourceSegment": "database",
+    "reason": "Segment not allowed"
+  },
+  {
+    "id": "20cf6df5fd3d7594",
+    "timestamp": "2026-02-17T08:00:27.564Z",
+    "type": "ACCESS_ALLOWED",
+    "agentId": "agent-db",
+    "resource": "database",
+    "action": "read",
+    "sourceSegment": "database",
+    "rule": "verified"
+  },
+  {
+    "id": "d09f8edb2884fd7d",
+    "timestamp": "2026-02-17T08:00:27.429Z",
+    "type": "ACCESS_ALLOWED",
+    "agentId": "agent-worker-001",
+    "resource": "cache",
+    "action": "read",
+    "sourceSegment": "internal",
+    "rule": "verified"
+  },
+  {
+    "id": "2050b4c048b752db",
+    "timestamp": "2026-02-17T08:00:27.303Z",
+    "type": "ACCESS_ALLOWED",
+    "agentId": "agent-worker-001",
+    "resource": "internal",
+    "action": "read",
+    "sourceSegment": "internal",
+    "rule": "verified"
+  },
+  {
+    "id": "c613cd25a9a128c4",
+    "timestamp": "2026-02-17T08:00:27.272Z",
+    "type": "ACCESS_ALLOWED",
+    "agentId": "agent-gateway",
+    "resource": "public",
+    "action": "read",
+    "sourceSegment": "public",
+    "rule": "verified"
+  }
+]

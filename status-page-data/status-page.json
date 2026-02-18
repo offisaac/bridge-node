@@ -1,0 +1,16 @@
+{
+  "id": "default",
+  "name": "Acme Corp Status",
+  "description": "Real-time system status",
+  "brandColor": "#2563eb",
+  "logoUrl": null,
+  "timezone": "UTC",
+  "modules": [
+    "status",
+    "history",
+    "components"
+  ],
+  "customCss": "",
+  "showUptime": true,
+  "showLatency": true
+}

@@ -1,0 +1,136 @@
+[
+  {
+    "suites": [
+      {
+        "suite": "AgentRegistry",
+        "tests": [
+          {
+            "status": "passed",
+            "name": "should register new agent",
+            "duration": 0,
+            "result": {
+              "success": true,
+              "agentId": "agent-001"
+            }
+          },
+          {
+            "status": "passed",
+            "name": "should list registered agents",
+            "duration": 0,
+            "result": {
+              "agents": [
+                "agent-001",
+                "agent-002"
+              ]
+            }
+          },
+          {
+            "status": "skipped",
+            "name": "should handle duplicate registration"
+          }
+        ],
+        "passed": 2,
+        "failed": 0,
+        "skipped": 1,
+        "duration": 0
+      },
+      {
+        "suite": "AgentMetrics",
+        "tests": [
+          {
+            "status": "passed",
+            "name": "should increment counter",
+            "duration": 0,
+            "result": {
+              "value": 1
+            }
+          },
+          {
+            "status": "passed",
+            "name": "should calculate rate",
+            "duration": 0,
+            "result": {
+              "rate": 10
+            }
+          }
+        ],
+        "passed": 2,
+        "failed": 0,
+        "skipped": 0,
+        "duration": 0
+      }
+    ],
+    "totalTests": 5,
+    "totalPassed": 4,
+    "totalFailed": 0,
+    "totalSkipped": 1,
+    "duration": 0
+  },
+  {
+    "suites": [
+      {
+        "suite": "AgentRegistry",
+        "tests": [
+          {
+            "status": "passed",
+            "name": "should register new agent",
+            "duration": 0,
+            "result": {
+              "success": true,
+              "agentId": "agent-001"
+            }
+          },
+          {
+            "status": "passed",
+            "name": "should list registered agents",
+            "duration": 0,
+            "result": {
+              "agents": [
+                "agent-001",
+                "agent-002"
+              ]
+            }
+          },
+          {
+            "status": "skipped",
+            "name": "should handle duplicate registration"
+          }
+        ],
+        "passed": 2,
+        "failed": 0,
+        "skipped": 1,
+        "duration": 0
+      },
+      {
+        "suite": "AgentMetrics",
+        "tests": [
+          {
+            "status": "passed",
+            "name": "should increment counter",
+            "duration": 1,
+            "result": {
+              "value": 1
+            }
+          },
+          {
+            "status": "passed",
+            "name": "should calculate rate",
+            "duration": 0,
+            "result": {
+              "rate": 10
+            }
+          }
+        ],
+        "passed": 2,
+        "failed": 0,
+        "skipped": 0,
+        "duration": 1
+      }
+    ],
+    "totalTests": 5,
+    "totalPassed": 4,
+    "totalFailed": 0,
+    "totalSkipped": 1,
+    "duration": 1
+  }
+]

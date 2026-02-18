@@ -1,0 +1,217 @@
+[
+  {
+    "id": "model_1771312032245",
+    "name": "E-Commerce Platform Threat Model",
+    "description": "Security analysis for e-commerce platform",
+    "components": [
+      {
+        "id": "component_1771312032256",
+        "name": "Web Frontend",
+        "type": "frontend",
+        "description": "",
+        "trustLevel": "untrusted",
+        "dataClassification": "public",
+        "entryPoints": [],
+        "dataFlows": []
+      },
+      {
+        "id": "component_1771312032273",
+        "name": "API Gateway",
+        "type": "api",
+        "description": "",
+        "trustLevel": "internal",
+        "dataClassification": "internal",
+        "entryPoints": [],
+        "dataFlows": []
+      },
+      {
+        "id": "component_1771312032288",
+        "name": "User Database",
+        "type": "database",
+        "description": "",
+        "trustLevel": "internal",
+        "dataClassification": "confidential",
+        "entryPoints": [],
+        "dataFlows": []
+      },
+      {
+        "id": "component_1771312032303",
+        "name": "Payment Service",
+        "type": "external",
+        "description": "",
+        "trustLevel": "trusted",
+        "dataClassification": "restricted",
+        "entryPoints": [],
+        "dataFlows": []
+      },
+      {
+        "id": "component_1771312032533",
+        "name": "File Storage",
+        "type": "storage",
+        "description": "",
+        "trustLevel": "internal",
+        "dataClassification": "internal",
+        "entryPoints": [],
+        "dataFlows": []
+      }
+    ],
+    "threats": [
+      {
+        "id": "threat_1771312032546",
+        "name": "SQL Injection",
+        "description": "User input in SQL queries",
+        "category": "injection",
+        "severity": "critical",
+        "likelihood": "medium",
+        "status": "mitigated",
+        "affectedComponents": [],
+        "mitigations": [],
+        "references": [],
+        "createdAt": 1771312032546,
+        "updatedAt": 1771312032546
+      },
+      {
+        "id": "threat_1771312032632",
+        "name": "XSS Attack",
+        "description": "Malicious scripts in user input",
+        "category": "injection",
+        "severity": "high",
+        "likelihood": "high",
+        "status": "mitigated",
+        "affectedComponents": [],
+        "mitigations": [],
+        "references": [],
+        "createdAt": 1771312032632,
+        "updatedAt": 1771312032632
+      },
+      {
+        "id": "threat_1771312032646",
+        "name": "Weak Password Policy",
+        "description": "Insufficient password requirements",
+        "category": "authentication",
+        "severity": "medium",
+        "likelihood": "medium",
+        "status": "identified",
+        "affectedComponents": [],
+        "mitigations": [],
+        "references": [],
+        "createdAt": 1771312032646,
+        "updatedAt": 1771312032646
+      },
+      {
+        "id": "threat_1771312032661",
+        "name": "Untrusted Input Handling",
+        "description": "Component Web Frontend accepts untrusted input",
+        "category": "injection",
+        "severity": "high",
+        "likelihood": "medium",
+        "status": "identified",
+        "affectedComponents": [
+          "component_1771312032256"
+        ],
+        "mitigations": [],
+        "references": [],
+        "createdAt": 1771312032661,
+        "updatedAt": 1771312032661
+      },
+      {
+        "id": "threat_1771312032661",
+        "name": "Public API Exposure",
+        "description": "API Web Frontend is publicly accessible",
+        "category": "authorization",
+        "severity": "medium",
+        "likelihood": "high",
+        "status": "identified",
+        "affectedComponents": [
+          "component_1771312032256"
+        ],
+        "mitigations": [],
+        "references": [],
+        "createdAt": 1771312032661,
+        "updatedAt": 1771312032661
+      },
+      {
+        "id": "threat_1771312032661",
+        "name": "Public API Exposure",
+        "description": "API API Gateway is publicly accessible",
+        "category": "authorization",
+        "severity": "medium",
+        "likelihood": "high",
+        "status": "identified",
+        "affectedComponents": [
+          "component_1771312032273"
+        ],
+        "mitigations": [],
+        "references": [],
+        "createdAt": 1771312032661,
+        "updatedAt": 1771312032661
+      },
+      {
+        "id": "threat_1771312032661",
+        "name": "Database Exposure",
+        "description": "Database User Database needs protection",
+        "category": "data_leak",
+        "severity": "critical",
+        "likelihood": "low",
+        "status": "identified",
+        "affectedComponents": [
+          "component_1771312032288"
+        ],
+        "mitigations": [],
+        "references": [],
+        "createdAt": 1771312032661,
+        "updatedAt": 1771312032661
+      },
+      {
+        "id": "threat_1771312032661",
+        "name": "SQL Injection",
+        "description": "Database User Database vulnerable to SQL injection",
+        "category": "injection",
+        "severity": "critical",
+        "likelihood": "medium",
+        "status": "identified",
+        "affectedComponents": [
+          "component_1771312032288"
+        ],
+        "mitigations": [],
+        "references": [],
+        "createdAt": 1771312032661,
+        "updatedAt": 1771312032661
+      },
+      {
+        "id": "threat_1771312032661",
+        "name": "External Service Compromise",
+        "description": "External service Payment Service could be compromised",
+        "category": "external",
+        "severity": "high",
+        "likelihood": "low",
+        "status": "identified",
+        "affectedComponents": [
+          "component_1771312032303"
+        ],
+        "mitigations": [],
+        "references": [],
+        "createdAt": 1771312032661,
+        "updatedAt": 1771312032661
+      },
+      {
+        "id": "threat_1771312032661",
+        "name": "Unencrypted Storage",
+        "description": "Storage File Storage may contain sensitive data",
+        "category": "crypto",
+        "severity": "high",
+        "likelihood": "medium",
+        "status": "identified",
+        "affectedComponents": [
+          "component_1771312032533"
+        ],
+        "mitigations": [],
+        "references": [],
+        "createdAt": 1771312032661,
+        "updatedAt": 1771312032661
+      }
+    ],
+    "createdAt": 1771312032245,
+    "updatedAt": 1771312032661
+  }
+]

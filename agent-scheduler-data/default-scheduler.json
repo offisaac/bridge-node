@@ -1,0 +1,354 @@
+{
+  "tasks": [
+    {
+      "id": "task_1771313770760_0y6ew6f52",
+      "name": "Health Check",
+      "agentId": "agent-1",
+      "cron": "*/2 * * * *",
+      "command": {
+        "action": "health-check"
+      },
+      "payload": {},
+      "metadata": {},
+      "enabled": true,
+      "timezone": "UTC",
+      "createdAt": 1771313770760,
+      "lastRun": 1771313904820,
+      "nextRun": null,
+      "runCount": 1,
+      "failCount": 0,
+      "maxRetries": 3,
+      "timeout": 300000,
+      "options": {
+        "immediate": false,
+        "runOnStartup": true,
+        "skipIfRunning": false
+      }
+    },
+    {
+      "id": "task_1771313770787_r365zn3u0",
+      "name": "Data Backup",
+      "agentId": "agent-2",
+      "cron": "0 2 * * *",
+      "command": {
+        "action": "backup"
+      },
+      "payload": {},
+      "metadata": {
+        "target": "database"
+      },
+      "enabled": true,
+      "timezone": "UTC",
+      "createdAt": 1771313770787,
+      "lastRun": null,
+      "nextRun": 1771351200000,
+      "runCount": 0,
+      "failCount": 0,
+      "maxRetries": 3,
+      "timeout": 300000,
+      "options": {
+        "immediate": false,
+        "runOnStartup": false,
+        "skipIfRunning": false
+      }
+    },
+    {
+      "id": "task_1771313770802_n2v5rynt8",
+      "name": "Report Generation",
+      "agentId": "agent-3",
+      "cron": "0 9 * * 1",
+      "command": {
+        "action": "generate-report"
+      },
+      "payload": {},
+      "metadata": {},
+      "enabled": true,
+      "timezone": "UTC",
+      "createdAt": 1771313770802,
+      "lastRun": null,
+      "nextRun": 1771808400000,
+      "runCount": 0,
+      "failCount": 0,
+      "maxRetries": 3,
+      "timeout": 300000,
+      "options": {
+        "immediate": false,
+        "runOnStartup": false,
+        "skipIfRunning": true
+      }
+    },
+    {
+      "id": "task_1771313770834_gt6u8kz8j",
+      "name": "Cleanup Temp Files",
+      "agentId": "agent-1",
+      "cron": "0 3 * * *",
+      "command": {
+        "action": "cleanup"
+      },
+      "payload": {},
+      "metadata": {},
+      "enabled": false,
+      "timezone": "UTC",
+      "createdAt": 1771313770834,
+      "lastRun": null,
+      "nextRun": null,
+      "runCount": 0,
+      "failCount": 0,
+      "maxRetries": 3,
+      "timeout": 300000,
+      "options": {
+        "immediate": false,
+        "runOnStartup": false,
+        "skipIfRunning": false
+      }
+    },
+    {
+      "id": "task_1771313868302_jlet9mdj3",
+      "name": "Health Check",
+      "agentId": "agent-1",
+      "cron": "*/2 * * * *",
+      "command": {
+        "action": "health-check"
+      },
+      "payload": {},
+      "metadata": {},
+      "enabled": true,
+      "timezone": "UTC",
+      "createdAt": 1771313868302,
+      "lastRun": 1771313904820,
+      "nextRun": null,
+      "runCount": 1,
+      "failCount": 0,
+      "maxRetries": 3,
+      "timeout": 300000,
+      "options": {
+        "immediate": false,
+        "runOnStartup": true,
+        "skipIfRunning": false
+      }
+    },
+    {
+      "id": "task_1771313869109_63i5fu1od",
+      "name": "Data Backup",
+      "agentId": "agent-2",
+      "cron": "0 2 * * *",
+      "command": {
+        "action": "backup"
+      },
+      "payload": {},
+      "metadata": {
+        "target": "database"
+      },
+      "enabled": true,
+      "timezone": "UTC",
+      "createdAt": 1771313869109,
+      "lastRun": null,
+      "nextRun": 1771351200000,
+      "runCount": 0,
+      "failCount": 0,
+      "maxRetries": 3,
+      "timeout": 300000,
+      "options": {
+        "immediate": false,
+        "runOnStartup": false,
+        "skipIfRunning": false
+      }
+    },
+    {
+      "id": "task_1771313869123_6c04sfdt6",
+      "name": "Report Generation",
+      "agentId": "agent-3",
+      "cron": "0 9 * * 1",
+      "command": {
+        "action": "generate-report"
+      },
+      "payload": {},
+      "metadata": {},
+      "enabled": true,
+      "timezone": "UTC",
+      "createdAt": 1771313869123,
+      "lastRun": null,
+      "nextRun": 1771808400000,
+      "runCount": 0,
+      "failCount": 0,
+      "maxRetries": 3,
+      "timeout": 300000,
+      "options": {
+        "immediate": false,
+        "runOnStartup": false,
+        "skipIfRunning": true
+      }
+    },
+    {
+      "id": "task_1771313869140_gcoddi0h5",
+      "name": "Cleanup Temp Files",
+      "agentId": "agent-1",
+      "cron": "0 3 * * *",
+      "command": {
+        "action": "cleanup"
+      },
+      "payload": {},
+      "metadata": {},
+      "enabled": false,
+      "timezone": "UTC",
+      "createdAt": 1771313869140,
+      "lastRun": null,
+      "nextRun": null,
+      "runCount": 0,
+      "failCount": 0,
+      "maxRetries": 3,
+      "timeout": 300000,
+      "options": {
+        "immediate": false,
+        "runOnStartup": false,
+        "skipIfRunning": false
+      }
+    },
+    {
+      "id": "task_1771313904653_zkbnjd6dx",
+      "name": "Health Check",
+      "agentId": "agent-1",
+      "cron": "*/2 * * * *",
+      "command": {
+        "action": "health-check"
+      },
+      "payload": {},
+      "metadata": {},
+      "enabled": true,
+      "timezone": "UTC",
+      "createdAt": 1771313904653,
+      "lastRun": 1771313904820,
+      "nextRun": null,
+      "runCount": 1,
+      "failCount": 0,
+      "maxRetries": 3,
+      "timeout": 300000,
+      "options": {
+        "immediate": false,
+        "runOnStartup": true,
+        "skipIfRunning": false
+      }
+    },
+    {
+      "id": "task_1771313904700_p9bpb8h40",
+      "name": "Data Backup",
+      "agentId": "agent-2",
+      "cron": "0 2 * * *",
+      "command": {
+        "action": "backup"
+      },
+      "payload": {},
+      "metadata": {
+        "target": "database"
+      },
+      "enabled": true,
+      "timezone": "UTC",
+      "createdAt": 1771313904700,
+      "lastRun": null,
+      "nextRun": 1771351200000,
+      "runCount": 0,
+      "failCount": 0,
+      "maxRetries": 3,
+      "timeout": 300000,
+      "options": {
+        "immediate": false,
+        "runOnStartup": false,
+        "skipIfRunning": false
+      }
+    },
+    {
+      "id": "task_1771313904716_xsso6b33h",
+      "name": "Report Generation",
+      "agentId": "agent-3",
+      "cron": "0 9 * * 1",
+      "command": {
+        "action": "generate-report"
+      },
+      "payload": {},
+      "metadata": {},
+      "enabled": true,
+      "timezone": "UTC",
+      "createdAt": 1771313904716,
+      "lastRun": null,
+      "nextRun": 1771808400000,
+      "runCount": 0,
+      "failCount": 0,
+      "maxRetries": 3,
+      "timeout": 300000,
+      "options": {
+        "immediate": false,
+        "runOnStartup": false,
+        "skipIfRunning": true
+      }
+    },
+    {
+      "id": "task_1771313904736_i797cvusp",
+      "name": "Cleanup Temp Files",
+      "agentId": "agent-1",
+      "cron": "0 3 * * *",
+      "command": {
+        "action": "cleanup"
+      },
+      "payload": {},
+      "metadata": {},
+      "enabled": false,
+      "timezone": "UTC",
+      "createdAt": 1771313904736,
+      "lastRun": null,
+      "nextRun": null,
+      "runCount": 0,
+      "failCount": 0,
+      "maxRetries": 3,
+      "timeout": 300000,
+      "options": {
+        "immediate": false,
+        "runOnStartup": false,
+        "skipIfRunning": false
+      }
+    }
+  ],
+  "history": [
+    {
+      "id": "run_1771313904819_nhddveuiv",
+      "taskId": "task_1771313770760_0y6ew6f52",
+      "startedAt": 1771313904820,
+      "completedAt": 1771313904920,
+      "status": "success",
+      "result": {
+        "executed": true,
+        "taskId": "task_1771313770760_0y6ew6f52",
+        "agentId": "agent-1"
+      },
+      "error": null,
+      "duration": 100
+    },
+    {
+      "id": "run_1771313904820_l4nvf6oui",
+      "taskId": "task_1771313868302_jlet9mdj3",
+      "startedAt": 1771313904820,
+      "completedAt": 1771313905068,
+      "status": "success",
+      "result": {
+        "executed": true,
+        "taskId": "task_1771313868302_jlet9mdj3",
+        "agentId": "agent-1"
+      },
+      "error": null,
+      "duration": 248
+    },
+    {
+      "id": "run_1771313904820_2p6ivoxr8",
+      "taskId": "task_1771313904653_zkbnjd6dx",
+      "startedAt": 1771313904820,
+      "completedAt": 1771313905103,
+      "status": "success",
+      "result": {
+        "executed": true,
+        "taskId": "task_1771313904653_zkbnjd6dx",
+        "agentId": "agent-1"
+      },
+      "error": null,
+      "duration": 283
+    }
+  ]
+}

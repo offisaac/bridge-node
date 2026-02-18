@@ -1,0 +1,45 @@
+{
+  "agent_qa": {
+    "id": "agent_qa",
+    "name": "Agent-QA",
+    "role": "tester",
+    "status": "idle",
+    "current_task": null,
+    "capabilities": [
+      "integration_testing",
+      "bug_detection",
+      "performance_testing",
+      "test_automation"
+    ],
+    "registered_at": "2026-02-17T00:40:00",
+    "workspace": "/home/pengxiang/bridge-node"
+  },
+  "agent_driver": {
+    "id": "agent_driver",
+    "name": "Agent-Driver",
+    "role": "ideator",
+    "status": "idle",
+    "current_task": null,
+    "capabilities": [
+      "security_audit",
+      "idea_generation",
+      "performance_analysis"
+    ],
+    "registered_at": "2026-02-17T00:40:00",
+    "workspace": "/home/pengxiang/bridge-node"
+  },
+  "agent_mv": {
+    "id": "agent_mv",
+    "name": "Agent-MV",
+    "role": "memory",
+    "status": "idle",
+    "current_task": null,
+    "capabilities": [
+      "knowledge_storage",
+      "documentation",
+      "context_preservation"
+    ],
+    "registered_at": "2026-02-17T00:40:00",
+    "workspace": "/home/pengxiang/bridge-node"
+  }
+}

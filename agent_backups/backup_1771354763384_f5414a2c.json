@@ -1,0 +1,17 @@
+{
+  "backupId": "backup_1771354763384_f5414a2c",
+  "agentId": "agent-demo",
+  "timestamp": "2026-02-17T18:59:23.384Z",
+  "data": {
+    "state": {
+      "status": "active",
+      "version": "1.0.0"
+    },
+    "config": {
+      "maxRetries": 3,
+      "timeout": 5000
+    }
+  },
+  "metadata": {},
+  "version": "1.0"
+}

@@ -1,0 +1,15 @@
+{
+  "id": "3be4e6e7-1523-4026-9bd4-3f1e8c425325",
+  "content": "test",
+  "cleaned_content": "test",
+  "label": "test",
+  "output_type": "text",
+  "metadata": {},
+  "timestamp": "2024-01-01",
+  "content_hash": "098f6bcd",
+  "content_length": 4,
+  "has_debug_markers": false,
+  "debug_markers": [],
+  "code_blocks": [],
+  "code_block_count": 0
+}

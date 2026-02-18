@@ -1,0 +1,150 @@
+{
+  "experiments": [
+    {
+      "id": "exp_1771314104588_741cec1sy",
+      "name": "High Latency Test",
+      "description": "Test system under high latency",
+      "type": "delay",
+      "level": 5,
+      "targetAgents": [],
+      "targetPercentage": 100,
+      "duration": 120000,
+      "enabled": true,
+      "schedule": null,
+      "createdAt": 1771314104588,
+      "startedAt": 1771323157115,
+      "completedAt": null,
+      "status": "running",
+      "config": {
+        "multiplier": 500
+      },
+      "results": null
+    },
+    {
+      "id": "exp_1771314104639_44paas9j2",
+      "name": "Random Errors",
+      "description": "Inject random errors",
+      "type": "error",
+      "level": 1,
+      "targetAgents": [],
+      "targetPercentage": 10,
+      "duration": 180000,
+      "enabled": true,
+      "schedule": null,
+      "createdAt": 1771314104639,
+      "startedAt": 1771314104677,
+      "completedAt": 1771314284759,
+      "status": "completed",
+      "config": {
+        "errorCode": 500,
+        "errorMessage": "Chaos-induced error"
+      },
+      "results": {
+        "duration": 180082,
+        "requestsAffected": 0,
+        "errorsInjected": 0,
+        "failuresObserved": 0,
+        "recoveries": 0,
+        "latency": {
+          "min": 0,
+          "max": 0,
+          "avg": 0,
+          "p50": 0,
+          "p95": 0,
+          "p99": 0
+        }
+      }
+    },
+    {
+      "id": "exp_1771314104663_fp7t8sbg7",
+      "name": "Timeout Test",
+      "description": "Test timeout handling",
+      "type": "timeout",
+      "level": 10,
+      "targetAgents": [],
+      "targetPercentage": 100,
+      "duration": 60000,
+      "enabled": true,
+      "schedule": null,
+      "createdAt": 1771314104663,
+      "startedAt": 1771323210826,
+      "completedAt": null,
+      "status": "running",
+      "config": {},
+      "results": null
+    },
+    {
+      "id": "exp_1771354281895_u4mignfta",
+      "name": "High Latency Test",
+      "description": "Test system under high latency",
+      "type": "delay",
+      "level": 5,
+      "targetAgents": [],
+      "targetPercentage": 100,
+      "duration": 120000,
+      "enabled": true,
+      "schedule": null,
+      "createdAt": 1771354281895,
+      "startedAt": null,
+      "completedAt": null,
+      "status": "pending",
+      "config": {
+        "multiplier": 500
+      },
+      "results": null
+    },
+    {
+      "id": "exp_1771354281907_pq9spdrp2",
+      "name": "Random Errors",
+      "description": "Inject random errors",
+      "type": "error",
+      "level": 1,
+      "targetAgents": [],
+      "targetPercentage": 10,
+      "duration": 180000,
+      "enabled": true,
+      "schedule": null,
+      "createdAt": 1771354281907,
+      "startedAt": 1771354281936,
+      "completedAt": 1771354462035,
+      "status": "completed",
+      "config": {
+        "errorCode": 500,
+        "errorMessage": "Chaos-induced error"
+      },
+      "results": {
+        "duration": 180099,
+        "requestsAffected": 0,
+        "errorsInjected": 0,
+        "failuresObserved": 0,
+        "recoveries": 0,
+        "latency": {
+          "min": 0,
+          "max": 0,
+          "avg": 0,
+          "p50": 0,
+          "p95": 0,
+          "p99": 0
+        }
+      }
+    },
+    {
+      "id": "exp_1771354281920_qackh4o8h",
+      "name": "Timeout Test",
+      "description": "Test timeout handling",
+      "type": "timeout",
+      "level": 10,
+      "targetAgents": [],
+      "targetPercentage": 100,
+      "duration": 60000,
+      "enabled": true,
+      "schedule": null,
+      "createdAt": 1771354281920,
+      "startedAt": null,
+      "completedAt": null,
+      "status": "pending",
+      "config": {},
+      "results": null
+    }
+  ]
+}

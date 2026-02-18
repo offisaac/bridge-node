@@ -1,0 +1,121 @@
+{
+  "members": [
+    {
+      "id": "member_1771299620236",
+      "name": "Alice",
+      "email": "alice@example.com",
+      "phone": "+1234567890",
+      "slack": "@alice",
+      "timezone": "UTC",
+      "skills": [
+        "backend",
+        "database",
+        "aws"
+      ],
+      "maxShiftsPerMonth": 5,
+      "preferredShifts": [],
+      "unavailableDates": [],
+      "status": "off_duty"
+    },
+    {
+      "id": "member_1771299620247",
+      "name": "Bob",
+      "email": "bob@example.com",
+      "phone": "+1234567891",
+      "slack": "@bob",
+      "timezone": "UTC",
+      "skills": [
+        "frontend",
+        "react",
+        "aws"
+      ],
+      "maxShiftsPerMonth": 5,
+      "preferredShifts": [],
+      "unavailableDates": [],
+      "status": "off_duty"
+    },
+    {
+      "id": "member_1771299620260",
+      "name": "Charlie",
+      "email": "charlie@example.com",
+      "phone": null,
+      "slack": null,
+      "timezone": "UTC",
+      "skills": [
+        "devops",
+        "kubernetes",
+        "aws"
+      ],
+      "maxShiftsPerMonth": 5,
+      "preferredShifts": [],
+      "unavailableDates": [],
+      "status": "off_duty"
+    }
+  ],
+  "rotations": [
+    {
+      "id": "rotation_1771299620294",
+      "name": "Primary On-Call",
+      "description": "Primary on-call rotation for platform team",
+      "type": "weekly",
+      "timezone": "UTC",
+      "startDate": "2026-01-01T09:00:00Z",
+      "handoffTime": "09:00",
+      "members": [
+        "member_1771299620236",
+        "member_1771299620247",
+        "member_1771299620260"
+      ],
+      "escalationPolicyId": "policy_1771299620280",
+      "overrides": [
+        {
+          "memberId": "member_1771299620260",
+          "startTime": "2026-02-20T00:00:00Z",
+          "endTime": "2026-02-21T00:00:00Z",
+          "reason": "Vacation coverage"
+        }
+      ]
+    }
+  ],
+  "policies": [
+    {
+      "id": "policy_1771299620280",
+      "name": "Standard Escalation",
+      "description": "Standard on-call escalation policy",
+      "steps": [
+        {
+          "level": 1,
+          "delayMinutes": 0,
+          "contacts": [
+            {
+              "memberId": "member_1771299620236",
+              "type": "phone"
+            }
+          ]
+        },
+        {
+          "level": 2,
+          "delayMinutes": 15,
+          "contacts": [
+            {
+              "memberId": "member_1771299620247",
+              "type": "slack"
+            }
+          ]
+        },
+        {
+          "level": 3,
+          "delayMinutes": 30,
+          "contacts": [
+            {
+              "memberId": "member_1771299620260",
+              "type": "email"
+            }
+          ]
+        }
+      ],
+      "escalateIfUnacknowledged": true,
+      "ackTimeoutMinutes": 15
+    }
+  ]
+}

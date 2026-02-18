@@ -1,0 +1,13 @@
+{
+  "name": "DATABASE_URL",
+  "value": "postgres://localhost:5432/db",
+  "type": "url",
+  "description": "",
+  "required": false,
+  "scope": "project",
+  "validation": null,
+  "encrypted": false,
+  "deprecated": false,
+  "deprecatedMessage": "",
+  "metadata": {}
+}

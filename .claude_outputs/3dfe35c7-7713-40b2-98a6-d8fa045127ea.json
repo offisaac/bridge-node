@@ -1,0 +1,23 @@
+{
+  "id": "3dfe35c7-7713-40b2-98a6-d8fa045127ea",
+  "content": "Issue: Broad exception catch in key_scanner.py",
+  "cleaned_content": "Issue: Broad exception catch in key_scanner.py",
+  "label": "Issue",
+  "output_type": "text",
+  "metadata": {},
+  "timestamp": "2026-02-17T11:39:14.756926",
+  "content_hash": "c36ddf44",
+  "content_length": 46,
+  "has_debug_markers": true,
+  "debug_markers": [
+    {
+      "keyword": "exception",
+      "context": "Issue: Broad exception catch in key_scanner.py",
+      "line_number": null,
+      "timestamp": "2026-02-17T11:39:14.756926",
+      "severity": "high"
+    }
+  ],
+  "code_blocks": [],
+  "code_block_count": 0
+}

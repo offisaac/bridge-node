@@ -1,0 +1,12 @@
+{
+  "user_1:quota_1771298339382": {
+    "quotaId": "quota_1771298339382",
+    "scope": "user_1",
+    "used": 100,
+    "windowStart": 1771298339413,
+    "softLimitHit": true,
+    "hardLimitHit": true,
+    "throttled": false,
+    "history": []
+  }
+}

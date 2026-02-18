@@ -1,0 +1,58 @@
+[
+  {
+    "id": "getting-started",
+    "name": "Getting Started",
+    "description": "Quick start guides",
+    "parentId": null,
+    "order": 1
+  },
+  {
+    "id": "api-reference",
+    "name": "API Reference",
+    "description": "API documentation",
+    "parentId": null,
+    "order": 2
+  },
+  {
+    "id": "configuration",
+    "name": "Configuration",
+    "description": "Configuration guides",
+    "parentId": null,
+    "order": 3
+  },
+  {
+    "id": "troubleshooting",
+    "name": "Troubleshooting",
+    "description": "Problem solving",
+    "parentId": null,
+    "order": 4
+  },
+  {
+    "id": "best-practices",
+    "name": "Best Practices",
+    "description": "Recommended practices",
+    "parentId": null,
+    "order": 5
+  },
+  {
+    "id": "security",
+    "name": "Security",
+    "description": "Security guidelines",
+    "parentId": null,
+    "order": 6
+  },
+  {
+    "id": "deployment",
+    "name": "Deployment",
+    "description": "Deployment guides",
+    "parentId": null,
+    "order": 7
+  },
+  {
+    "id": "general",
+    "name": "General",
+    "description": "General documentation",
+    "parentId": null,
+    "order": 99
+  }
+]

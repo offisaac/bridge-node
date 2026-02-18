@@ -1,0 +1,86 @@
+{
+  "roles": {
+    "admin": {
+      "permissions": [
+        "*"
+      ],
+      "description": "Full access",
+      "inherits": []
+    },
+    "developer": {
+      "permissions": [
+        "read",
+        "write",
+        "execute"
+      ],
+      "description": "Development access",
+      "inherits": [
+        "viewer"
+      ]
+    },
+    "viewer": {
+      "permissions": [
+        "read"
+      ],
+      "description": "Read-only access",
+      "inherits": []
+    },
+    "operator": {
+      "permissions": [
+        "read"
+      ],
+      "description": "Read-only access",
+      "inherits": []
+    },
+    "auditor": {
+      "permissions": [
+        "read",
+        "audit"
+      ],
+      "description": "Audit access",
+      "inherits": []
+    }
+  },
+  "agentRoles": {
+    "agent-001": [
+      "admin"
+    ],
+    "agent-002": [
+      "developer"
+    ],
+    "agent-003": [
+      "viewer"
+    ],
+    "agent-004": [
+      "auditor"
+    ]
+  },
+  "acls": {
+    "deployments": [
+      {
+        "principal": "role:developer",
+        "permission": "write",
+        "allow": true,
+        "priority": 10
+      },
+      {
+        "principal": "role:developer",
+        "permission": "write",
+        "allow": true,
+        "priority": 10
+      },
+      {
+        "principal": "role:viewer",
+        "permission": "write",
+        "allow": false,
+        "priority": 5
+      },
+      {
+        "principal": "role:viewer",
+        "permission": "write",
+        "allow": false,
+        "priority": 5
+      }
+    ]
+  }
+}

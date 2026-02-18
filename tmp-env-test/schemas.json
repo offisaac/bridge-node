@@ -1,0 +1,47 @@
+[
+  {
+    "name": "app",
+    "description": "Application environment schema",
+    "variables": [
+      {
+        "name": "PORT",
+        "type": "number",
+        "description": "",
+        "default": 8080,
+        "required": true,
+        "scope": "project",
+        "validation": null,
+        "encrypted": false,
+        "deprecated": false,
+        "deprecatedMessage": "",
+        "metadata": {}
+      },
+      {
+        "name": "HOST",
+        "type": "string",
+        "description": "",
+        "default": "localhost",
+        "required": false,
+        "scope": "project",
+        "validation": null,
+        "encrypted": false,
+        "deprecated": false,
+        "deprecatedMessage": "",
+        "metadata": {}
+      },
+      {
+        "name": "DEBUG",
+        "type": "boolean",
+        "description": "",
+        "default": false,
+        "required": false,
+        "scope": "project",
+        "validation": null,
+        "encrypted": false,
+        "deprecated": false,
+        "deprecatedMessage": "",
+        "metadata": {}
+      }
+    ]
+  }
+]

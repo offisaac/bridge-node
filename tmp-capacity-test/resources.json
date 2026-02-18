@@ -1,0 +1,266 @@
+{
+  "cpu-prod-1": {
+    "id": "cpu-prod-1",
+    "name": "Production CPU",
+    "type": "cpu",
+    "current": 74.44000009797196,
+    "peak": 74.44000009797196,
+    "average": 68.42380995236068,
+    "capacity": 100,
+    "unit": "%",
+    "utilization": 74.44000009797196,
+    "status": "warning",
+    "thresholds": {
+      "warning": 70,
+      "critical": 85,
+      "emergency": 95
+    },
+    "metrics": [
+      {
+        "resourceId": "cpu-prod-1",
+        "metricType": "utilization",
+        "value": 69.27830357074853,
+        "unit": "%",
+        "timestamp": 1770089653081,
+        "tags": {}
+      },
+      {
+        "resourceId": "cpu-prod-1",
+        "metricType": "utilization",
+        "value": 67.55486959058307,
+        "unit": "%",
+        "timestamp": 1770176053109,
+        "tags": {}
+      },
+      {
+        "resourceId": "cpu-prod-1",
+        "metricType": "utilization",
+        "value": 69.76322564049907,
+        "unit": "%",
+        "timestamp": 1770262453136,
+        "tags": {}
+      },
+      {
+        "resourceId": "cpu-prod-1",
+        "metricType": "utilization",
+        "value": 69.9472620444098,
+        "unit": "%",
+        "timestamp": 1770348853166,
+        "tags": {}
+      },
+      {
+        "resourceId": "cpu-prod-1",
+        "metricType": "utilization",
+        "value": 63.94848502634716,
+        "unit": "%",
+        "timestamp": 1770435253195,
+        "tags": {}
+      },
+      {
+        "resourceId": "cpu-prod-1",
+        "metricType": "utilization",
+        "value": 63.01056251941023,
+        "unit": "%",
+        "timestamp": 1770521653222,
+        "tags": {}
+      },
+      {
+        "resourceId": "cpu-prod-1",
+        "metricType": "utilization",
+        "value": 65.58890972700888,
+        "unit": "%",
+        "timestamp": 1770608053248,
+        "tags": {}
+      },
+      {
+        "resourceId": "cpu-prod-1",
+        "metricType": "utilization",
+        "value": 64.81345916273486,
+        "unit": "%",
+        "timestamp": 1770694453816,
+        "tags": {}
+      },
+      {
+        "resourceId": "cpu-prod-1",
+        "metricType": "utilization",
+        "value": 69.83345009642171,
+        "unit": "%",
+        "timestamp": 1770780853862,
+        "tags": {}
+      },
+      {
+        "resourceId": "cpu-prod-1",
+        "metricType": "utilization",
+        "value": 69.11564181679157,
+        "unit": "%",
+        "timestamp": 1770867253895,
+        "tags": {}
+      },
+      {
+        "resourceId": "cpu-prod-1",
+        "metricType": "utilization",
+        "value": 69.77621028593308,
+        "unit": "%",
+        "timestamp": 1770953653950,
+        "tags": {}
+      },
+      {
+        "resourceId": "cpu-prod-1",
+        "metricType": "utilization",
+        "value": 67.14589855298146,
+        "unit": "%",
+        "timestamp": 1771040053981,
+        "tags": {}
+      },
+      {
+        "resourceId": "cpu-prod-1",
+        "metricType": "utilization",
+        "value": 73.71706120120817,
+        "unit": "%",
+        "timestamp": 1771126454027,
+        "tags": {}
+      },
+      {
+        "resourceId": "cpu-prod-1",
+        "metricType": "utilization",
+        "value": 74.44000009797196,
+        "unit": "%",
+        "timestamp": 1771212854076,
+        "tags": {}
+      }
+    ],
+    "projections": []
+  },
+  "mem-prod-1": {
+    "id": "mem-prod-1",
+    "name": "Production Memory",
+    "type": "memory",
+    "current": 45.73061288668279,
+    "peak": 48.70484197441883,
+    "average": 45.29894515092635,
+    "capacity": 100,
+    "unit": "%",
+    "utilization": 45.73061288668279,
+    "status": "healthy",
+    "thresholds": {
+      "warning": 70,
+      "critical": 85,
+      "emergency": 95
+    },
+    "metrics": [
+      {
+        "resourceId": "mem-prod-1",
+        "metricType": "utilization",
+        "value": 48.336318213096256,
+        "unit": "%",
+        "timestamp": 1770089653094,
+        "tags": {}
+      },
+      {
+        "resourceId": "mem-prod-1",
+        "metricType": "utilization",
+        "value": 41.73454678423869,
+        "unit": "%",
+        "timestamp": 1770176053122,
+        "tags": {}
+      },
+      {
+        "resourceId": "mem-prod-1",
+        "metricType": "utilization",
+        "value": 47.792319111957966,
+        "unit": "%",
+        "timestamp": 1770262453152,
+        "tags": {}
+      },
+      {
+        "resourceId": "mem-prod-1",
+        "metricType": "utilization",
+        "value": 43.62806470898555,
+        "unit": "%",
+        "timestamp": 1770348853181,
+        "tags": {}
+      },
+      {
+        "resourceId": "mem-prod-1",
+        "metricType": "utilization",
+        "value": 48.70484197441883,
+        "unit": "%",
+        "timestamp": 1770435253208,
+        "tags": {}
+      },
+      {
+        "resourceId": "mem-prod-1",
+        "metricType": "utilization",
+        "value": 46.764158601362716,
+        "unit": "%",
+        "timestamp": 1770521653235,
+        "tags": {}
+      },
+      {
+        "resourceId": "mem-prod-1",
+        "metricType": "utilization",
+        "value": 40.18381586232716,
+        "unit": "%",
+        "timestamp": 1770608053584,
+        "tags": {}
+      },
+      {
+        "resourceId": "mem-prod-1",
+        "metricType": "utilization",
+        "value": 41.623636543445,
+        "unit": "%",
+        "timestamp": 1770694453832,
+        "tags": {}
+      },
+      {
+        "resourceId": "mem-prod-1",
+        "metricType": "utilization",
+        "value": 41.24387697813646,
+        "unit": "%",
+        "timestamp": 1770780853877,
+        "tags": {}
+      },
+      {
+        "resourceId": "mem-prod-1",
+        "metricType": "utilization",
+        "value": 45.965032509022144,
+        "unit": "%",
+        "timestamp": 1770867253931,
+        "tags": {}
+      },
+      {
+        "resourceId": "mem-prod-1",
+        "metricType": "utilization",
+        "value": 45.87989980572752,
+        "unit": "%",
+        "timestamp": 1770953653965,
+        "tags": {}
+      },
+      {
+        "resourceId": "mem-prod-1",
+        "metricType": "utilization",
+        "value": 48.03362541390881,
+        "unit": "%",
+        "timestamp": 1771040054001,
+        "tags": {}
+      },
+      {
+        "resourceId": "mem-prod-1",
+        "metricType": "utilization",
+        "value": 48.564482719659104,
+        "unit": "%",
+        "timestamp": 1771126454052,
+        "tags": {}
+      },
+      {
+        "resourceId": "mem-prod-1",
+        "metricType": "utilization",
+        "value": 45.73061288668279,
+        "unit": "%",
+        "timestamp": 1771212854093,
+        "tags": {}
+      }
+    ],
+    "projections": []
+  }
+}

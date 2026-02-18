@@ -1,0 +1,41 @@
+[
+  {
+    "id": "asset_1771312219083",
+    "path": "demo-assets/app.js",
+    "type": "javascript",
+    "size": 64,
+    "originalSize": 181,
+    "optimizations": [
+      "minify",
+      "mangle"
+    ],
+    "hash": "38ae7193",
+    "lastModified": 1771312219083
+  },
+  {
+    "id": "asset_1771312219112",
+    "path": "demo-assets/index.html",
+    "type": "other",
+    "size": 217,
+    "originalSize": 217,
+    "optimizations": [],
+    "hash": "21e0a507",
+    "lastModified": 1771312219112
+  },
+  {
+    "id": "asset_1771312219148",
+    "path": "demo-assets/styles.css",
+    "type": "stylesheet",
+    "size": 220,
+    "originalSize": 299,
+    "optimizations": [
+      "minify",
+      "autoprefixer",
+      "autoprefixer",
+      "autoprefixer",
+      "autoprefixer"
+    ],
+    "hash": "a9e7554",
+    "lastModified": 1771312219148
+  }
+]

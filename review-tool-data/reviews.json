@@ -1,0 +1,155 @@
+[
+  {
+    "id": "review_1771311714397",
+    "title": "API Gateway 故障复盘",
+    "incidentId": "INC-001",
+    "incidentTitle": "API Gateway 高延迟",
+    "date": 1771138914397,
+    "severity": "high",
+    "duration": 45,
+    "status": "completed",
+    "timeline": [
+      {
+        "title": "问题发现",
+        "description": "用户报告API响应慢",
+        "time": 1771138914409
+      },
+      {
+        "title": "告警触发",
+        "description": "监控系统检测到高延迟",
+        "time": 1771139214425
+      },
+      {
+        "title": "开始调查",
+        "description": "团队开始排查",
+        "time": 1771139514440
+      },
+      {
+        "title": "定位根因",
+        "description": "发现数据库连接池问题",
+        "time": 1771140714454
+      },
+      {
+        "title": "应用修复",
+        "description": "重启连接池",
+        "time": 1771141314477
+      },
+      {
+        "title": "服务恢复",
+        "description": "延迟恢复正常",
+        "time": 1771141614494
+      }
+    ],
+    "impact": {
+      "usersAffected": 5000,
+      "servicesAffected": [
+        "API Gateway",
+        "User Service"
+      ],
+      "financialImpact": 10000,
+      "reputationalImpact": "medium"
+    },
+    "rootCause": {
+      "category": "infrastructure",
+      "description": "数据库连接池配置不当导致连接耗尽",
+      "contributingFactors": [
+        "监控告警延迟",
+        "文档缺失"
+      ]
+    },
+    "resolution": {
+      "immediate": "重启数据库连接池",
+      "shortTerm": [
+        "增加连接池大小",
+        "优化慢查询"
+      ],
+      "longTerm": [
+        "实施自动扩缩容",
+        "完善监控告警"
+      ]
+    },
+    "lessons": {
+      "whatWentWell": [
+        "团队响应迅速",
+        "沟通及时"
+      ],
+      "whatCouldImprove": [
+        "监控覆盖不足",
+        "文档需要更新"
+      ],
+      "actionItems": [
+        {
+          "description": "增加数据库监控",
+          "owner": "张三",
+          "status": "in_progress",
+          "id": "action_1771311714512",
+          "createdAt": 1771311714512
+        },
+        {
+          "description": "更新连接池配置文档",
+          "owner": "李四",
+          "status": "completed",
+          "id": "action_1771311714531",
+          "createdAt": 1771311714531
+        },
+        {
+          "description": "实施自动扩缩容",
+          "owner": "王五",
+          "status": "pending",
+          "id": "action_1771311714544",
+          "createdAt": 1771311714544
+        }
+      ]
+    },
+    "participants": [
+      "张三",
+      "李四",
+      "王五"
+    ],
+    "reviewers": [
+      "技术总监"
+    ],
+    "createdAt": 1771311714397,
+    "updatedAt": 1771311714544
+  },
+  {
+    "id": "review_1771311714559",
+    "title": "支付服务告警复盘",
+    "incidentId": null,
+    "incidentTitle": "",
+    "date": 1771225314559,
+    "severity": "critical",
+    "duration": 120,
+    "status": "in_progress",
+    "timeline": [],
+    "impact": {
+      "usersAffected": 1000,
+      "servicesAffected": [
+        "Payment Service"
+      ],
+      "financialImpact": 50000,
+      "reputationalImpact": "high"
+    },
+    "rootCause": {
+      "category": "code",
+      "description": "第三方支付API超时处理不当"
+    },
+    "resolution": {
+      "immediate": "暂时禁用重试机制",
+      "shortTerm": [],
+      "longTerm": []
+    },
+    "lessons": {
+      "whatWentWell": [],
+      "whatCouldImprove": [],
+      "actionItems": []
+    },
+    "participants": [
+      "赵六",
+      "钱七"
+    ],
+    "reviewers": [],
+    "createdAt": 1771311714559,
+    "updatedAt": 1771311714559
+  }
+]

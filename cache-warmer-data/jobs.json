@@ -1,0 +1,53 @@
+[
+  {
+    "id": "job_1771312397951",
+    "url": "http://localhost:3000/api/health",
+    "method": "GET",
+    "headers": {},
+    "body": null,
+    "interval": 60000,
+    "priority": "high",
+    "status": "completed",
+    "lastRun": 1771322566837,
+    "nextRun": 1771322626837,
+    "runCount": 1,
+    "successCount": 0,
+    "failCount": 1,
+    "avgResponseTime": 24,
+    "createdAt": 1771312397951
+  },
+  {
+    "id": "job_1771312397978",
+    "url": "http://localhost:3000/api/users",
+    "method": "GET",
+    "headers": {},
+    "body": null,
+    "interval": 120000,
+    "priority": "normal",
+    "status": "completed",
+    "lastRun": 1771322624007,
+    "nextRun": 1771322744007,
+    "runCount": 1,
+    "successCount": 0,
+    "failCount": 1,
+    "avgResponseTime": 25,
+    "createdAt": 1771312397978
+  },
+  {
+    "id": "job_1771312398019",
+    "url": "http://localhost:3000/api/products",
+    "method": "GET",
+    "headers": {},
+    "body": null,
+    "interval": 300000,
+    "priority": "low",
+    "status": "completed",
+    "lastRun": 1771322654644,
+    "nextRun": 1771322954644,
+    "runCount": 1,
+    "successCount": 0,
+    "failCount": 1,
+    "avgResponseTime": 17,
+    "createdAt": 1771312398019
+  }
+]
