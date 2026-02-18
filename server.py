@@ -3182,17 +3182,19 @@ async def get_latest_input(token: str = Depends(simple_auth)):
 
 def main():
     """Main entry point."""
+    global PORT, HOST
     parser = argparse.ArgumentParser(description="BridgeNode Server")
     parser.add_argument("--port", type=int, default=DEFAULT_PORT, help="Server port")
     parser.add_argument("--host", type=str, default=HOST, help="Server host")
     args = parser.parse_args()
 
-    global PORT
     PORT = args.port
+    HOST = args.host
 
+    # REQUEST_TIMEOUT_OPT
     uvicorn.run(
         app,
-        host=args.host,
+        host=HOST,
         port=PORT,
         log_level="info"
     )
