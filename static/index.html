@@ -2100,8 +2100,8 @@
         }
 
         .output-block-content {
-            font-size: 0.85rem;
-            line-height: 1.6;
+            font-size: 0.75rem;
+            line-height: 1.5;
             color: var(--text-primary);
         }
 
@@ -2288,17 +2288,98 @@
 </style>
 
 <script>
+// Storage Manager - Unified localStorage management
+const STORAGE_PREFIX = 'bridge_';
+
+const StorageManager = {
+    KEYS: {
+        THEME: 'theme',
+        LANGUAGE: 'language',
+        CLUSTER_DOWNLOAD_DIR: 'clusterDownloadDir',
+        CLUSTER_UPLOAD_DIR: 'clusterUploadDir',
+        FAVORITES: 'favorites',
+        TASKS: 'active_tasks',
+        CONTEXT_CARDS: 'claudeContextCards',
+        INPUT_HISTORY: 'claudeInputHistory',
+        OUTPUTS: 'claudeOutputs',
+        OUTPUTS_NEW: 'claudeOutputsNew',
+        CLIPBOARD_HISTORY: 'clipboardHistory',
+        ACTIVITY_LOG: 'activityLog',
+        QUICK_LINKS: 'quickLinks',
+    },
+
+    get(key) {
+        const value = localStorage.getItem(STORAGE_PREFIX + this.KEYS[key] || key);
+        try {
+            return value ? JSON.parse(value) : null;
+        } catch {
+            return value;
+        }
+    },
+
+    set(key, value) {
+        const storageKey = STORAGE_PREFIX + (this.KEYS[key] || key);
+        if (typeof value === 'object') {
+            localStorage.setItem(storageKey, JSON.stringify(value));
+        } else {
+            localStorage.setItem(storageKey, value);
+        }
+    },
+
+    remove(key) {
+        localStorage.removeItem(STORAGE_PREFIX + (this.KEYS[key] || key));
+    },
+
+    clear() {
+        Object.keys(this.KEYS).forEach(key => {
+            localStorage.removeItem(STORAGE_PREFIX + this.KEYS[key]);
+        });
+    },
+
+    // Async operations with requestIdleCallback
+    asyncSet(key, value) {
+        return new Promise(resolve => {
+            if ('requestIdleCallback' in window) {
+                requestIdleCallback(() => {
+                    this.set(key, value);
+                    resolve();
+                });
+            } else {
+                setTimeout(() => {
+                    this.set(key, value);
+                    resolve();
+                }, 0);
+            }
+        });
+    },
+
+    // Get storage usage stats
+    getStats() {
+        let totalSize = 0;
+        const keys = [];
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key.startsWith(STORAGE_PREFIX)) {
+                const value = localStorage.getItem(key);
+                totalSize += key.length + value.length;
+                keys.push(key);
+            }
+        }
+        return { totalSize, keyCount: keys.length, keys };
+    }
+};
+
 function toggleTheme() {
     const html = document.documentElement;
     const btn = document.querySelector('.theme-toggle-btn');
     if (html.getAttribute('data-theme') === 'light') {
         html.setAttribute('data-theme', 'dark');
         btn.textContent = '🌙';
-        localStorage.setItem('theme', 'dark');
+        StorageManager.set('THEME', 'dark');
     } else {
         html.setAttribute('data-theme', 'light');
         btn.textContent = '☀️';
-        localStorage.setItem('theme', 'light');
+        StorageManager.set('THEME', 'light');
     }
 }
 
@@ -3447,6 +3528,16 @@ function generateSendPrompt() {
                 if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
                     e.preventDefault();
                     toggleCommandPalette();
+                }
+
+                // Ctrl/Cmd + R: Command history search
+                if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
+                    e.preventDefault();
+                    const cmdInput = document.getElementById('customCommandInput') || document.getElementById('commandSearch');
+                    if (cmdInput) {
+                        cmdInput.focus();
+                        cmdInput.select();
+                    }
                 }
 
                 // Ctrl/Cmd + /: Show shortcuts help
@@ -4987,15 +5078,17 @@ function generateSendPrompt() {
         // ============================================
         // Context Cards - Persistent Storage
         // ============================================
-        function saveContextCard(cardData) {
+        // Context Cards - Persistent Storage (Async)
+        // ============================================
+        async function saveContextCard(cardData) {
             const cards = JSON.parse(localStorage.getItem('claudeContextCards') || '[]');
             cards.unshift(cardData);
             if (cards.length > 20) cards.pop();
-            localStorage.setItem('claudeContextCards', JSON.stringify(cards));
+            await StorageManager.asyncSet('CONTEXT_CARDS', cards);
         }
 
         function loadContextCards() {
-            const cards = JSON.parse(localStorage.getItem('claudeContextCards') || '[]');
+            const cards = StorageManager.get('CONTEXT_CARDS') || [];
             const container = document.getElementById('contextCards');
             container.innerHTML = cards.map(card => createContextCardHTML(card)).join('');
         }
