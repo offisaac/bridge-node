@@ -3627,8 +3627,26 @@ function generateSendPrompt() {
         })();
 
         // ====================
-        // Command Palette
+        // Command Palette with Favorites
         // ====================
+        const FAVORITE_COMMANDS_KEY = 'commandFavorites';
+        let favoriteCommands = JSON.parse(localStorage.getItem(FAVORITE_COMMANDS_KEY) || '[]');
+
+        function isCommandFavorite(cmdId) {
+            return favoriteCommands.includes(cmdId);
+        }
+
+        function toggleCommandFavorite(cmdId, event) {
+            event.stopPropagation();
+            if (favoriteCommands.includes(cmdId)) {
+                favoriteCommands = favoriteCommands.filter(id => id !== cmdId);
+            } else {
+                favoriteCommands.push(cmdId);
+            }
+            localStorage.setItem(FAVORITE_COMMANDS_KEY, JSON.stringify(favoriteCommands));
+            renderCommandList(document.getElementById('commandSearch')?.value || '');
+        }
+
         const COMMANDS = [
             { id: 'refresh-files', name: 'Refresh File List', shortcut: 'Ctrl+L', action: () => refreshFileList() },
             { id: 'new-tab', name: 'Open Terminal', shortcut: '', action: () => window.open('/terminal.html', '_blank') },
@@ -3661,17 +3679,50 @@ function generateSendPrompt() {
 
         function renderCommandList(filter) {
             const list = document.getElementById('commandList');
-            const filtered = COMMANDS.filter(cmd =>
+
+            // Separate favorites and regular commands
+            const favoriteCmds = COMMANDS.filter(cmd =>
+                favoriteCommands.includes(cmd.id) &&
+                cmd.name.toLowerCase().includes(filter.toLowerCase())
+            );
+            const regularCmds = COMMANDS.filter(cmd =>
+                !favoriteCommands.includes(cmd.id) &&
                 cmd.name.toLowerCase().includes(filter.toLowerCase())
             );
 
-            list.innerHTML = filtered.map((cmd, index) => `
-                <div class="command-item ${index === commandPaletteSelectedIndex ? 'selected' : ''}"
-                     onclick="executeCommand('${cmd.id}')"
-                     data-index="${index}">
-                    <span class="command-name">${cmd.name}</span>
-                    <span class="command-shortcut">${cmd.shortcut}</span>
-                </div>
+            let html = '';
+            if (favoriteCmds.length > 0) {
+                html += '<div style="padding: 4px 8px; font-size: 0.7rem; color: var(--accent);">★ Favorites</div>';
+                html += favoriteCmds.map((cmd, index) => `
+                    <div class="command-item ${index === commandPaletteSelectedIndex ? 'selected' : ''}"
+                         onclick="executeCommand('${cmd.id}')"
+                         data-index="${index}"
+                         style="border-left: 2px solid var(--accent);">
+                        <span class="command-name">${cmd.name}</span>
+                        <span class="command-shortcut">${cmd.shortcut}</span>
+                        <span onclick="toggleCommandFavorite('${cmd.id}', event)" style="cursor: pointer; margin-left: 8px;">★</span>
+                    </div>
+                `).join('');
+            }
+
+            if (regularCmds.length > 0) {
+                if (favoriteCmds.length > 0) {
+                    html += '<div style="padding: 4px 8px; font-size: 0.7rem; color: var(--text-muted);">Commands</div>';
+                }
+                html += regularCmds.map((cmd, index) => {
+                    const actualIndex = favoriteCmds.length + index;
+                    return `
+                    <div class="command-item ${actualIndex === commandPaletteSelectedIndex ? 'selected' : ''}"
+                         onclick="executeCommand('${cmd.id}')"
+                         data-index="${actualIndex}">
+                        <span class="command-name">${cmd.name}</span>
+                        <span class="command-shortcut">${cmd.shortcut}</span>
+                        <span onclick="toggleCommandFavorite('${cmd.id}', event)" style="cursor: pointer; margin-left: 8px; opacity: 0.5;">☆</span>
+                    </div>
+                `}).join('');
+            }
+
+            list.innerHTML = html;
             `).join('');
         }
 
