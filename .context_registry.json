@@ -59,11 +59,21 @@
       "created_at": "2026-02-15T17:54:20.841764",
       "data_file": "context_db.json",
       "pdf_extracted": true
+    },
+    {
+      "uuid": "ca731864-7012-4f08-8813-ebf6a9fdd290",
+      "title": "",
+      "filename": "",
+      "md5": "d41d8cd98f00b204e9800998ecf8427e",
+      "content_length": 0,
+      "created_at": "2026-02-19T17:43:57.652351",
+      "data_file": "context_db.json",
+      "pdf_extracted": false
     }
   ],
   "metadata": {
     "created_at": "2026-02-15T16:04:56.298029",
-    "last_updated": "2026-02-15T17:54:20.841764",
-    "total_entries": 6
+    "last_updated": "2026-02-19T17:43:57.652351",
+    "total_entries": 7
   }
 }
