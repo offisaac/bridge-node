@@ -89,6 +89,16 @@
       "content_length": 0,
       "created_at": "2026-03-02T16:31:23.357550",
       "pdf_extracted": false
+    },
+    {
+      "id": "2559f05c-4b14-4c99-b4ac-fcf7470db0a6",
+      "title": "",
+      "description": "",
+      "filename": "",
+      "content": "",
+      "content_length": 0,
+      "created_at": "2026-03-02T16:34:31.267171",
+      "pdf_extracted": false
     }
   ]
 }
