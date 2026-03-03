@@ -2100,8 +2100,8 @@
         }
 
         .output-block-content {
-            font-size: 0.75rem;
-            line-height: 1.5;
+            font-size: 0.85rem;
+            line-height: 1.6;
             color: var(--text-primary);
         }
 
@@ -2288,98 +2288,17 @@
 </style>
 
 <script>
-// Storage Manager - Unified localStorage management
-const STORAGE_PREFIX = 'bridge_';
-
-const StorageManager = {
-    KEYS: {
-        THEME: 'theme',
-        LANGUAGE: 'language',
-        CLUSTER_DOWNLOAD_DIR: 'clusterDownloadDir',
-        CLUSTER_UPLOAD_DIR: 'clusterUploadDir',
-        FAVORITES: 'favorites',
-        TASKS: 'active_tasks',
-        CONTEXT_CARDS: 'claudeContextCards',
-        INPUT_HISTORY: 'claudeInputHistory',
-        OUTPUTS: 'claudeOutputs',
-        OUTPUTS_NEW: 'claudeOutputsNew',
-        CLIPBOARD_HISTORY: 'clipboardHistory',
-        ACTIVITY_LOG: 'activityLog',
-        QUICK_LINKS: 'quickLinks',
-    },
-
-    get(key) {
-        const value = localStorage.getItem(STORAGE_PREFIX + this.KEYS[key] || key);
-        try {
-            return value ? JSON.parse(value) : null;
-        } catch {
-            return value;
-        }
-    },
-
-    set(key, value) {
-        const storageKey = STORAGE_PREFIX + (this.KEYS[key] || key);
-        if (typeof value === 'object') {
-            localStorage.setItem(storageKey, JSON.stringify(value));
-        } else {
-            localStorage.setItem(storageKey, value);
-        }
-    },
-
-    remove(key) {
-        localStorage.removeItem(STORAGE_PREFIX + (this.KEYS[key] || key));
-    },
-
-    clear() {
-        Object.keys(this.KEYS).forEach(key => {
-            localStorage.removeItem(STORAGE_PREFIX + this.KEYS[key]);
-        });
-    },
-
-    // Async operations with requestIdleCallback
-    asyncSet(key, value) {
-        return new Promise(resolve => {
-            if ('requestIdleCallback' in window) {
-                requestIdleCallback(() => {
-                    this.set(key, value);
-                    resolve();
-                });
-            } else {
-                setTimeout(() => {
-                    this.set(key, value);
-                    resolve();
-                }, 0);
-            }
-        });
-    },
-
-    // Get storage usage stats
-    getStats() {
-        let totalSize = 0;
-        const keys = [];
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            if (key.startsWith(STORAGE_PREFIX)) {
-                const value = localStorage.getItem(key);
-                totalSize += key.length + value.length;
-                keys.push(key);
-            }
-        }
-        return { totalSize, keyCount: keys.length, keys };
-    }
-};
-
 function toggleTheme() {
     const html = document.documentElement;
     const btn = document.querySelector('.theme-toggle-btn');
     if (html.getAttribute('data-theme') === 'light') {
         html.setAttribute('data-theme', 'dark');
         btn.textContent = '🌙';
-        StorageManager.set('THEME', 'dark');
+        localStorage.setItem('theme', 'dark');
     } else {
         html.setAttribute('data-theme', 'light');
         btn.textContent = '☀️';
-        StorageManager.set('THEME', 'light');
+        localStorage.setItem('theme', 'light');
     }
 }
 
@@ -3530,16 +3449,6 @@ function generateSendPrompt() {
                     toggleCommandPalette();
                 }
 
-                // Ctrl/Cmd + R: Command history search
-                if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
-                    e.preventDefault();
-                    const cmdInput = document.getElementById('customCommandInput') || document.getElementById('commandSearch');
-                    if (cmdInput) {
-                        cmdInput.focus();
-                        cmdInput.select();
-                    }
-                }
-
                 // Ctrl/Cmd + /: Show shortcuts help
                 if ((e.ctrlKey || e.metaKey) && e.key === '/') {
                     e.preventDefault();
@@ -3627,26 +3536,8 @@ function generateSendPrompt() {
         })();
 
         // ====================
-        // Command Palette with Favorites
+        // Command Palette
         // ====================
-        const FAVORITE_COMMANDS_KEY = 'commandFavorites';
-        let favoriteCommands = JSON.parse(localStorage.getItem(FAVORITE_COMMANDS_KEY) || '[]');
-
-        function isCommandFavorite(cmdId) {
-            return favoriteCommands.includes(cmdId);
-        }
-
-        function toggleCommandFavorite(cmdId, event) {
-            event.stopPropagation();
-            if (favoriteCommands.includes(cmdId)) {
-                favoriteCommands = favoriteCommands.filter(id => id !== cmdId);
-            } else {
-                favoriteCommands.push(cmdId);
-            }
-            localStorage.setItem(FAVORITE_COMMANDS_KEY, JSON.stringify(favoriteCommands));
-            renderCommandList(document.getElementById('commandSearch')?.value || '');
-        }
-
         const COMMANDS = [
             { id: 'refresh-files', name: 'Refresh File List', shortcut: 'Ctrl+L', action: () => refreshFileList() },
             { id: 'new-tab', name: 'Open Terminal', shortcut: '', action: () => window.open('/terminal.html', '_blank') },
@@ -3679,50 +3570,17 @@ function generateSendPrompt() {
 
         function renderCommandList(filter) {
             const list = document.getElementById('commandList');
-
-            // Separate favorites and regular commands
-            const favoriteCmds = COMMANDS.filter(cmd =>
-                favoriteCommands.includes(cmd.id) &&
-                cmd.name.toLowerCase().includes(filter.toLowerCase())
-            );
-            const regularCmds = COMMANDS.filter(cmd =>
-                !favoriteCommands.includes(cmd.id) &&
+            const filtered = COMMANDS.filter(cmd =>
                 cmd.name.toLowerCase().includes(filter.toLowerCase())
             );
 
-            let html = '';
-            if (favoriteCmds.length > 0) {
-                html += '<div style="padding: 4px 8px; font-size: 0.7rem; color: var(--accent);">★ Favorites</div>';
-                html += favoriteCmds.map((cmd, index) => `
-                    <div class="command-item ${index === commandPaletteSelectedIndex ? 'selected' : ''}"
-                         onclick="executeCommand('${cmd.id}')"
-                         data-index="${index}"
-                         style="border-left: 2px solid var(--accent);">
-                        <span class="command-name">${cmd.name}</span>
-                        <span class="command-shortcut">${cmd.shortcut}</span>
-                        <span onclick="toggleCommandFavorite('${cmd.id}', event)" style="cursor: pointer; margin-left: 8px;">★</span>
-                    </div>
-                `).join('');
-            }
-
-            if (regularCmds.length > 0) {
-                if (favoriteCmds.length > 0) {
-                    html += '<div style="padding: 4px 8px; font-size: 0.7rem; color: var(--text-muted);">Commands</div>';
-                }
-                html += regularCmds.map((cmd, index) => {
-                    const actualIndex = favoriteCmds.length + index;
-                    return `
-                    <div class="command-item ${actualIndex === commandPaletteSelectedIndex ? 'selected' : ''}"
-                         onclick="executeCommand('${cmd.id}')"
-                         data-index="${actualIndex}">
-                        <span class="command-name">${cmd.name}</span>
-                        <span class="command-shortcut">${cmd.shortcut}</span>
-                        <span onclick="toggleCommandFavorite('${cmd.id}', event)" style="cursor: pointer; margin-left: 8px; opacity: 0.5;">☆</span>
-                    </div>
-                `}).join('');
-            }
-
-            list.innerHTML = html;
+            list.innerHTML = filtered.map((cmd, index) => `
+                <div class="command-item ${index === commandPaletteSelectedIndex ? 'selected' : ''}"
+                     onclick="executeCommand('${cmd.id}')"
+                     data-index="${index}">
+                    <span class="command-name">${cmd.name}</span>
+                    <span class="command-shortcut">${cmd.shortcut}</span>
+                </div>
             `).join('');
         }
 
@@ -5129,17 +4987,15 @@ function generateSendPrompt() {
         // ============================================
         // Context Cards - Persistent Storage
         // ============================================
-        // Context Cards - Persistent Storage (Async)
-        // ============================================
-        async function saveContextCard(cardData) {
+        function saveContextCard(cardData) {
             const cards = JSON.parse(localStorage.getItem('claudeContextCards') || '[]');
             cards.unshift(cardData);
             if (cards.length > 20) cards.pop();
-            await StorageManager.asyncSet('CONTEXT_CARDS', cards);
+            localStorage.setItem('claudeContextCards', JSON.stringify(cards));
         }
 
         function loadContextCards() {
-            const cards = StorageManager.get('CONTEXT_CARDS') || [];
+            const cards = JSON.parse(localStorage.getItem('claudeContextCards') || '[]');
             const container = document.getElementById('contextCards');
             container.innerHTML = cards.map(card => createContextCardHTML(card)).join('');
         }
