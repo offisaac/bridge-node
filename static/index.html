@@ -3970,6 +3970,10 @@ function generateSendPrompt() {
         document.addEventListener('DOMContentLoaded', function() {
             // Remove loading class to show the page
             document.body.classList.remove('loading');
+
+            // Verify token on load - show login if invalid
+            verifyTokenOnLoad();
+
             initDownloadDir();
             initUploadDir();
             fetchClusterConfig();  // Fetch cluster config from server
@@ -4249,6 +4253,30 @@ function generateSendPrompt() {
         // ============================================
         const API_BASE = window.location.origin;
         let authToken = localStorage.getItem('bridgeToken');
+
+        // Verify token on load - clear if invalid
+        async function verifyTokenOnLoad() {
+            if (!authToken) {
+                showLoginModal();
+                return false;
+            }
+            try {
+                const res = await fetch(`${API_BASE}/api/auth/token`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                if (!res.ok) {
+                    // Token invalid - clear and show login
+                    localStorage.removeItem('bridgeToken');
+                    authToken = null;
+                    showLoginModal();
+                    return false;
+                }
+                return true;
+            } catch (e) {
+                showLoginModal();
+                return false;
+            }
+        }
 
         function saveToken(token) {
             authToken = token;
