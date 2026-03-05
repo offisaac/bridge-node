@@ -4,9 +4,18 @@ import secrets
 from datetime import datetime, timedelta
 from typing import Optional
 
-# Credentials from environment variables with fallback defaults
-DEFAULT_USERNAME = os.getenv("BRIDGENODE_USERNAME", "admin")
-DEFAULT_PASSWORD = os.getenv("BRIDGENODE_PASSWORD", "password")
+# Credentials - MUST be set via environment variables
+_BRIDGENODE_USERNAME = os.getenv("BRIDGENODE_USERNAME")
+_BRIDGENODE_PASSWORD = os.getenv("BRIDGENODE_PASSWORD")
+
+if not _BRIDGENODE_USERNAME or not _BRIDGENODE_PASSWORD:
+    raise ValueError(
+        "CRITICAL: BRIDGENODE_USERNAME and BRIDGENODE_PASSWORD environment variables must be set! "
+        "For security, default credentials have been removed."
+    )
+
+DEFAULT_USERNAME = _BRIDGENODE_USERNAME
+DEFAULT_PASSWORD = _BRIDGENODE_PASSWORD
 
 # Token storage
 _token: Optional[str] = None
