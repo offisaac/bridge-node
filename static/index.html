@@ -32,33 +32,39 @@
             --radius-lg: 18px;
         }
 
-        /* Light Mode - Modern Minimal (Linear/Vercel style) */
+        /* Light Mode - Premium Minimal (Notion/Linear hybrid) */
         [data-theme="light"] {
-            --bg-primary: #fafbfc;
-            --bg-secondary: #ffffff;
-            --bg-tertiary: #f6f8fa;
-            --text-primary: #1f2937;
-            --text-secondary: #4b5563;
-            --text-muted: #9ca3af;
-            --border: #e5e7eb;
-            --accent: #3b82f6;
-            --accent-glow: rgba(59, 130, 246, 0.1);
+            --bg-primary: #ffffff;
+            --bg-secondary: #fbfbfb;
+            --bg-tertiary: #f7f7f5;
+            --text-primary: #37352f;
+            --text-secondary: #6b6b6b;
+            --text-muted: #9b9b9b;
+            --border: #e9e9e7;
+            --accent: #2f80ed;
+            --accent-glow: rgba(47, 128, 237, 0.08);
             --card-bg: #ffffff;
-            --success: #10b981;
-            --error: #ef4444;
-            --warning: #f59e0b;
+            --success: #0f7b6c;
+            --error: #e03e3e;
+            --warning: #d97706;
         }
 
-        /* Light mode body background */
+        /* Light mode body background - subtle warm white */
         [data-theme="light"] body {
-            background: var(--bg-primary);
+            background: linear-gradient(180deg, #ffffff 0%, #fafaf9 100%);
+            min-height: 100vh;
         }
 
-        /* Light mode cards - soft shadow instead of border */
+        /* Light mode cards - minimal with subtle depth */
         [data-theme="light"] .card {
             background: var(--card-bg);
             border: 1px solid var(--border);
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        }
+
+        [data-theme="light"] .card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            border-color: #d4d4d2;
         }
 
         /* Light mode inputs */
@@ -70,30 +76,43 @@
             color: var(--text-primary);
         }
 
-        /* Light mode buttons */
+        /* Light mode buttons - refined */
         [data-theme="light"] .btn {
-            background: var(--bg-tertiary);
+            background: var(--bg-secondary);
             border: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        [data-theme="light"] .btn:hover {
+            background: var(--bg-tertiary);
             color: var(--text-primary);
         }
 
         [data-theme="light"] .btn-primary {
             background: var(--accent);
             color: #ffffff;
+            border: none;
+            font-weight: 500;
         }
 
-        /* Light mode header */
+        /* Light mode header - blend with background */
         [data-theme="light"] header {
-            background: var(--bg-secondary);
+            background: var(--bg-primary);
             border-bottom: 1px solid var(--border);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
         }
 
-        /* Light mode scrollbar */
+        /* Light mode scrollbar - subtle */
         [data-theme="light"] ::-webkit-scrollbar-track {
-            background: var(--bg-tertiary);
+            background: transparent;
         }
         [data-theme="light"] ::-webkit-scrollbar-thumb {
-            background: #8b949e;
+            background: #d4d4d4;
+            border-radius: 4px;
+        }
+        [data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+            background: #b8b8b8;
         }
 
         /* Light mode card header - same as card body */
