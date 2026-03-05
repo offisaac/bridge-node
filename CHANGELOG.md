@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.0] - 2024-03-05
+
+### Fixed
+- Token-based authentication for all API calls
+- 401 errors when accessing via Tailscale/VPN
+- Token validation on page load
+- Login modal not showing when token is invalid
+- SSE endpoint authentication via query param
+
+### Security
+- All API requests now require authentication
+- Token stored in localStorage with validation
+
 ## [1.1.0] - 2024-03-05
 
 ### Added
