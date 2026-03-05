@@ -1,9 +1,27 @@
-fastapi==0.109.0
-uvicorn[standard]==0.27.0
-python-multipart==0.0.6
-websockets==12.0
-pydantic==2.5.3
-aiofiles==23.2.1
-psutil==5.9.8
-pypdf==3.17.4
-sse-starlette==2.0.0
+# BridgeNode Dependencies
+# Install with: pip install -r requirements.txt
+
+# Web Framework
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+
+# File Handling
+python-multipart>=0.0.6
+aiofiles>=23.2.1
+
+# Real-time Communication
+websockets>=12.0
+sse-starlette>=2.0.0
+
+# Data Validation
+pydantic>=2.5.3
+
+# System Monitoring
+psutil>=5.9.8
+
+# PDF Processing (optional)
+pypdf>=3.17.4
+
+# Development Tools
+pytest>=7.0.0
+pytest-asyncio>=0.21.0
