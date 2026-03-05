@@ -32,31 +32,68 @@
             --radius-lg: 18px;
         }
 
-        /* Light Mode - Blue White Gradient */
+        /* Light Mode - Clean White Theme */
         [data-theme="light"] {
-            --bg-primary: linear-gradient(135deg, #f0f9ff 0%, #ffffff 50%, #e0f2fe 100%);
-            --bg-secondary: rgba(255, 255, 255, 0.85);
-            --bg-tertiary: rgba(224, 242, 254, 0.6);
-            --text-primary: #1e3a5f;
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f1f5f9;
+            --text-primary: #1e293b;
             --text-secondary: #475569;
-            --text-muted: #64748b;
-            --border: rgba(191, 219, 254, 0.6);
-            --accent: #0284c7;
-            --accent-glow: rgba(2, 132, 199, 0.2);
-            --card-bg: rgba(255, 255, 255, 0.9);
+            --text-muted: #94a3b8;
+            --border: #e2e8f0;
+            --accent: #0ea5e9;
+            --accent-glow: rgba(14, 165, 233, 0.3);
+            --card-bg: #ffffff;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
         }
 
         /* Light mode body background */
         [data-theme="light"] body {
-            background: linear-gradient(135deg, #f0f9ff 0%, #ffffff 40%, #e0f2fe 100%);
+            background: var(--bg-primary);
         }
 
         /* Light mode cards */
         [data-theme="light"] .card {
             background: var(--card-bg);
-            /* backdrop-filter removed - causes scrolling glitch on some browsers */
             border: 1px solid var(--border);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Light mode inputs */
+        [data-theme="light"] input,
+        [data-theme="light"] textarea,
+        [data-theme="light"] select {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+        }
+
+        /* Light mode buttons */
+        [data-theme="light"] .btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+        }
+
+        [data-theme="light"] .btn-primary {
+            background: var(--accent);
+            color: #ffffff;
+        }
+
+        /* Light mode header */
+        [data-theme="light"] header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* Light mode scrollbar */
+        [data-theme="light"] ::-webkit-scrollbar-track {
+            background: var(--bg-tertiary);
+        }
+        [data-theme="light"] ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
         }
 
         /* Card hover effect - Enhanced */
