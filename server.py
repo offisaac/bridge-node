@@ -1,10 +1,12 @@
 """BridgeNode - SSH Tunnel Web Interaction Middleware"""
 import argparse
 import asyncio
+import logging
 import os
 import secrets
 import shlex
 import subprocess
+import threading
 import time
 from contextlib import asynccontextmanager
 from datetime import datetime
@@ -16,13 +18,19 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, FileResponse, StreamingResponse
 from sse_starlette import EventSourceResponse
 from pydantic import BaseModel
-import asyncio
 from collections import defaultdict
 from typing import List, Dict, Any, Optional
 import json
 import uuid
 import aiofiles
 import hashlib
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger("bridge-node")
 
 from config import HOST, DEFAULT_PORT, CORS_ORIGINS, find_available_port, ensure_directories
 import auth
@@ -42,6 +50,66 @@ ensure_directories()
 # Server metadata
 SERVER_VERSION = "1.0.0"
 SERVER_START_TIME = time.time()
+
+# Login failure rate limiter (Security: SEC-010)
+LOGIN_FAIL_LIMIT = 5  # Max failures before lockout
+LOGIN_FAIL_WINDOW = 900  # 15 minutes window
+LOGIN_LOCKOUT_DURATION = 900  # 15 minutes lockout
+login_failures: Dict[str, list] = defaultdict(list)
+
+
+def check_login_rate_limit(ip: str) -> tuple[bool, Optional[str]]:
+    """Check if IP is rate limited due to failed login attempts."""
+    now = time.time()
+    # Clean old entries
+    login_failures[ip] = [t for t in login_failures[ip] if now - t < LOGIN_FAIL_WINDOW]
+
+    if len(login_failures[ip]) >= LOGIN_FAIL_LIMIT:
+        return False, f"登录尝试过多，请 {LOGIN_FAIL_WINDOW // 60} 分钟后再试"
+
+    return True, None
+
+
+def record_login_failure(ip: str):
+    """Record a failed login attempt."""
+    login_failures[ip].append(time.time())
+
+
+def record_login_success(ip: str):
+    """Remove oldest failure on successful login (prevent attack reset)."""
+    if login_failures[ip]:
+        login_failures[ip].pop(0)  # Only remove oldest, not all
+
+
+# Simple cache for status endpoint (Performance: OPT-010)
+_status_cache = {"data": None, "timestamp": 0}
+_status_cache_lock = threading.Lock()
+STATUS_CACHE_TTL = 10  # 10 seconds
+
+# Cache for rate limit config (Performance: OPT-011)
+_rate_limit_cache = {"data": None, "timestamp": 0}
+_rate_limit_cache_lock = threading.Lock()
+RATE_LIMIT_CACHE_TTL = 60  # 60 seconds
+
+# Cache for context list (Performance: OPT-012)
+_context_list_cache = {"data": None, "timestamp": 0}
+CONTEXT_LIST_CACHE_TTL = 30  # 30 seconds
+
+
+def get_cached_status():
+    """Get cached status if still valid."""
+    with _status_cache_lock:
+        now = time.time()
+        if _status_cache["data"] and (now - _status_cache["timestamp"]) < STATUS_CACHE_TTL:
+            return _status_cache["data"]
+        return None
+
+
+def set_cached_status(data):
+    """Set cached status."""
+    with _status_cache_lock:
+        _status_cache["data"] = data
+        _status_cache["timestamp"] = time.time()
 
 
 # ============================================================
@@ -73,8 +141,7 @@ ALLOWED_COMMANDS: Optional[List[str]] = [
     'fd -H',
     'fd',
     'find ~ -name',
-    # File search with timeout (for frontend fd search)
-    'timeout',
+    # SEC-002: Removed 'timeout' from whitelist - too permissive, allows command injection
 ]
 
 # Predefined quick commands (can be extended)
@@ -94,18 +161,18 @@ async def lifespan(app: FastAPI):
     """Application lifespan handler."""
     # Startup
     token = auth.generate_token()
-    print(f"\n{'='*50}")
-    print(f"BridgeNode v1.0.0")
-    print(f"{'='*50}")
-    print(f"Server running at: http://{HOST}:{PORT}")
-    print(f"Token: {token[:8]}...")
-    print(f"SSH Command: ssh -L {PORT}:localhost:{PORT} user@your-cluster")
-    print(f"{'='*50}\n")
+    logger.info(f"\n{'='*50}")
+    logger.info(f"BridgeNode v1.0.0")
+    logger.info(f"{'='*50}")
+    logger.info(f"Server running at: http://{HOST}:{PORT}")
+    logger.info(f"Token: {token[:8]}...")
+    logger.info(f"SSH Command: ssh -L {PORT}:localhost:{PORT} user@your-cluster")
+    logger.info(f"{'='*50}\n")
 
     yield
 
     # Shutdown
-    print("Shutting down BridgeNode...")
+    logger.info("Shutting down BridgeNode...")
 
 
 # Create FastAPI app
@@ -124,6 +191,34 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Static files middleware (serve /styles/ and /js/ directories)
+from fastapi.staticfiles import StaticFiles
+import os
+
+static_dir = os.path.join(os.path.dirname(__file__), "static")
+if os.path.exists(static_dir):
+    # Mount static files directories
+    styles_dir = os.path.join(static_dir, "styles")
+    js_dir = os.path.join(static_dir, "js")
+
+    if os.path.exists(styles_dir):
+        app.mount("/styles", StaticFiles(directory=styles_dir), name="styles")
+    if os.path.exists(js_dir):
+        app.mount("/js", StaticFiles(directory=js_dir), name="js")
+
+
+# Security headers middleware (SEC-011)
+@app.middleware("http")
+async def add_security_headers(request, call_next):
+    response = await call_next(request)
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Content-Security-Policy"] = "default-src 'self' 'unsafe-inline' 'unsafe-eval'; img-src 'self' data:"
+    return response
+
 
 # Global exception handler
 from fastapi import Request
@@ -167,7 +262,7 @@ def error_response(message: str, code: str, status_code: int = 400, detail: str 
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
-    print(f"[GLOBAL ERROR] {exc}")
+    logger.error(f"[GLOBAL ERROR] {exc}")
     import traceback
     traceback.print_exc()
 
@@ -245,22 +340,25 @@ async def get_token(authorization: str = Header(None)):
 
 async def verify_auth(request_data: dict = None):
     """Verify authentication using username/password or token."""
+    # If no credentials provided, deny by default
+    if not request_data:
+        return False
+
     # Try token first
-    auth_header = request_data.get("authorization") if request_data else None
+    auth_header = request_data.get("authorization")
     if auth_header:
         token = auth_header.replace("Bearer ", "")
         if auth.verify_token(token):
             return True
 
     # Try username/password
-    if request_data:
-        username = request_data.get("username")
-        password = request_data.get("password")
-        if username and password and auth.verify_credentials(username, password):
-            return True
+    username = request_data.get("username")
+    password = request_data.get("password")
+    if username and password and auth.verify_credentials(username, password):
+        return True
 
-    # For now, allow if credentials match
-    return True
+    # Authentication failed
+    return False
 
 
 # SEC-006/007/008: Path traversal prevention
@@ -338,8 +436,8 @@ async def simple_auth(authorization: str = Header(None)):
     SEC-001: By default, require authentication.
     Set BRIDGENODE_OPTIONAL_AUTH=1 to allow anonymous access (not recommended).
     """
-    # Default: allow optional auth for development convenience
-    if os.getenv("BRIDGENODE_OPTIONAL_AUTH", "1"):
+    # Default: require authentication for security
+    if os.getenv("BRIDGENODE_OPTIONAL_AUTH", "0") == "1":
         # Optional auth mode: allow anonymous access
         if not authorization:
             return "anonymous"
@@ -405,12 +503,32 @@ async def serve_page(page: str):
 
 
 @app.post("/api/auth/login")
-async def login(request: LoginRequest):
+async def login(request: LoginRequest, request_obj: Request = None):
     """Authenticate with username/password and get access token."""
-    print(f"[LOGIN] Attempt: username={request.username}")
+    # Get client IP for rate limiting
+    client_ip = "unknown"
+    if request_obj:
+        client_ip = request_obj.client.host if request_obj.client else "unknown"
+
+    # Check rate limit before processing
+    allowed, error_msg = check_login_rate_limit(client_ip)
+    if not allowed:
+        logger.warning(f"[LOGIN] Rate limited: {client_ip}")
+        raise HTTPException(
+            status_code=429,
+            detail={
+                "error": "rate_limited",
+                "message": error_msg,
+                "retry_after": LOGIN_LOCKOUT_DURATION
+            }
+        )
+
+    logger.info(f"[LOGIN] Attempt: username={request.username} from {client_ip}")
 
     if not auth.verify_credentials(request.username, request.password):
-        print(f"[LOGIN] Failed: invalid credentials for {request.username}")
+        # Record failed attempt
+        record_login_failure(client_ip)
+        logger.warning(f"[LOGIN] Failed: invalid credentials for {request.username} from {client_ip}")
         raise HTTPException(
             status_code=401,
             detail={
@@ -420,8 +538,10 @@ async def login(request: LoginRequest):
             }
         )
 
+    # Clear failures on success
+    record_login_success(client_ip)
     token = auth.generate_token()
-    print(f"[LOGIN] Success: {request.username}, token={token[:16]}...")
+    logger.info(f"[LOGIN] Success: {request.username}, token={token[:16]}...")
     return {
         "success": True,
         "token": token,
@@ -440,7 +560,7 @@ async def get_current_token():
 
 @app.get("/api/config")
 async def get_config(token: str = Depends(simple_auth)):
-    """Get cluster configuration."""
+    """Get cluster configuration (static, no caching needed)."""
     return {
         "CLUSTER_UPLOAD_DIR": CLUSTER_UPLOAD_DIR,
         "cluster_download_dir": os.path.expanduser("~/downloads")
@@ -457,13 +577,25 @@ class RateLimitConfig(BaseModel):
 
 @app.get("/api/rate-limit/config")
 async def get_rate_limit_config(token: str = Depends(simple_auth)):
-    """Get rate limiting configuration (ISS-005)."""
-    return {
-        "requests_per_minute": rate_limiter.requests_per_minute,
-        "requests_per_hour": rate_limiter.requests_per_hour,
-        "burst_limit": rate_limiter.burst_limit,
-        "enabled": rate_limiter._enabled
-    }
+    """Get rate limiting configuration (ISS-005, Cached: OPT-011)."""
+    with _rate_limit_cache_lock:
+        now = time.time()
+
+        # Check cache first
+        if _rate_limit_cache["data"] and (now - _rate_limit_cache["timestamp"]) < RATE_LIMIT_CACHE_TTL:
+            return _rate_limit_cache["data"]
+
+        # Build fresh data
+        data = {
+            "requests_per_minute": rate_limiter.requests_per_minute,
+            "requests_per_hour": rate_limiter.requests_per_hour,
+            "burst_limit": rate_limiter.burst_limit,
+            "enabled": rate_limiter._enabled
+        }
+
+        # Cache the result
+        _rate_limit_cache = {"data": data, "timestamp": now}
+        return data
 
 
 @app.post("/api/rate-limit/config")
@@ -478,6 +610,9 @@ async def update_rate_limit_config(
         burst_limit=config.burst_limit,
         enabled=config.enabled
     )
+    # Clear cache after update
+    with _rate_limit_cache_lock:
+        _rate_limit_cache = {"data": None, "timestamp": 0}
     return {
         "success": True,
         "message": "Rate limit configuration updated",
@@ -526,6 +661,16 @@ async def health_check():
     }
 
 
+@app.get("/api/health")
+async def health_check():
+    """Health check endpoint (no auth required)."""
+    return {
+        "status": "healthy",
+        "service": "bridge-node",
+        "timestamp": datetime.now().isoformat()
+    }
+
+
 @app.get("/api/status")
 async def get_status(token: str = Depends(simple_auth)):
     """Get system status."""
@@ -560,7 +705,7 @@ async def get_status(token: str = Depends(simple_auth)):
                 "upload_dir": os.listdir(upload_dir) if os.path.exists(upload_dir) else []
             }
         except Exception as e:
-            print(f"[ERROR] get_status: {e}")
+            logger.error(f"[ERROR] get_status: {e}")
             return {
                 "status": "running",
                 "tunnel": {},
@@ -569,7 +714,7 @@ async def get_status(token: str = Depends(simple_auth)):
                 "error": str(e)
             }
     except Exception as e:
-        print(f"[ERROR] get_status: {e}")
+        logger.error(f"[ERROR] get_status: {e}")
         return {
             "status": "running",
             "tunnel": {},
@@ -582,11 +727,25 @@ async def get_status(token: str = Depends(simple_auth)):
 # ============================================================
 # Command Execution State Tracking
 # ============================================================
-import threading
 
 # Command state storage
 command_states: Dict[str, Dict[str, Any]] = {}
 command_states_lock = threading.Lock()
+MAX_COMMAND_HISTORY = 1000  # Prevent memory leak
+
+def _cleanup_old_commands():
+    """Remove expired command states to prevent memory leak."""
+    global command_states
+    if len(command_states) > MAX_COMMAND_HISTORY:
+        # Remove oldest 20% of completed commands
+        completed = {k: v for k, v in command_states.items()
+                   if v.get("state") in ["success", "failed", "timeout", "cancelled"]}
+        if len(completed) > MAX_COMMAND_HISTORY * 0.8:
+            # Sort by created_at and remove oldest
+            sorted_cmds = sorted(completed.items(),
+                               key=lambda x: x[1].get("created_at", ""))
+            for k, _ in sorted_cmds[:len(completed) // 5]:
+                del command_states[k]
 
 # Active subprocesses for cancellation
 active_processes: Dict[str, subprocess.Popen] = {}
@@ -603,6 +762,9 @@ def update_command_state(command_id: str, state: str, **kwargs):
         if command_id not in command_states:
             command_states[command_id] = {"state": "idle", "created_at": datetime.now().isoformat()}
         command_states[command_id].update({"state": state, "updated_at": datetime.now().isoformat(), **kwargs})
+        # Cleanup old commands periodically to prevent memory leak
+        if len(command_states) > MAX_COMMAND_HISTORY - 100:
+            _cleanup_old_commands()
 
 
 def get_command_state(command_id: str) -> Dict[str, Any]:
@@ -1134,40 +1296,51 @@ async def list_remote_files(path: str = "/home", token: str = Depends(simple_aut
         if not os.path.exists(expanded_path):
             raise HTTPException(status_code=404, detail="Path not found")
 
-        items = []
-        for item in os.listdir(expanded_path):
-            item_path = os.path.join(expanded_path, item)
-            try:
-                stat = os.stat(item_path)
-                if os.path.isdir(item_path):
-                    # Count items in directory
-                    try:
-                        item_count = len(os.listdir(item_path))
-                    except:
-                        item_count = 0
-                    items.append({
-                        "name": item,
-                        "path": item_path,
-                        "is_dir": True,
-                        "size": item_count,  # Number of items in directory
-                        "modified": stat.st_mtime
-                    })
-                else:
-                    items.append({
-                        "name": item,
-                        "path": item_path,
-                        "is_dir": False,
-                        "size": stat.st_size,
-                        "modified": stat.st_mtime
-                    })
-            except:
-                pass
+        # Use asyncio.to_thread to avoid blocking event loop
+        items = await asyncio.to_thread(_list_directory_efficient, expanded_path)
 
         # Sort: directories first, then by name
         items.sort(key=lambda x: (not x["is_dir"], x["name"].lower()))
         return {"path": expanded_path, "items": items}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+def _list_directory_efficient(path: str) -> list:
+    """Efficiently list directory using os.scandir (avoids N+1 problem)."""
+    items = []
+    try:
+        with os.scandir(path) as entries:
+            for entry in entries:
+                try:
+                    is_dir = entry.is_dir(follow_symlinks=False)
+                    stat = entry.stat(follow_symlinks=False)
+                    if is_dir:
+                        # Count items efficiently using scandir
+                        try:
+                            item_count = sum(1 for _ in os.scandir(entry.path))
+                        except OSError:
+                            item_count = 0
+                        items.append({
+                            "name": entry.name,
+                            "path": entry.path,
+                            "is_dir": True,
+                            "size": item_count,
+                            "modified": stat.st_mtime
+                        })
+                    else:
+                        items.append({
+                            "name": entry.name,
+                            "path": entry.path,
+                            "is_dir": False,
+                            "size": stat.st_size,
+                            "modified": stat.st_mtime
+                        })
+                except OSError:
+                    pass
+    except OSError:
+        pass
+    return items
 
 
 @app.post("/api/remote/download")
@@ -1309,68 +1482,66 @@ async def search_files(path: str, query: str, recursive: bool = False, token: st
         if not os.path.exists(expanded_path):
             raise HTTPException(status_code=404, detail="Path not found")
 
-        results = []
-        query_lower = query.lower()
-
-        # Limit search depth and time
-        import time
-        start_time = time.time()
-        max_time = 3  # seconds
-        max_results = 50
-
-        if recursive:
-            # Recursive search
-            for root, dirs, files in os.walk(expanded_path):
-                if len(results) >= max_results:
-                    break
-                if time.time() - start_time > max_time:
-                    break
-
-                for name in files + dirs:
-                    if len(results) >= max_results:
-                        break
-                    if time.time() - start_time > max_time:
-                        break
-                    if query_lower in name.lower():
-                        full_path = os.path.join(root, name)
-                        try:
-                            stat = os.stat(full_path)
-                            results.append({
-                                "name": name,
-                                "path": full_path,
-                                "is_dir": os.path.isdir(full_path),
-                                "size": stat.st_size if not os.path.isdir(full_path) else 0,
-                                "modified": stat.st_mtime
-                            })
-                        except:
-                            pass
-        else:
-            # Immediate children only (faster)
-            try:
-                for name in os.listdir(expanded_path):
-                    if len(results) >= max_results:
-                        break
-                    if time.time() - start_time > max_time:
-                        break
-                    full_path = os.path.join(expanded_path, name)
-                    try:
-                        if query_lower in name.lower():
-                            stat = os.stat(full_path)
-                            results.append({
-                                "name": name,
-                                "path": full_path,
-                                "is_dir": os.path.isdir(full_path),
-                                "size": stat.st_size if not os.path.isdir(full_path) else 0,
-                                "modified": stat.st_mtime
-                            })
-                    except:
-                        pass
-            except:
-                pass
+        # Use asyncio.to_thread to avoid blocking event loop
+        results = await asyncio.to_thread(
+            _search_files_sync, expanded_path, query, recursive
+        )
 
         return {"path": expanded_path, "query": query, "results": results}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+def _search_files_sync(path: str, query: str, recursive: bool) -> list:
+    """Synchronous file search (runs in thread pool)."""
+    import time
+    results = []
+    query_lower = query.lower()
+    start_time = time.time()
+    max_time = 3  # seconds
+    max_results = 50
+
+    if recursive:
+        for root, dirs, files in os.walk(path):
+            if len(results) >= max_results or time.time() - start_time > max_time:
+                break
+            for name in files + dirs:
+                if len(results) >= max_results or time.time() - start_time > max_time:
+                    break
+                if query_lower in name.lower():
+                    full_path = os.path.join(root, name)
+                    try:
+                        stat = os.stat(full_path)
+                        results.append({
+                            "name": name,
+                            "path": full_path,
+                            "is_dir": os.path.isdir(full_path),
+                            "size": stat.st_size if not os.path.isdir(full_path) else 0,
+                            "modified": stat.st_mtime
+                        })
+                    except OSError:
+                        pass
+    else:
+        try:
+            for name in os.listdir(path):
+                if len(results) >= max_results or time.time() - start_time > max_time:
+                    break
+                full_path = os.path.join(path, name)
+                try:
+                    if query_lower in name.lower():
+                        stat = os.stat(full_path)
+                        results.append({
+                            "name": name,
+                            "path": full_path,
+                            "is_dir": os.path.isdir(full_path),
+                            "size": stat.st_size if not os.path.isdir(full_path) else 0,
+                            "modified": stat.st_mtime
+                        })
+                except OSError:
+                    pass
+        except OSError:
+            pass
+    return results
 
 
 @app.get("/api/remote/size")
@@ -1381,23 +1552,35 @@ async def get_directory_size(path: str, token: str = Depends(simple_auth)):
         if not os.path.exists(expanded_path):
             raise HTTPException(status_code=404, detail="Path not found")
 
-        total_size = 0
-        file_count = 0
-        if os.path.isdir(expanded_path):
-            for root, dirs, files in os.walk(expanded_path):
-                file_count += len(files)
-                for name in files:
-                    try:
-                        full_path = os.path.join(root, name)
-                        total_size += os.path.getsize(full_path)
-                    except:
-                        pass
-        else:
-            total_size = os.path.getsize(expanded_path)
+        # Use asyncio.to_thread to avoid blocking event loop
+        result = await asyncio.to_thread(_calculate_size_sync, expanded_path)
 
-        return {"path": expanded_path, "size": total_size, "size_formatted": format_size(total_size), "file_count": file_count}
+        return {
+            "path": expanded_path,
+            "size": result["size"],
+            "size_formatted": format_size(result["size"]),
+            "file_count": result["file_count"]
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+def _calculate_size_sync(path: str) -> dict:
+    """Synchronous directory size calculation (runs in thread pool)."""
+    total_size = 0
+    file_count = 0
+    if os.path.isdir(path):
+        for root, dirs, files in os.walk(path):
+            file_count += len(files)
+            for name in files:
+                try:
+                    full_path = os.path.join(root, name)
+                    total_size += os.path.getsize(full_path)
+                except OSError:
+                    pass
+    else:
+        total_size = os.path.getsize(path)
+    return {"size": total_size, "file_count": file_count}
 
 
 @app.get("/api/fs/download/folder")
@@ -1434,7 +1617,7 @@ async def fs_download_folder(
                     size = os.path.getsize(file_path)
                     total_size += size
                     file_list.append((file_path, os.path.relpath(file_path, os.path.dirname(expanded_path))))
-                except:
+                except OSError:
                     pass
 
         # Create streaming ZIP response
@@ -1446,7 +1629,7 @@ async def fs_download_folder(
                         with open(file_path, 'rb') as f:
                             content = f.read()
                             zipf.writestr(arcname, content)
-                    except:
+                    except OSError:
                         pass
             memory_file.seek(0)
             return memory_file.getvalue()
@@ -1473,7 +1656,7 @@ async def fs_download_folder(
     except HTTPException:
         raise
     except Exception as e:
-        print(f"[FS DOWNLOAD FOLDER] Error: {e}")
+        logger.error(f"[FS DOWNLOAD FOLDER] Error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -1567,7 +1750,7 @@ async def get_recent_files(path: str, limit: int = 20, token: str = Depends(simp
                         "size": stat.st_size,
                         "modified": stat.st_mtime
                     })
-                except:
+                except OSError:
                     pass
 
         # Sort by modification time (newest first)
@@ -1638,7 +1821,7 @@ async def fs_download(
                             # 下载被中断
                             break
             except Exception as e:
-                print(f"[FS DOWNLOAD] Stream error: {e}")
+                logger.error(f"[FS DOWNLOAD] Stream error: {e}")
             finally:
                 if download_id in streaming_downloads:
                     del streaming_downloads[download_id]
@@ -1654,7 +1837,7 @@ async def fs_download(
     except HTTPException:
         raise
     except Exception as e:
-        print(f"[FS DOWNLOAD] Error: {e}")
+        logger.error(f"[FS DOWNLOAD] Error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -1781,7 +1964,7 @@ async def fs_upload(
     except HTTPException:
         raise
     except Exception as e:
-        print(f"[FS UPLOAD] Error: {e}")
+        logger.error(f"[FS UPLOAD] Error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -1825,7 +2008,7 @@ def load_context_registry() -> Dict[str, Any]:
         try:
             with open(CONTEXT_REGISTRY_PATH, 'r', encoding='utf-8') as f:
                 return json.load(f)
-        except:
+        except OSError:
             return {"entries": [], "metadata": {"created_at": datetime.now().isoformat()}}
     return {"entries": [], "metadata": {"created_at": datetime.now().isoformat()}}
 
@@ -1847,7 +2030,7 @@ def git_commit_context():
         repo_path = os.path.dirname(__file__)
         # 检查是否是 git 仓库
         if not os.path.exists(os.path.join(repo_path, ".git")):
-            print("[GIT] Not a git repository, skipping commit")
+            logger.info("[GIT] Not a git repository, skipping commit")
             return False
 
         # 添加状态文件和数据库文件
@@ -1875,13 +2058,13 @@ def git_commit_context():
                 capture_output=True,
                 check=False
             )
-            print(f"[GIT] Auto-committed context registry at {timestamp}")
+            logger.info(f"[GIT] Auto-committed context registry at {timestamp}")
             return True
         else:
-            print("[GIT] No changes to commit")
+            logger.info("[GIT] No changes to commit")
             return False
     except Exception as e:
-        print(f"[GIT] Auto-commit failed: {e}")
+        logger.error(f"[GIT] Auto-commit failed: {e}")
         return False
 
 def load_context_db() -> Dict[str, Any]:
@@ -1890,7 +2073,7 @@ def load_context_db() -> Dict[str, Any]:
         try:
             with open(CONTEXT_DB_PATH, 'r', encoding='utf-8') as f:
                 return json.load(f)
-        except:
+        except OSError:
             return {"contexts": []}
     return {"contexts": []}
 
@@ -1914,7 +2097,7 @@ def parse_pdf_text(pdf_content: bytes) -> str:
 
         return text.strip()
     except Exception as e:
-        print(f"[PDF PARSE] Error: {e}")
+        logger.error(f"[PDF PARSE] Error: {e}")
         return ""
 
 
@@ -1951,13 +2134,13 @@ async def context_submit(
 
                 pdf_text = parse_pdf_text(content)
                 if not pdf_text:
-                    print(f"[CONTEXT] Warning: Could not extract text from PDF")
+                    logger.warning(f"[CONTEXT] Warning: Could not extract text from PDF")
             else:
                 # 非 PDF 文件，读取为文本
                 content = await file.read()
                 try:
                     pdf_text = content.decode('utf-8')
-                except:
+                except OSError:
                     pdf_text = f"[Binary file: {filename}]"
 
         # 合并内容
@@ -2015,7 +2198,11 @@ async def context_submit(
         # 触发 Git 自动提交
         git_commit_context()
 
-        print(f"[CONTEXT] Created context {context_id}: {title or filename}, MD5: {md5_checksum}")
+        logger.info(f"[CONTEXT] Created context {context_id}: {title or filename}, MD5: {md5_checksum}")
+
+        # Clear context list cache after creating new context
+        global _context_list_cache
+        _context_list_cache = {"data": None, "timestamp": 0}
 
         return {
             "success": True,
@@ -2029,7 +2216,7 @@ async def context_submit(
     except HTTPException:
         raise
     except Exception as e:
-        print(f"[CONTEXT SUBMIT] Error: {e}")
+        logger.error(f"[CONTEXT SUBMIT] Error: {e}")
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
@@ -2040,13 +2227,28 @@ async def context_list(
     limit: int = 20,
     token: str = Depends(simple_auth)
 ):
-    """列出所有上下文"""
+    """列出所有上下文 (Cached: OPT-012)"""
+    global _context_list_cache
+    now = time.time()
+
+    # Check cache first - cache the full sorted list
+    if _context_list_cache["data"] and (now - _context_list_cache["timestamp"]) < CONTEXT_LIST_CACHE_TTL:
+        cached_contexts = _context_list_cache["data"]
+        return {
+            "success": True,
+            "total": len(cached_contexts),
+            "contexts": cached_contexts[:limit]
+        }
+
     try:
         db = load_context_db()
         contexts = db.get("contexts", [])
 
         # 按创建时间倒序
         contexts.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+
+        # Cache the full sorted list
+        _context_list_cache = {"data": contexts, "timestamp": now}
 
         # 返回指定数量
         return {
@@ -2144,6 +2346,10 @@ async def context_delete(
 
         # 触发 Git 自动提交
         git_commit_context()
+
+        # Clear context list cache after deleting context
+        global _context_list_cache
+        _context_list_cache = {"data": None, "timestamp": 0}
 
         return {"success": True, "message": "Context deleted"}
     except HTTPException:
@@ -2359,7 +2565,7 @@ async def broadcast_to_sse(data: dict):
         try:
             await client.send_text(message)
         except Exception as e:
-            print(f"[SSE BROADCAST] Error: {e}")
+            logger.error(f"[SSE BROADCAST] Error: {e}")
             await remove_sse_client(client)
 
 
@@ -2405,7 +2611,7 @@ async def sse_output_stream(
                     # 发送心跳保持连接
                     yield f"data: {json.dumps({'type': 'heartbeat', 'timestamp': datetime.now().isoformat()})}\n\n"
         except Exception as e:
-            print(f"[SSE STREAM] Error: {e}")
+            logger.error(f"[SSE STREAM] Error: {e}")
         finally:
             await remove_sse_client(client)
 
@@ -2459,7 +2665,7 @@ async def claude_hook(
             "has_debug_markers": os.path.getsize(os.path.join(CLAUDE_OUTPUTS_DIR, f"{output_id}.json")) > 0
         }
 
-        print(f"[CLAUDE HOOK] Received: {request.label}, output_id: {output_id[:8]}...")
+        logger.info(f"[CLAUDE HOOK] Received: {request.label}, output_id: {output_id[:8]}...")
 
         # 立刻通过 SSE 广播
         await broadcast_to_sse(output_data)
@@ -2468,7 +2674,7 @@ async def claude_hook(
         try:
             await manager.broadcast(output_data)
         except Exception as e:
-            print(f"[CLAUDE HOOK] WebSocket broadcast error: {e}")
+            logger.error(f"[CLAUDE HOOK] WebSocket broadcast error: {e}")
 
         return {
             "success": True,
@@ -2478,7 +2684,7 @@ async def claude_hook(
         }
 
     except Exception as e:
-        print(f"[CLAUDE HOOK] Error: {e}")
+        logger.error(f"[CLAUDE HOOK] Error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -2505,7 +2711,7 @@ async def push_claude_output(request: ClaudeOutputRequest, token: str = Depends(
         "label": request.label,
         "timestamp": timestamp
     }
-    print(f"[PUSH] Received: {request.label}, output_id: {output_id[:8]}...")
+    logger.info(f"[PUSH] Received: {request.label}, output_id: {output_id[:8]}...")
 
     # 通过 SSE 广播
     await broadcast_to_sse(output_data)
@@ -2513,9 +2719,9 @@ async def push_claude_output(request: ClaudeOutputRequest, token: str = Depends(
     # 通过 WebSocket 广播
     try:
         await manager.broadcast(output_data)
-        print(f"[PUSH] Broadcast completed")
+        logger.info(f"[PUSH] Broadcast completed")
     except Exception as e:
-        print(f"[PUSH ERROR] Broadcast error: {e}")
+        logger.error(f"[PUSH ERROR] Broadcast error: {e}")
         import traceback
         traceback.print_exc()
     return {"success": True, "message": "Output pushed to clients", "output_id": output_id}
@@ -2555,7 +2761,7 @@ async def list_claude_outputs(
             "total": len(outputs)
         }
     except Exception as e:
-        print(f"[LIST OUTPUTS] Error: {e}")
+        logger.error(f"[LIST OUTPUTS] Error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -2578,7 +2784,7 @@ async def get_claude_output(
     except HTTPException:
         raise
     except Exception as e:
-        print(f"[GET OUTPUT] Error: {e}")
+        logger.error(f"[GET OUTPUT] Error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -2607,7 +2813,7 @@ async def get_claude_output_cleaned(
     except HTTPException:
         raise
     except Exception as e:
-        print(f"[GET CLEANED] Error: {e}")
+        logger.error(f"[GET CLEANED] Error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -2633,7 +2839,7 @@ async def get_claude_output_code_blocks(
     except HTTPException:
         raise
     except Exception as e:
-        print(f"[GET CODE BLOCKS] Error: {e}")
+        logger.error(f"[GET CODE BLOCKS] Error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -2655,7 +2861,7 @@ async def list_debug_markers(
                 if line.strip():
                     try:
                         markers.append(json.loads(line))
-                    except:
+                    except OSError:
                         pass
 
         # 按时间倒序
@@ -2667,7 +2873,7 @@ async def list_debug_markers(
             "total": len(markers)
         }
     except Exception as e:
-        print(f"[LIST DEBUG MARKERS] Error: {e}")
+        logger.error(f"[LIST DEBUG MARKERS] Error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -2693,7 +2899,7 @@ async def clear_claude_outputs(
 
         return {"success": True, "message": "All outputs cleared"}
     except Exception as e:
-        print(f"[CLEAR OUTPUTS] Error: {e}")
+        logger.error(f"[CLEAR OUTPUTS] Error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -2719,7 +2925,7 @@ async def list_local_files(path: str = "~/downloads", token: str = Depends(simpl
                         "size": stat.st_size if not os.path.isdir(item_path) else 0,
                         "modified": stat.st_mtime
                     })
-                except:
+                except OSError:
                     pass
         except PermissionError:
             raise HTTPException(status_code=403, detail="Permission denied")
@@ -3031,7 +3237,7 @@ def load_input_index() -> Dict[str, Any]:
         try:
             with open(CLAUDE_INPUT_INDEX, 'r', encoding='utf-8') as f:
                 return json.load(f)
-        except:
+        except OSError:
             return {"inputs": [], "last_updated": None}
     return {"inputs": [], "last_updated": None}
 
@@ -3113,7 +3319,7 @@ async def receive_claude_input(request: ClaudeInputRequest, token: str = Depends
         with open(input_file, 'w', encoding='utf-8') as f:
             f.write(request.content)
     except Exception as e:
-        print(f"[CLAUDE INPUT] Save error: {e}")
+        logger.error(f"[CLAUDE INPUT] Save error: {e}")
 
     # 持久化到 .claude_outputs/inputs/ 目录
     input_id = save_claude_input(request.content, request.title)
@@ -3145,7 +3351,7 @@ async def receive_claude_input(request: ClaudeInputRequest, token: str = Depends
         "timestamp": datetime.now().isoformat()
     })
 
-    print(f"[CLAUDE INPUT] Received: {len(request.content)} chars, md5: {md5_hash[:8]}, id: {input_id[:8]}...")
+    logger.info(f"[CLAUDE INPUT] Received: {len(request.content)} chars, md5: {md5_hash[:8]}, id: {input_id[:8]}...")
     return result
 
 
@@ -3166,7 +3372,7 @@ async def get_input_history(
             "inputs": inputs
         }
     except Exception as e:
-        print(f"[INPUT HISTORY] Error: {e}")
+        logger.error(f"[INPUT HISTORY] Error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -3189,7 +3395,7 @@ async def get_input_by_id(
     except HTTPException:
         raise
     except Exception as e:
-        print(f"[GET INPUT] Error: {e}")
+        logger.error(f"[GET INPUT] Error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -3218,7 +3424,7 @@ async def delete_input(
     except HTTPException:
         raise
     except Exception as e:
-        print(f"[DELETE INPUT] Error: {e}")
+        logger.error(f"[DELETE INPUT] Error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 

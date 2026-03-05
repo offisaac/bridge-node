@@ -1,8 +1,11 @@
 """BridgeNode Log Tailer - Real-time log file streaming"""
 import asyncio
+import logging
 import os
 import re
 from typing import Optional, List, Callable
+
+logger = logging.getLogger(__name__)
 
 
 class LogTailer:
@@ -80,8 +83,9 @@ class LogTailer:
                         await callback(line.rstrip())
                     else:
                         await asyncio.sleep(0.5)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.error(f"Error watching {filepath}: {e}")
+            await callback(f"Error: {str(e)}")
 
 
 # Global tailer instance
