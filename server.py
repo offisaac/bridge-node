@@ -2571,8 +2571,23 @@ async def broadcast_to_sse(data: dict):
 
 @app.get("/api/stream/output")
 async def sse_output_stream(
-    token: str = Depends(simple_auth)
+    request: Request,
+    token: Optional[str] = None
 ):
+    """
+    SSE 路由 - Claude Output 流。
+    当 internal 接口收到数据时，立刻通过 SSE 广播给前端。
+    支持 Header 或 Query 参数认证。
+    """
+    # Check query param first, then header
+    if not token:
+        auth_header = request.headers.get("authorization", "")
+        if auth_header.startswith("Bearer "):
+            token = auth_header[7:]
+
+    # Verify token manually
+    if not token or not auth.verify_token(token):
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
     """
     SSE 路由 - Claude Output 流。
     当 internal 接口收到数据时，立刻通过 SSE 广播给前端。

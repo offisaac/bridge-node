@@ -4245,6 +4245,70 @@ function generateSendPrompt() {
         }
 
         // ============================================
+        // Authentication & Token Management
+        // ============================================
+        const API_BASE = window.location.origin;
+        let authToken = localStorage.getItem('bridgeToken');
+
+        function saveToken(token) {
+            authToken = token;
+            localStorage.setItem('bridgeToken', token);
+        }
+
+        function getAuthHeaders() {
+            return authToken ? { 'Authorization': `Bearer ${authToken}` } : {};
+        }
+
+        function isLoggedIn() { return !!authToken; }
+
+        function showLoginModal() {
+            const modal = document.createElement('div');
+            modal.id = 'loginModal';
+            modal.innerHTML = `<div style="position:fixed;inset:0;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;z-index:99999;">
+                <div style="background:var(--bg-secondary);padding:40px;border-radius:12px;max-width:400px;width:90%;">
+                    <h2 style="margin:0 0 20px;color:var(--text-primary)">🔐 BridgeNode Login</h2>
+                    <input type="text" id="loginUsername" placeholder="Username" style="width:100%;padding:12px;margin-bottom:12px;background:var(--bg-tertiary);border:1px solid var(--border);color:var(--text-primary);border-radius:8px;">
+                    <input type="password" id="loginPassword" placeholder="Password" style="width:100%;padding:12px;margin-bottom:20px;background:var(--bg-tertiary);border:1px solid var(--border);color:var(--text-primary);border-radius:8px;">
+                    <button onclick="doLogin()" style="width:100%;padding:12px;background:var(--accent);color:white;border:none;border-radius:8px;cursor:pointer;font-weight:600;">Login</button>
+                </div></div>`;
+            document.body.appendChild(modal);
+        }
+
+        async function doLogin() {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            try {
+                const res = await fetch(`${API_BASE}/api/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, password }) });
+                const data = await res.json();
+                if (data.success && data.token) {
+                    saveToken(data.token);
+                    document.getElementById('loginModal')?.remove();
+                    showToast('Login successful!');
+                    location.reload();
+                } else {
+                    showToast('Login failed: ' + (data.detail || 'Invalid credentials'), 'error');
+                }
+            } catch (e) {
+                showToast('Login error: ' + e.message, 'error');
+            }
+        }
+
+        async function authFetch(url, options = {}) {
+            return fetch(url, { ...options, headers: { ...getAuthHeaders(), ...options.headers } });
+        }
+
+        // Global fetch interceptor - add auth to all API calls
+        const originalFetch = window.fetch;
+        window.fetch = async function(url, options = {}) {
+            const urlStr = url.toString();
+            if (urlStr.includes('/api/') && !urlStr.includes('/api/auth/login')) {
+                const headers = { ...getAuthHeaders(), ...options.headers };
+                return originalFetch(url, { ...options, headers });
+            }
+            return originalFetch(url, options);
+        };
+
+        // ============================================
         // API Connection & Status (Latency Heartbeat)
         // ============================================
         const API_BASE = window.location.origin;
@@ -5806,7 +5870,11 @@ function generateSendPrompt() {
             const sseStatus = document.getElementById('sseConnectionStatus');
 
             try {
-                eventSource = new EventSource(`${API_BASE}/api/stream/output`);
+                // SSE with token auth via query param
+                const sseUrl = authToken
+                    ? `${API_BASE}/api/stream/output?token=${encodeURIComponent(authToken)}`
+                    : `${API_BASE}/api/stream/output`;
+                eventSource = new EventSource(sseUrl);
 
                 eventSource.onopen = () => {
                     console.log('SSE connected');
