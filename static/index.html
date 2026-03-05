@@ -3205,14 +3205,14 @@ function generateSendPrompt() {
                         <button class="btn btn-secondary" onclick="refreshLogs()" style="padding: 4px 8px; font-size: 0.7rem;">⟳</button>
                     </div>
                     <div class="card-body" style="padding: 8px;">
-                        <select id="logFileSelect" onchange="loadLogFile()" style="width: 100%; margin-bottom: 6px; padding: 4px; font-size: 0.75rem;">
+                        <select id="logFileSelect" onchange="loadLogFile()" style="width: 100%; margin-bottom: 6px; padding: 4px; font-size: 0.75rem; background: #000; color: #fff; border: 1px solid #333;">
                             <option value="/tmp/server.log">server.log</option>
                             <option value="/tmp/agent_driver.log">agent_driver.log</option>
                             <option value="/tmp/agent_driver_state.json">driver_state.json</option>
                             <option value="/home/pengxiang/bridge-node/debug.log">debug.log</option>
                         </select>
                         <input type="text" id="logFilterInput" placeholder="Filter logs..." oninput="filterLogs()"
-                               style="width: 100%; margin-bottom: 6px; padding: 4px; font-size: 0.75rem;">
+                               style="width: 100%; margin-bottom: 6px; padding: 4px; font-size: 0.75rem; background: #000; color: #fff; border: 1px solid #333;">
                         <div style="display: flex; gap: 4px; margin-bottom: 6px;">
                             <label style="font-size: 0.7rem; display: flex; align-items: center; gap: 4px;">
                                 <input type="checkbox" id="logAutoRefresh" onchange="toggleLogAutoRefresh()"> Auto
