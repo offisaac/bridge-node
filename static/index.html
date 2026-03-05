@@ -2778,7 +2778,7 @@ function generateSendPrompt() {
                     </div>
                     <div class="card-body" style="padding: 8px;">
                         <div style="display: flex; gap: 4px; margin-bottom: 6px;">
-                            <input type="text" id="fdSearchInput" placeholder="filename..." onkeydown="if(event.key==='Enter')runFdSearch()" style="flex: 1; padding: 4px 8px; font-size: 0.75rem; border: 1px solid var(--border); border-radius: 4px; background: #1e1e2e !important; color: #fff !important;">
+                            <input type="text" id="fdSearchInput" placeholder="filename..." onkeydown="if(event.key==='Enter')runFdSearch()" style="flex: 1; padding: 4px 8px; font-size: 0.75rem; border: 1px solid var(--border); border-radius: 4px;">
                             <button class="btn btn-secondary" onclick="runFdSearch()" style="padding: 4px 8px; font-size: 0.7rem;">🔍</button>
                         </div>
                         <div id="fdSearchResults" style="max-height: 80px; overflow-y: auto; font-size: 0.7rem; color: var(--text-secondary);">
@@ -2803,7 +2803,7 @@ function generateSendPrompt() {
                         <!-- Mode 1: Read Input -->
                         <div id="promptInputMode">
                             <div style="display: flex; gap: 4px;">
-                                <textarea id="inputIds" placeholder="Input ID..." style="flex: 1; padding: 4px; font-size: 0.6rem; border: 1px solid var(--border); border-radius: 4px; resize: none; height: 40px; background: #1e1e2e !important; color: #fff !important;"></textarea>
+                                <textarea id="inputIds" placeholder="Input ID..." style="flex: 1; padding: 4px; font-size: 0.6rem; border: 1px solid var(--border); border-radius: 4px; resize: none; height: 40px;"></textarea>
                                 <button class="btn btn-secondary" onclick="generateInputPrompt()" style="padding: 4px 6px; font-size: 0.6rem;">📋</button>
                             </div>
                         </div>
@@ -2811,7 +2811,7 @@ function generateSendPrompt() {
                         <!-- Mode: Context -->
                         <div id="promptContextMode" style="display: none;">
                             <div style="display: flex; gap: 4px;">
-                                <textarea id="contextIds" placeholder="Context ID..." style="flex: 1; padding: 4px; font-size: 0.6rem; border: 1px solid var(--border); border-radius: 4px; resize: none; height: 40px; background: #1e1e2e !important; color: #fff !important;"></textarea>
+                                <textarea id="contextIds" placeholder="Context ID..." style="flex: 1; padding: 4px; font-size: 0.6rem; border: 1px solid var(--border); border-radius: 4px; resize: none; height: 40px;"></textarea>
                                 <button class="btn btn-secondary" onclick="generateContextPrompt()" style="padding: 4px 6px; font-size: 0.6rem;">📋</button>
                             </div>
                         </div>
@@ -2819,7 +2819,7 @@ function generateSendPrompt() {
                         <!-- Mode: Send -->
                         <div id="promptSendMode" style="display: none;">
                             <div style="display: flex; gap: 4px;">
-                                <textarea id="sendContent" placeholder="内容..." style="flex: 1; padding: 4px; font-size: 0.6rem; border: 1px solid var(--border); border-radius: 4px; resize: none; height: 40px; background: #1e1e2e !important; color: #fff !important;"></textarea>
+                                <textarea id="sendContent" placeholder="内容..." style="flex: 1; padding: 4px; font-size: 0.6rem; border: 1px solid var(--border); border-radius: 4px; resize: none; height: 40px;"></textarea>
                                 <button class="btn btn-secondary" onclick="generateSendPrompt()" style="padding: 4px 6px; font-size: 0.6rem;">📋</button>
                             </div>
                         </div>
@@ -3205,14 +3205,14 @@ function generateSendPrompt() {
                         <button class="btn btn-secondary" onclick="refreshLogs()" style="padding: 4px 8px; font-size: 0.7rem;">⟳</button>
                     </div>
                     <div class="card-body" style="padding: 8px;">
-                        <select id="logFileSelect" onchange="loadLogFile()" style="width: 100%; margin-bottom: 6px; padding: 4px; font-size: 0.75rem; background: #000 !important; color: #fff !important; border: 1px solid #333;">
+                        <select id="logFileSelect" onchange="loadLogFile()" style="width: 100%; margin-bottom: 6px; padding: 4px; font-size: 0.75rem;">
                             <option value="/tmp/server.log">server.log</option>
                             <option value="/tmp/agent_driver.log">agent_driver.log</option>
                             <option value="/tmp/agent_driver_state.json">driver_state.json</option>
                             <option value="/home/pengxiang/bridge-node/debug.log">debug.log</option>
                         </select>
                         <input type="text" id="logFilterInput" placeholder="Filter logs..." oninput="filterLogs()"
-                               style="width: 100%; margin-bottom: 6px; padding: 4px; font-size: 0.75rem; background: #000 !important; color: #fff !important; border: 1px solid #333;">
+                               style="width: 100%; margin-bottom: 6px; padding: 4px; font-size: 0.75rem;">
                         <div style="display: flex; gap: 4px; margin-bottom: 6px;">
                             <label style="font-size: 0.7rem; display: flex; align-items: center; gap: 4px;">
                                 <input type="checkbox" id="logAutoRefresh" onchange="toggleLogAutoRefresh()"> Auto
