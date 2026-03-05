@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.1] - 2024-03-05
+
+### Refactored
+- Add SimpleCache class with TTL support for thread-safe caching
+- Archive deprecated agent files
+
 ## [1.2.0] - 2024-03-05
 
 ### Fixed
